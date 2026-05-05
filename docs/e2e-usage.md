@@ -142,6 +142,22 @@ npx playwright test tests/E2E/checkout-sandbox.paypay.spec.js --project=e2e-payp
 
 ---
 
+## Block Checkout 対応ゲートウェイについて
+
+Branch 3（`feature/block-cs-mb-paidy`）で以下のゲートウェイが Block Checkout に対応しました。
+
+| ゲートウェイ | Block 対応 | 特記事項 |
+|-------------|-----------|---------|
+| コンビニ（CS） | ✅ | 店舗選択ドロップダウン。`cvs_company_id` を `process_payment()` に渡す |
+| キャリア（MB） | ✅ | キャリア選択ドロップダウン。`career_type` を `process_payment()` に渡す |
+| Paidy | ✅ | リダイレクト型。説明文（`paidy_description`）を表示 |
+| MCCC | ✅ | `WC_Paygent_Block_CC` を継承。`paygent_mccc-token` 送信、installment なし |
+
+これらのゲートウェイはサンドボックス専用の spec ファイルを持ちません。
+実 API を使ったコンビニ・ATM 決済のテストは `checkout-sandbox.guest.spec.js` でカバーしています。
+
+---
+
 ## Playwright プロジェクト構成
 
 `playwright.config.js` で 4 つのプロジェクトを定義しています。

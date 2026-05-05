@@ -1,0 +1,43 @@
+/* Shared styles for Block checkout selector forms (Convenience Store and Carrier). */
+
+.wc-paygent-select-form {
+	margin-top: 0.75em;
+}
+
+.wc-paygent-select-form__field {
+	margin-bottom: 0.75em;
+}
+
+.wc-paygent-select-form__label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.375em;
+	font-size: 0.875em;
+}
+
+.wc-paygent-select-form__required {
+	color: #cc1818;
+	margin-left: 0.25em;
+}
+
+.wc-paygent-select-form__select {
+	width: 100%;
+	padding: 0.5em 0.75em;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	font-size: 1em;
+	color: inherit;
+	background-color: #fff;
+	cursor: pointer;
+}
+
+.wc-paygent-select-form__select:focus {
+	border-color: #007cba;
+	outline: 2px solid #007cba;
+	outline-offset: 0;
+}
+
+.wc-paygent-select-form__empty {
+	color: #646970;
+	font-style: italic;
+}
