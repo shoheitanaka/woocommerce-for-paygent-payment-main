@@ -18,11 +18,16 @@ $telegram_array = array(
 
 楽天ペイは `woocommerce_order_status_completed` で売上計上が必要。
 
-**既知の問題（要修正・2026-07時点）**: `class-wc-gateway-paygent-rakuten-pay.php` の
-`process_refund()` と完了時売上計上がPaidy用電文（340/342/341）を送信している
-（メソッド名も `order_paidy_status_completed` のままでPaidyクラスからのコピペ痕跡）。
-楽天ペイ別紙仕様書 v1.07 の正しい電文は **271（売上）/ 272（取消）/ 273（補正）**。
-このコードを参照実装として流用しないこと。
+```php
+// process_refund(): 取消は272（オーソリOK 20 / 消込済 40 の両方に対応、常に全額取消）
+// 部分返金は273（補正）だが未実装のためガードでfalseを返す
+// 完了時売上計上: order_rakutenpay_status_completed() が271（売上）を送信
+// payment_id（transaction_id）と trading_id（_paygent_order_id メタ）を指定
+```
+
+**履歴**: 2026-07までこのファイルはPaidy用電文（340/342/341）を誤送信していた
+（Paidyクラスからのコピペ）。楽天ペイ別紙仕様書 v1.07 の正しい電文は
+**271（売上）/ 272（取消）/ 273（補正）**。2026-07-02に修正済み。
 
 ## Paidy 特殊処理
 

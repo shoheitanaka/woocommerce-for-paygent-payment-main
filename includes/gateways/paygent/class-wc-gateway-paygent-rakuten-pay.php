@@ -115,6 +115,8 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'paygent_rakutenpay_redirect_order' ) );
 		add_filter( 'woocommerce_order_button_html', array( $this, 'paygent_rakuten_order_button_html' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'paygent_rakutenpay_thankyou' ), 10, 1 );
+
+		add_action( 'woocommerce_order_status_completed', array( $this, 'order_rakutenpay_status_completed' ) );
 	}
 	/**
 	 * Initialize Gateway Settings Form Fields.
@@ -369,11 +371,20 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		$send_data = array();
 		$order     = wc_get_order( $order_id );
+		// The Rakuten Pay cancel telegram (272) always cancels the full amount.
+		if ( null !== $amount && (float) $amount < (float) $order->get_total() ) {
+			$order->add_order_note( __( 'Rakuten Pay does not support partial refunds. Please refund the full amount.', 'woocommerce-for-paygent-payment-main' ) );
+			return false;
+		}
 		// Set Order ID for Paygent.
-		$send_data['trading_id'] = $order_id;
+		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
+		if ( $paygent_order_id ) {
+			$send_data['trading_id'] = $paygent_order_id;
+		}
+		$send_data['payment_id'] = $order->get_transaction_id();
 
-		if ( $order->get_status() === 'processing' ) {// Processing to cancel.
-			$telegram_kind = '340';
+		if ( $order->get_status() === 'processing' ) {// Cancel the authorization (payment status 20).
+			$telegram_kind = '272';// Rakuten Pay cancel.
 			$response      = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $send_data, $this->debug );
 			if ( '0' === $response['result'] ) {
 				$order->add_order_note( __( 'Success the cancel for paygent.', 'woocommerce-for-paygent-payment-main' ) );
@@ -382,8 +393,8 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 				$order->add_order_note( __( 'Failed the cancel for paygent.', 'woocommerce-for-paygent-payment-main' ) . $response['responseCode'] . ':' . $response['responseDetail'] . ':' . $response['result'] );
 				return false;
 			}
-		} elseif ( $order->get_status() === 'completed' ) {
-			$telegram_kind = '342';
+		} elseif ( $order->get_status() === 'completed' ) {// Cancel the captured sale (payment status 40).
+			$telegram_kind = '272';// Rakuten Pay cancel.
 			$response      = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $send_data, $this->debug );
 			if ( '0' === $response['result'] ) {
 				$order->add_order_note( __( 'Success the refund for paygent.', 'woocommerce-for-paygent-payment-main' ) );
@@ -403,8 +414,23 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 	 *
 	 * @param int $order_id Order ID.
 	 */
-	public function order_paidy_status_completed( $order_id ) {
-		$telegram_kind = '341';
-		$this->paygent_request->order_paygent_status_completed( $order_id, $telegram_kind, $this );
+	public function order_rakutenpay_status_completed( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( $order && $order->get_payment_method() === $this->id ) {
+			$send_data = array();
+			// Set Order ID for Paygent.
+			$paygent_order_id = $order->get_meta( '_paygent_order_id' );
+			if ( $paygent_order_id ) {
+				$send_data['trading_id'] = $paygent_order_id;
+			}
+			$send_data['payment_id'] = $order->get_transaction_id();
+			$telegram_kind           = '271';// Rakuten Pay sale.
+			$response                = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $send_data, $this->debug );
+			if ( '0' === $response['result'] ) {
+				$order->add_order_note( __( 'Success this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
+			} else {
+				$order->add_order_note( __( 'Failed this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) . $response['responseCode'] . ':' . $response['responseDetail'] );
+			}
+		}
 	}
 }
