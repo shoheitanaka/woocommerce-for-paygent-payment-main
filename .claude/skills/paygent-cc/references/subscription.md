@@ -38,11 +38,16 @@ add_action( 'woocommerce_subscription_cancelled_' . $this->id,
 
 ## telegram_kind（継続課金）
 
+CC継続課金に専用電文はなく、通常のカード決済電文を再利用する（Paygentの「継続課金サービス」電文は本プラグインでは未使用）。
+
 | コード | 内容 |
 |---|---|
-| `551` | 継続課金登録 |
-| `020` | 定期決済（トークン決済と同じ） |
-| `025` | 定期決済取消 |
+| `020` | 定期決済ごとのオーソリ（保存済み `customer_card_id` / fingerprint を再利用） |
+| `022` | 即時売上設定時の売上計上（020成功直後に送信） |
+| `021`/`023` | 取消（auth_cancel / sale_cancel） |
+
+初回決済時に `fingerprint`（カード識別子）と `customer_card_id` をオーダーメタに保存し、
+`woocommerce_scheduled_subscription_payment_{id}` フックで再課金時に再利用する。
 
 ## wcs_order_contains_subscription() の使用
 

@@ -91,8 +91,8 @@ submitted to or are listed on the marketplace.
 ./vendor/bin/qit run:e2e my-extension \
   --zip=./my-extension.zip \
   --php_version=8.3 \
-  --wordpress_version=6.7 \
-  --woocommerce_version=9.6
+  --wordpress_version=7.0 \
+  --woocommerce_version=10.9
 
 # Activate other extensions simultaneously for compatibility testing
 ./vendor/bin/qit run:activation my-extension \
