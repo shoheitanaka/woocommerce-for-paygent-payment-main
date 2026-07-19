@@ -50,7 +50,6 @@ const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) 
 		tokenKey,
 		isTds2,
 		savedCards,
-		enableSaveCard,
 	} = settings;
 
 	const hasSavedCards = savedCards && savedCards.length > 0;
