@@ -371,6 +371,9 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		$send_data = array();
 		$order     = wc_get_order( $order_id );
+		if ( ! $order ) {
+			return false;
+		}
 		// The Rakuten Pay cancel telegram (272) always cancels the full amount.
 		if ( null !== $amount && (float) $amount < (float) $order->get_total() ) {
 			$order->add_order_note( __( 'Rakuten Pay does not support partial refunds. Please refund the full amount.', 'woocommerce-for-paygent-payment-main' ) );
