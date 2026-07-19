@@ -338,7 +338,7 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 			}
 
 			// Credit card gateway.
-			if ( class_exists( 'WC_Paygent_Block_CC' ) ) {
+			if ( class_exists( 'WC_Paygent_Block_CC' ) && get_option( 'wc-paygent-cc', false ) ) {
 				$registry->register( new WC_Paygent_Block_CC() );
 			}
 

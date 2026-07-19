@@ -126,9 +126,12 @@ class WC_Paygent_Block_CS extends Abstract_WC_Paygent_Block_Payment {
 	/**
 	 * Features supported by the CS gateway in Block checkout.
 	 *
+	 * The CS gateway does not implement process_refund(), so 'refunds'
+	 * must not be declared here.
+	 *
 	 * @return string[]
 	 */
 	public function get_supported_features(): array {
-		return array( 'products', 'refunds' );
+		return array( 'products' );
 	}
 }

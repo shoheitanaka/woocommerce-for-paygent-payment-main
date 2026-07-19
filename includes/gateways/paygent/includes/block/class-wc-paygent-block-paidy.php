@@ -64,7 +64,7 @@ class WC_Paygent_Block_Paidy extends Abstract_WC_Paygent_Block_Payment {
 			parent::get_payment_method_data(),
 			array(
 				'paidyDescription' => $this->settings['paidy_description'] ?? '',
-				'iconUrl'          => WC_PAYGENT_PLUGIN_URL . 'assets/images/paidy_logo_100_2023.png',
+				'icon_url'         => WC_PAYGENT_PLUGIN_URL . 'assets/images/paidy_logo_100_2023.png',
 			)
 		);
 	}
