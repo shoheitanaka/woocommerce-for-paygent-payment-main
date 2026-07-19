@@ -117,6 +117,13 @@ if ( $token->get_gateway_id() !== $this->id ) {
 
 - 注意: Phase 1 適用前に保存された「MCCC 経由だが gateway_id=paygent_cc のトークン」は CC 側ハンドラが削除することになる（Paygent 側 customer_card_id は共通なので実害なし）
 
+### Phase 4.5: Block 保存カード UI の再有効化
+
+2026-07-19 の PR #22 レビュー対応で、`WC_Paygent_Block_MCCC::get_payment_method_data()` が
+`enableSaveCard = false` / `savedCards = []` を強制する暫定措置を入れた
+（機能しない保存チェックボックスを出さないため）。Phase 1〜3 の完了後に
+この強制上書きを削除し、Block の保存カード UI を再有効化すること。
+
 ### Phase 5: 既存データの移行（**移行しない**方針を推奨）
 
 - 既存の MCCC 経由保存カードは `gateway_id=paygent_cc` のトークンとして存在し、CC 経由保存分と**判別する手段がない**（customer_card_id は Paygent 側で共通管理）

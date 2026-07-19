@@ -86,4 +86,16 @@ class BlockMCCCTest extends TestCase {
 		$this->assertArrayHasKey( 'merchantId', $data );
 		$this->assertArrayHasKey( 'tokenKey', $data );
 	}
+
+	public function test_save_card_ui_is_disabled_until_issue_20(): void {
+		Functions\when( 'get_option' )->justReturn( array( 'store_card_info' => 'yes' ) );
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
+
+		$block = new \WC_Paygent_Block_MCCC();
+		$block->initialize();
+		$data = $block->get_payment_method_data();
+
+		$this->assertFalse( $data['enableSaveCard'] );
+		$this->assertSame( array(), $data['savedCards'] );
+	}
 }
