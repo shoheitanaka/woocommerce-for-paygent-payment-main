@@ -1,6 +1,5 @@
 import { registerPaymentMethod } from '@woocommerce/blocks-registry';
 import { getSetting } from '@woocommerce/settings';
-import { decodeEntities } from '@wordpress/html-entities';
 import { RawHTML } from '@wordpress/element';
 import { PaymentLabel, PaymentDescription } from '../shared/components';
 
@@ -17,8 +16,11 @@ if ( ! settings ) {
  * (both are optional in admin settings).
  */
 const PaidyContent = () => {
-	const description      = decodeEntities( settings?.description || '' );
-	const paidyDescription = decodeEntities( settings?.paidyDescription || '' );
+	// No decodeEntities here: RawHTML (innerHTML) already parses entities.
+	// Decoding first would turn kses-passed entity text (e.g. &lt;img …&gt;)
+	// back into live markup.
+	const description      = settings?.description || '';
+	const paidyDescription = settings?.paidyDescription || '';
 
 	return (
 		<div className="wc-paygent-paidy-content">
