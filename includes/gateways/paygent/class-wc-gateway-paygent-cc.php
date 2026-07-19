@@ -1089,14 +1089,15 @@ jQuery(function(){
 	/**
 	 * Add stored card information for 3D Secure 2.0
 	 *
-	 * @param string $user_id    User ID to store the card for.
-	 * @param string $card_token Token representing the card to store.
-	 * @param object $order      Order object.
+	 * @param string $user_id          User ID to store the card for.
+	 * @param string $card_token       Token representing the card to store.
+	 * @param object $order            Order object.
+	 * @param string $token_gateway_id Gateway ID to save the WC token under (defaults to $this->id).
 	 * @return mixed Result from add_stored_user_data call
 	 */
-	public function paygent_tds_add_stored_card( $user_id, $card_token, $order ) {
+	public function paygent_tds_add_stored_card( $user_id, $card_token, $order, $token_gateway_id = null ) {
 		$card_user_id = 'wc' . $user_id;
-		$result       = $this->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order );
+		$result       = $this->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order, $token_gateway_id );
 		return $result;
 	}
 
@@ -1493,9 +1494,10 @@ jQuery(function(){
 	 * @param bool   $test_mode    Test mode.
 	 * @param bool   $debug        Debug mode.
 	 * @param object $order WC_Order.
+	 * @param string $token_gateway_id Gateway ID to save the WC token under (defaults to $this->id).
 	 * @return mixed
 	 */
-	public function add_stored_user_data( $user_id, $card_token, $test_mode, $debug, $order = null ) {
+	public function add_stored_user_data( $user_id, $card_token, $test_mode, $debug, $order = null, $token_gateway_id = null ) {
 		$telegram_kind = '025';
 		$send_data     = array(
 			'trading_id'      => '',
@@ -1539,7 +1541,7 @@ jQuery(function(){
 			$token = new WC_Payment_Token_CC();
 			$token->set_default( true );
 			$token->set_token( $card_token );
-			$token->set_gateway_id( $this->id );
+			$token->set_gateway_id( $token_gateway_id ?? $this->id );
 			$token->set_last4( $card_last4 );
 			$token->set_card_type( $card_type );
 			$token->set_expiry_month( $expiry_month );
@@ -1560,7 +1562,7 @@ jQuery(function(){
 	 */
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
-		if ( $this->jp4wc_framework->get_post( 'saveinfo' )
+		if ( $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );
@@ -2013,6 +2015,9 @@ jQuery(function(){
 	 * @return void
 	 */
 	public function paygent_delete_card( $token_id, $token ) {
+		if ( $token->get_gateway_id() !== $this->id ) {
+			return;
+		}
 		$customer_card_id = $token->get_meta( 'customer_card_id' );
 		$delete_card_data = array(
 			'customer_id'      => 'wc' . get_current_user_id(),

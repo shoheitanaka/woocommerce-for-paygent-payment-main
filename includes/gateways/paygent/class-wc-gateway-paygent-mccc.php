@@ -391,14 +391,20 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 			$card_user_id = 'wc' . $order_id . '-user';
 		}
 
+		// Save user's card-save preference to meta (needed for 3DS2 callback which has no POST data).
+		$user_wants_save_card = ( 'yes' === sanitize_text_field( wp_unslash( $_POST['paygent_save_card_info'] ?? '' ) ) );// phpcs:ignore
+		$order->update_meta_data( '_paygent_save_card_preference', $user_wants_save_card ? '1' : '0' );
+		$order->save_meta_data();
+
 		// Card information deposit function without EMV-3DS.
-		$set_login = false;
-		if ( is_user_logged_in() && 'yes' === $this->store_card_info ) {
+		$using_stored_card = ( $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' ) === 'yes' );
+		$set_login         = false;
+		if ( is_user_logged_in() && 'yes' === $this->store_card_info && ( $user_wants_save_card || $using_stored_card ) ) {
 			$set_login = true;
-			if ( $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' ) === 'yes' ) {
+			if ( $using_stored_card ) {
 				$send_data['customer_card_id'] = $this->jp4wc_framework->get_post( 'stored-info' );
 			} else {
-				$stored_user_card_data         = $this->paygent_cc->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order );
+				$stored_user_card_data         = $this->paygent_cc->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order, $this->id );
 				$send_data['customer_card_id'] = $stored_user_card_data['result_array'][0]['customer_card_id'];
 			}
 			$order->add_meta_data( '_paygent_customer_card_id', $send_data['customer_card_id'] );
@@ -618,11 +624,12 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 					exit;
 				}
 				// If necessary, register customer's card information.
-				if ( 'yes' === $this->store_card_info ) {
+				$user_wants_save_card = '1' === $order->get_meta( '_paygent_save_card_preference' );
+				if ( 'yes' === $this->store_card_info && $user_wants_save_card ) {
 					$card_token = $order->get_meta( '_paygent_card_token' );
 					$user_id    = $order->get_user_id();
 					if ( false === $order->get_meta( '_paygent_customer_card_id' ) ) {
-						$add_card_result = $this->paygent_tds_add_stored_card( $user_id, $card_token, $order );
+						$add_card_result = $this->paygent_cc->paygent_tds_add_stored_card( $user_id, $card_token, $order, $this->id );
 						if ( false === $add_card_result ) {
 							$order->add_order_note( __( 'Failed to store card information.', 'woocommerce-for-paygent-payment-main' ) );
 						}
@@ -735,7 +742,7 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 	 */
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
-		if ( $this->jp4wc_framework->get_post( 'saveinfo' )
+		if ( $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );
@@ -848,6 +855,9 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function paygent_mccc_delete_card( $token_id, $token ) {
+		if ( $token->get_gateway_id() !== $this->id ) {
+			return;
+		}
 		$customer_card_id = $token->get_meta( 'customer_card_id' );
 		$delete_card_data = array(
 			'customer_id'      => 'wc' . get_current_user_id(),

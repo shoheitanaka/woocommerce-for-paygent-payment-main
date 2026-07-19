@@ -43,6 +43,32 @@ class CardSaveLogicTest extends TestCase {
 	}
 
 	/**
+	 * MCCC has no subscription support, so its save preference is decided purely
+	 * by the checkbox (no subscription-always-saves branch like CC).
+	 *
+	 * @dataProvider mccc_card_save_preference_provider
+	 */
+	public function test_mccc_card_save_preference_is_determined_correctly(
+		string $checkbox_value,
+		string $expected_preference
+	): void {
+		// Replicate the logic from WC_Gateway_Paygent_MCCC::process_payment().
+		$user_wants_save_card = ( 'yes' === $checkbox_value );
+
+		$preference = $user_wants_save_card ? '1' : '0';
+
+		$this->assertSame( $expected_preference, $preference );
+	}
+
+	public static function mccc_card_save_preference_provider(): array {
+		return array(
+			'opt-in'             => array( 'yes', '1' ),
+			'opt-out'            => array( 'no', '0' ),
+			'no checkbox (guest)' => array( '', '0' ),
+		);
+	}
+
+	/**
 	 * The 3DS2 callback must read preference from order meta because POST is gone.
 	 */
 	public function test_3ds2_callback_reads_preference_from_order_meta(): void {
