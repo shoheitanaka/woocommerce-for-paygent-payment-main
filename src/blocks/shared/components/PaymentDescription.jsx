@@ -15,9 +15,9 @@ const PaymentDescription = ( { settings } ) => {
 	}
 
 	return (
-		<p className="wc-paygent-payment-description">
+		<div className="wc-paygent-payment-description">
 			<RawHTML>{ description }</RawHTML>
-		</p>
+		</div>
 	);
 };
 

@@ -23,14 +23,14 @@ const PaidyContent = () => {
 	return (
 		<div className="wc-paygent-paidy-content">
 			{ description && (
-				<p className="wc-paygent-payment-description">
+				<div className="wc-paygent-payment-description">
 					<RawHTML>{ description }</RawHTML>
-				</p>
+				</div>
 			) }
 			{ paidyDescription && (
-				<p className="wc-paygent-paidy-description">
+				<div className="wc-paygent-paidy-description">
 					<RawHTML>{ paidyDescription }</RawHTML>
-				</p>
+				</div>
 			) }
 		</div>
 	);
