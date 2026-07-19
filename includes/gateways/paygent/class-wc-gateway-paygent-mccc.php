@@ -760,7 +760,7 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		if ( 'yes' === $this->tds2_check
 		&& '' === $this->jp4wc_framework->get_post( 'paygent_cardholder_name' )
 		&& ( 'no' === $stored_payment_info || null === $stored_payment_info ) ) {
-			wc_add_notice( __( 'Please enter the cardholder name.', 'woocommerce-for-paygent-payment-main' ) . $test, 'error' );
+			wc_add_notice( __( 'Please enter the cardholder name.', 'woocommerce-for-paygent-payment-main' ), 'error' );
 			return false;
 		} elseif ( 'yes' === $this->tds2_check
 		&& 'no' === $stored_payment_info

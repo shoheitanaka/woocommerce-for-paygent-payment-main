@@ -108,4 +108,16 @@ class WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC {
 		unset( $data['numberOfPayments'] );
 		return $data;
 	}
+
+	/**
+	 * Features supported by the MCCC gateway in Block checkout.
+	 *
+	 * Matches WC_Gateway_Paygent_MCCC::$supports — unlike CC, the MCCC
+	 * gateway does not support WooCommerce Subscriptions.
+	 *
+	 * @return string[]
+	 */
+	public function get_supported_features(): array {
+		return array( 'products', 'refunds', 'tokenization' );
+	}
 }
