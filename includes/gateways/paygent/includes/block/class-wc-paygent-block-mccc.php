@@ -41,8 +41,8 @@ class WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC {
 		// PaygentToken.js — same external library as CC.
 		if ( ! wp_script_is( 'paygent-token-js', 'registered' ) ) {
 			$token_js_url = '1' === get_option( 'wc-paygent-testmode' )
-				? '//sandbox.paygent.co.jp/js/PaygentToken.js'
-				: '//token.paygent.co.jp/js/PaygentToken.js';
+				? 'https://sandbox.paygent.co.jp/js/PaygentToken.js'
+				: 'https://token.paygent.co.jp/js/PaygentToken.js';
 
 			wp_register_script(
 				'paygent-token-js',

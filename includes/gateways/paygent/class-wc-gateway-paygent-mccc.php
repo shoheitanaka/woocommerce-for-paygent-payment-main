@@ -545,9 +545,9 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 	 */
 	public function add_paygent_mccc_token_scripts() {
 		if ( '1' === $this->test_mode ) {
-			$paygent_token_js_link = '//sandbox.paygent.co.jp/js/PaygentToken.js';
+			$paygent_token_js_link = 'https://sandbox.paygent.co.jp/js/PaygentToken.js';
 		} else {
-			$paygent_token_js_link = '//token.paygent.co.jp/js/PaygentToken.js';
+			$paygent_token_js_link = 'https://token.paygent.co.jp/js/PaygentToken.js';
 		}
 		if ( is_checkout() || is_add_payment_method_page() ) {
 			wp_enqueue_script(
