@@ -1,31 +1,34 @@
-# 仮想口座・銀行ネット・口座振替
+# ATM決済・銀行ネット・口座振替
 
-## 仮想口座決済（ATM）
+## ATM決済（プラグイン上の「仮想口座（ATM）」）
 
-顧客専用の仮想口座番号を発行し、ATMや銀行振込で支払う方式。
+Pay-easy（ペイジー）方式。収納機関番号・お客様番号・確認番号を発行し、銀行/郵便局のATMやネットバンキングで支払う。
 
 ```php
 class WC_Gateway_Paygent_ATM extends WC_Payment_Gateway {
-    public $payment_detail;       // 口座名義（カナ）
-    public $payment_detail_kana;  // 口座名義（カナ）
-    public $payment_limit_date;   // 支払い期限（日数）
+    public $payment_detail;       // 明細内容
+    public $payment_detail_kana;  // 明細内容カナ
+    public $payment_limit_date;   // 支払い期限（日数、0〜60）
 }
 ```
 
 ```php
-// 申込 telegram_kind: '300'
+// 申込 telegram_kind: '010'（ATM決済申込）
 $send_data = array(
-    'trading_id'         => 'wc_' . $order_id,
-    'payment_amount'     => $order->get_total(),
-    'payment_limit_date' => date( 'Ymd', strtotime( '+' . $this->payment_limit_date . ' days' ) ),
-    'payment_detail'     => mb_convert_encoding( $this->payment_detail, 'SJIS', 'UTF-8' ),
+    'trading_id'          => 'wc_' . $order_id,
+    'payment_amount'      => $order->get_total(),
+    'payment_limit_date'  => $this->payment_limit_date, // 日数をそのまま送信
+    'payment_detail'      => mb_convert_encoding( $this->payment_detail, 'SJIS', 'UTF-8' ),
+    'payment_detail_kana' => mb_convert_encoding( $this->payment_detail_kana, 'SJIS', 'UTF-8' ),
 );
 
-// レスポンスに口座番号が含まれる
-$bank_code     = $response['result_array'][0]['bank_code'];
-$branch_code   = $response['result_array'][0]['branch_code'];
-$bank_account  = $response['result_array'][0]['bank_account'];
+// レスポンス（収納機関方式）— オーダーメタに保存して表示に使う
+$pay_center_number = $response['result_array'][0]['pay_center_number']; // 収納機関番号 → _pay_center_number
+$customer_number   = $response['result_array'][0]['customer_number'];   // お客様番号   → _customer_number
+$conf_number       = $response['result_array'][0]['conf_number'];       // 確認番号     → _conf_number
 ```
+
+※ 仕様書の「1.2.19. 仮想口座決済申込電文（電文種別ID=070）」は口座番号を発行する別サービスで、本プラグインでは未使用。
 
 ### ドキュメント
 
@@ -39,8 +42,9 @@ $bank_account  = $response['result_array'][0]['bank_account'];
 ネットバンキング経由の即時決済。リダイレクト型。
 
 ```php
-// telegram_kind: '320' 銀行ネット申込
-// → リダイレクト → 銀行ネットバンキング画面 → コールバック
+// telegram_kind: '060' 銀行ネット決済ASP申込
+// → リダイレクト → 金融機関選択・ネットバンキング画面 → コールバック
+// 入金完了はWebhookの payment_status '40'（消込済）で受信 → processing へ
 ```
 
 ### ドキュメント
@@ -67,16 +71,13 @@ $bank_account  = $response['result_array'][0]['bank_account'];
 
 ## Webhook経由の入金確認
 
-後払い系（コンビニ・仮想口座）は入金後にPaygentからWebhookが送信される：
+後払い系（コンビニ・ATM）は入金後にPaygentからWebhook（決済情報差分通知）が送信される：
 
 ```
 POST /wp-json/paygent/v1/check
-{
-    "trading_id": "wc_123",
-    "payment_id": "xxx",
-    "payment_status": "30"  // 売上計上済み
-}
+trading_id=wc_123&payment_id=xxx&payment_status=40&payment_type=03
 ```
 
-`WC_Paygent_Endpoint::paygent_check_webhook()` でオーダーを特定し、
-`payment_complete()` を呼び出してステータスを更新する。
+`WC_Paygent_Endpoint::paygent_check_webhook()` でオーダーを特定し、`payment_type` 別の
+ハンドラ（`paygent_cv_webhook()` / `paygent_bn_webhook()` 等）でステータスを更新する。
+入金完了は `payment_status=40`（消込済）で、オーダーは「processing」になる。

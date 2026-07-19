@@ -55,9 +55,10 @@ public function paygent_paypay_thankyou( $order_id ) {
 }
 ```
 
-## Paidy フロー（telegram `340`/`341`）
+## Paidy フロー（telegram `340`/`341`/`342`）
 
-PaidyはPayPay申込のような初回申込電文はなく、340（オーソリキャンセル）と341（売上確定）のみ。
+PaidyはPayPay申込のような初回申込電文はなく、340（オーソリキャンセル）・341（売上確定）・342（返金）・343（決済情報検証）を使う。
+`process_refund()` はオーダーステータスが processing なら 340、completed なら 342 を送信する。
 
 ```php
 // 取消・返金時のtrading_id取得ロジックが追加

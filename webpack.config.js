@@ -10,10 +10,10 @@ module.exports = {
 		// Branch 2: Credit card (CC + Addon_CC)
 		'paygent-cc': path.resolve( __dirname, 'src/blocks/paygent-cc/index.js' ),
 		// Branch 3: Select gateways (CS, MB, Paidy, MCCC)
-		// 'paygent-cs':    path.resolve( __dirname, 'src/blocks/paygent-cs/index.js' ),
-		// 'paygent-mb':    path.resolve( __dirname, 'src/blocks/paygent-mb/index.js' ),
-		// 'paygent-paidy': path.resolve( __dirname, 'src/blocks/paygent-paidy/index.js' ),
-		// 'paygent-mccc':  path.resolve( __dirname, 'src/blocks/paygent-mccc/index.js' ),
+		'paygent-cs':    path.resolve( __dirname, 'src/blocks/paygent-cs/index.js' ),
+		'paygent-mb':    path.resolve( __dirname, 'src/blocks/paygent-mb/index.js' ),
+		'paygent-paidy': path.resolve( __dirname, 'src/blocks/paygent-paidy/index.js' ),
+		'paygent-mccc':  path.resolve( __dirname, 'src/blocks/paygent-mccc/index.js' ),
 	},
 	output: {
 		...defaultConfig.output,

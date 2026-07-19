@@ -117,6 +117,13 @@ class WC_Gateway_Paygent_CS extends WC_Payment_Gateway {
 	public $payment_limit_date;
 
 	/**
+	 * Custom text shown on the order received (thank you) page.
+	 *
+	 * @var string
+	 */
+	public $order_received_text;
+
+	/**
 	 * Convenience store connection type.
 	 *
 	 * @var string

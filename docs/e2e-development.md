@@ -28,6 +28,10 @@
 | 6 | WooCommerce Block Checkout CC（会員・保存カード） | `tests/E2E/checkout-sandbox.block-cc.member.spec.js` | ✅ 完了 |
 | 7 | PayPay リダイレクト確認 | `tests/E2E/checkout-sandbox.paypay.spec.js` | ✅ 完了（ページ遷移まで） |
 | 8 | サブスクリプション更新課金のIntegrationテスト | `tests/Integration/SubscriptionRenewalTest.php` | 📋 追加予定 |
+| 12 | Block Checkout CS（コンビニ店舗選択 UI） | Playwright 動作確認（Functional テスト内包） | ✅ 完了（Block 登録・csStores 渡し・セレクター表示を確認） |
+| 13 | Block Checkout MB（キャリア選択 UI） | Playwright 動作確認（Functional テスト内包） | ✅ 完了（Block 登録・carrierTypes 渡し・セレクター表示を確認） |
+| 14 | Block Checkout Paidy（リダイレクト型表示） | Playwright 動作確認（Functional テスト内包） | ✅ 完了（Block 登録・paidyDescription 表示を確認） |
+| 15 | Block Checkout MCCC（多通貨カードフォーム） | コード審査 + PHP 動作確認 | ✅ 完了（WC_Paygent_Block_CC 継承・installment 除外を確認） |
 
 ### 低優先
 
@@ -111,6 +115,12 @@ tests/
     ├── checkout-sandbox.block-cc.guest.spec.js   Block Checkout CC（ゲスト）
     ├── checkout-sandbox.block-cc.member.spec.js  Block Checkout CC（会員・保存カード）
     └── checkout-sandbox.paypay.spec.js      PayPay 外部リダイレクト確認
+
+> **Block CS / MB / Paidy / MCCC（Branch 3）について**:
+> コンビニ・キャリア・Paidy・MCCC の Block Checkout 対応は Functional テスト（smoke / checkout など）で
+> ゲートウェイ登録・PHP データ返却・Block 上での表示を確認済み。
+> サンドボックス決済フロー（実 API）のテストは CS/MB が `checkout-sandbox.guest.spec.js` の Classic Checkout
+> テストでカバーされているため、Block 専用サンドボックス spec ファイルは未作成。
 ```
 
 ---
@@ -196,7 +206,7 @@ WP-CLI で注文を作成し、管理画面の HPOS 注文一覧・詳細表示�
 | E | カード保存 → 次回は保存済みカードで決済 |
 | F | 金額修正（オーソリ後に金額変更） |
 
-### `checkout-sandbox.block-cc.guest.spec.js`
+### `checkout-sandbox.block-cc.guest.spec.js` / `checkout-sandbox.block-cc.member.spec.js`
 WooCommerce Block Checkout を使ったゲストクレジットカード決済フロー。
 
 | グループ | 内容 |

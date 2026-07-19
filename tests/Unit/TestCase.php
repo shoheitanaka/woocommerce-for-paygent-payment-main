@@ -25,6 +25,9 @@ abstract class TestCase extends PHPUnitTestCase {
 		// apply_filters must be stubbed via Brain\Monkey (not bootstrap) so that
 		// Patchwork can redefine it per-test when needed.
 		Monkey\Functions\when( 'apply_filters' )->returnArg( 2 );
+
+		// wp_kses_post is not covered by stubEscapeFunctions().
+		Monkey\Functions\when( 'wp_kses_post' )->returnArg();
 	}
 
 	protected function tearDown(): void {

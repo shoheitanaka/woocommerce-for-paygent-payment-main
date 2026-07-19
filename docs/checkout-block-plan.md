@@ -1,6 +1,15 @@
 # Checkout Block 実装計画
 
-作成日: 2026-05-03
+作成日: 2026-05-03  
+完了日: 2026-05-05（全 Branch 実装済み）
+
+## 実装状況
+
+| Branch | ブランチ名 | 対象ゲートウェイ | 状態 |
+|--------|-----------|----------------|------|
+| Branch 1 | `feature/block-redirect-gateways` | ATM / BN / PayPay / 楽天ペイ | ✅ trunk にマージ済み |
+| Branch 2 | `feature/block-cc` | CC + 保存カード + 3DS2 | ✅ trunk にマージ済み |
+| Branch 3 | `feature/block-cs-mb-paidy` | コンビニ / キャリア / Paidy / MCCC | ✅ 実装完了
 
 ## アーキテクチャ概要
 
@@ -43,6 +52,9 @@ includes/gateways/paygent/includes/block/
 
 ### JS: `src/blocks/`
 
+> **注意**: 計画時に想定した `components/` サブディレクトリは作成せず、  
+> 各ゲートウェイの UI・ロジックをすべて単一の `index.js` に収めた。
+
 ```
 src/blocks/
   shared/
@@ -52,40 +64,36 @@ src/blocks/
       index.js
     utils/
       tokenize.js               ← PaygentToken.js の Promise ラッパー (Branch 2)
-      saved-cards.js            ← 保存カード共通ロジック (Branch 2)
-  paygent-cc/
-    index.js
-    components/
-      PaymentForm.jsx
-      SavedCardSelector.jsx
-      InstallmentSelector.jsx
-  paygent-cs/
-    index.js
-    components/ConvenienceStoreSelector.jsx
-  paygent-mb/
-    index.js
-    components/CarrierSelector.jsx
   paygent-redirect/
-    index.js                    ← ATM/BN/PayPay/楽天ペイを1ファイルで一括登録
+    index.js                    ← ATM/BN/PayPay/楽天ペイを1ファイルで一括登録 (Branch 1)
+  paygent-cc/
+    index.js                    ← CardForm / SavedCardSelector / InstallmentSelector を内包 (Branch 2)
+  paygent-cs/
+    index.js                    ← ConvenienceStoreForm を内包 (Branch 3)
+  paygent-mb/
+    index.js                    ← CarrierForm を内包 (Branch 3)
   paygent-paidy/
-    index.js
-    components/PaidyContent.jsx
+    index.js                    ← PaidyContent を内包・リダイレクト型 (Branch 3)
   paygent-mccc/
-    index.js                    ← paygent-cc/components をそのまま import
+    index.js                    ← McccCardForm を内包（CCとは独立実装、分割なし）(Branch 3)
 ```
 
 ### ビルド出力: `build/`
 
 ```
 build/
-  paygent-redirect.js         ← Branch 1
+  paygent-redirect.js         ← Branch 1 ✅
   paygent-redirect.asset.php
-  paygent-cc.js               ← Branch 2
+  paygent-cc.js               ← Branch 2 ✅
   paygent-cc.asset.php
-  paygent-cs.js               ← Branch 3
-  paygent-mb.js
-  paygent-paidy.js
-  paygent-mccc.js
+  paygent-cs.js               ← Branch 3 ✅
+  paygent-cs.asset.php
+  paygent-mb.js               ← Branch 3 ✅
+  paygent-mb.asset.php
+  paygent-paidy.js            ← Branch 3 ✅
+  paygent-paidy.asset.php
+  paygent-mccc.js             ← Branch 3 ✅
+  paygent-mccc.asset.php
 ```
 
 ---
@@ -95,19 +103,19 @@ build/
 ```
 trunk
  │
- ├── feature/block-redirect-gateways  ─ PR → trunk
+ ├── feature/block-redirect-gateways  ─ PR → trunk ✅ マージ済み
  │   基盤 + ATM/BN/PayPay/楽天ペイ
  │
- ├── feature/block-cc                 ─ PR → trunk（Branch 1 マージ後）
+ ├── feature/block-cc                 ─ PR → trunk ✅ マージ済み
  │   CC + Addon_CC + 3DS2 + 保存カード
  │
- └── feature/block-cs-mb-paidy        ─ PR → trunk（Branch 1 マージ後）
+ └── feature/block-cs-mb-paidy        ─ PR → trunk ✅ 実装完了
      コンビニ + キャリア + Paidy + MCCC
 ```
 
 ---
 
-## Branch 1: `feature/block-redirect-gateways`
+## Branch 1: `feature/block-redirect-gateways` ✅ 完了
 
 **基盤構築 + ATM・BN・PayPay・楽天ペイ**
 
@@ -147,7 +155,7 @@ new WC_Paygent_Block_Redirect( 'paygent_rakutenpay', [ 'products', 'refunds' ] )
 
 ---
 
-## Branch 2: `feature/block-cc`
+## Branch 2: `feature/block-cc` ✅ 完了
 
 **CC + Addon_CC (Subscriptions) + 3DS2 + 保存カード**
 
@@ -157,11 +165,7 @@ new WC_Paygent_Block_Redirect( 'paygent_rakutenpay', [ 'products', 'refunds' ] )
 |------|---------|
 | 新規 | `includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php` |
 | 新規 | `src/blocks/shared/utils/tokenize.js` |
-| 新規 | `src/blocks/shared/utils/saved-cards.js` |
-| 新規 | `src/blocks/paygent-cc/index.js` |
-| 新規 | `src/blocks/paygent-cc/components/PaymentForm.jsx` |
-| 新規 | `src/blocks/paygent-cc/components/SavedCardSelector.jsx` |
-| 新規 | `src/blocks/paygent-cc/components/InstallmentSelector.jsx` |
+| 新規 | `src/blocks/paygent-cc/index.js`（CardForm / SavedCardSelector / InstallmentSelector を内包） |
 | 修正 | `webpack.config.js`（CC エントリ追加） |
 | 修正 | `class-wc-gateway-paygent.php`（CC Block 登録追加） |
 
@@ -211,22 +215,46 @@ WooCommerce Blocks が自動的に 3DS_URL へリダイレクト
 
 ---
 
-## Branch 3: `feature/block-cs-mb-paidy`
+## Branch 3: `feature/block-cs-mb-paidy` ✅ 完了
 
 **コンビニ + キャリア + Addon_MB + Paidy + MCCC**
 
-### MCCC の重複ゼロ化
+### 変更・作成ファイル
+
+| 操作 | ファイル |
+|------|---------|
+| 新規 | `includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php` |
+| 新規 | `includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php` |
+| 新規 | `includes/gateways/paygent/includes/block/class-wc-paygent-block-paidy.php` |
+| 新規 | `includes/gateways/paygent/includes/block/class-wc-paygent-block-mccc.php` |
+| 新規 | `src/blocks/paygent-cs/index.js` |
+| 新規 | `src/blocks/paygent-mb/index.js` |
+| 新規 | `src/blocks/paygent-paidy/index.js` |
+| 新規 | `src/blocks/paygent-mccc/index.js` |
+| 新規 | `assets/css/paygent-block-select.css`（CS/MB 店舗・キャリア選択UI用） |
+| 修正 | `webpack.config.js`（CS/MB/Paidy/MCCC エントリ追加） |
+| 修正 | `class-wc-gateway-paygent.php`（4クラスの require + 登録追加） |
+
+### 核心設計
+
+**コンビニ（CS）**: 店舗セレクタを `onPaymentSetup` で `cvs_company_id` として送信。  
+有効店舗リストは `setting_cs_se/lm/f/sm/ctd` の設定値から PHP 側で生成し JS へ渡す。
+
+**キャリア（MB）**: キャリアセレクタを `onPaymentSetup` で `career_type` として送信。  
+有効キャリアは `setting_ct_04/05/06` の設定値から生成。
+
+**Paidy**: リダイレクト型のため `onPaymentSetup` 不要。説明文と `paidy_logo_100_2023.png` を表示するのみ。
+
+**MCCC**: `WC_Paygent_Block_CC` を継承し `$name = 'paygent_mccc'` をオーバーライド。  
+JS は CC コンポーネントを共有せず独立した `McccCardForm`（分割払い選択なし）として実装。  
+`paymentMethodData` のキーは `paygent_mccc-token` / `paygent_mccc-cvc_token`（CC の `paygent_cc-` プレフィックスとは別）。
 
 ```php
-// class-wc-paygent-block-mccc.php — CC を継承、差分のみ
+// class-wc-paygent-block-mccc.php — CC を継承、name と script handles のみオーバーライド
 class WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC {
-    protected string $name = 'paygent_mccc';
+    protected $name = 'paygent_mccc';
+    // get_payment_method_data() で paymentMethods / numberOfPayments を除去
 }
-```
-
-```js
-// src/blocks/paygent-mccc/index.js — CC コンポーネントをそのまま再利用
-import PaymentForm from '../paygent-cc/components/PaymentForm';
 ```
 
 ---
@@ -239,4 +267,11 @@ import PaymentForm from '../paygent-cc/components/PaymentForm';
 | `WC_Paygent_Block_Redirect` 1クラス | ATM/BN/PayPay/楽天ペイの4クラスを1つに集約 |
 | `src/blocks/shared/utils/tokenize.js` | CC と MCCC で同じトークン処理を共用 |
 | `src/blocks/shared/components/` | 全ゲートウェイのラベル・説明文表示を統一 |
-| `WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC` | MCCC 固有コードをほぼゼロに |
+| `WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC` | PHP 側の重複をゼロに。JS は安全優先で独立実装 |
+| `assets/css/paygent-block-select.css` | CS・MB のセレクタ UI を共通スタイルで統一 |
+
+## 実装メモ（計画との差異）
+
+- JS の各ゲートウェイは `components/` サブディレクトリを作成せず、すべて単一 `index.js` に収めた。コンポーネント数が少なく分割による恩恵が見込めなかったため。
+- `src/blocks/shared/utils/saved-cards.js` は計画にあったが作成しなかった。保存カードの取得・表示ロジックは `paygent-cc/index.js` 内に直接実装している。
+- MCCC の JS は CC の `CardForm` を import せず独立した `McccCardForm` として実装した。既存 CC 実装を壊すリスクを避け、MCCC 固有の差分（分割払いなし）を明確にするため。

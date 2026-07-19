@@ -186,6 +186,10 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-abstract-wc-paygent-block-payment.php';
 				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-wc-paygent-block-redirect.php';
 				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php';
+				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php';
+				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php';
+				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-wc-paygent-block-paidy.php';
+				require_once WC_PAYGENT_ABSPATH . 'includes/gateways/paygent/includes/block/class-wc-paygent-block-mccc.php';
 			}
 		}
 
@@ -334,8 +338,28 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 			}
 
 			// Credit card gateway.
-			if ( class_exists( 'WC_Paygent_Block_CC' ) ) {
+			if ( class_exists( 'WC_Paygent_Block_CC' ) && get_option( 'wc-paygent-cc', false ) ) {
 				$registry->register( new WC_Paygent_Block_CC() );
+			}
+
+			// Convenience store gateway.
+			if ( class_exists( 'WC_Paygent_Block_CS' ) && get_option( 'wc-paygent-cs', false ) ) {
+				$registry->register( new WC_Paygent_Block_CS() );
+			}
+
+			// Mobile carrier gateway.
+			if ( class_exists( 'WC_Paygent_Block_MB' ) && get_option( 'wc-paygent-mb', false ) ) {
+				$registry->register( new WC_Paygent_Block_MB() );
+			}
+
+			// Paidy gateway.
+			if ( class_exists( 'WC_Paygent_Block_Paidy' ) && get_option( 'wc-paygent-paidy', false ) ) {
+				$registry->register( new WC_Paygent_Block_Paidy() );
+			}
+
+			// Multi-currency credit card gateway.
+			if ( class_exists( 'WC_Paygent_Block_MCCC' ) && get_option( 'wc-paygent-mccc', false ) ) {
+				$registry->register( new WC_Paygent_Block_MCCC() );
 			}
 		}
 

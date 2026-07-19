@@ -25,21 +25,25 @@ public function paygent_token_scripts_method() {
 public function process_payment( $order_id ) {
     $order = wc_get_order( $order_id );
 
-    // telegram_kind: '020' = トークン与信, '031' = 3DS2与信
+    // telegram_kind: '020' = トークン与信（3DS2チャレンジ後の認証実行は '450'）
     $telegram_kind = '020';
 
+    // トークンはチェックアウトフォームの 'paygent_cc-token' から取得し、
+    // '_paygent_card_token' オーダーメタにも保存される
+    $card_token = $this->jp4wc_framework->get_post( 'paygent_cc-token' );
+
     $send_data = array(
-        'trading_id'      => 'wc_' . $order_id,
-        'payment_amount'  => $order->get_total(),
-        'payment_class'   => $this->payment_method, // 10=1回払い等
-        'token'           => sanitize_text_field( $_POST['paygent_token'] ),
-        'out_appr_amount' => $order->get_total(),
+        'trading_id'     => 'wc_' . $order_id,
+        'payment_amount' => $order->get_total(),
+        'payment_class'  => $this->payment_method, // 10=1回払い等
+        'card_token'     => $card_token,
     );
 
-    // カード保存時
-    if ( isset( $_POST['wc-paygent_cc-new-payment-method'] ) ) {
-        $send_data['stock_card_flg'] = '1'; // カード情報保存
-    }
+    // カード保存時（set_stored_card() 内で設定）
+    // $send_data['stock_card_mode'] = 1;            // カード情報保存
+    // $send_data['customer_id']     = $card_user_id; // 顧客ID
+    // 保存済みカード利用時は card_token を unset し
+    // $send_data['customer_card_id'] と $send_data['card_set_method'] = 'token' を設定
 
     $response = $this->paygent_request->send_paygent_request(
         $this->test_mode, $order, $telegram_kind, $send_data, $this->debug
@@ -56,27 +60,21 @@ public function process_payment( $order_id ) {
 }
 ```
 
-## カード保存（トークナイゼーション）
+## カード保存（トークナイゼーション）— カード情報お預り機能
 
 ```php
-// カード登録 telegram_kind: '092'
-// カード削除 telegram_kind: '093'
+// カード情報設定（登録） telegram_kind: '025'（valid_check_flg で有効性チェック可）
+// カード情報更新（洗替）  telegram_kind: '116'
+// カード情報削除          telegram_kind: '026'
+// カード情報照会          telegram_kind: '027'
 
 // カード削除フック
 add_action( 'woocommerce_payment_token_deleted', array( $this, 'paygent_delete_card' ), 10, 2 );
-
-public function paygent_delete_card( $token_id, $token ) {
-    if ( 'paygent_cc' === $token->get_gateway_id() ) {
-        $send_data = array(
-            'trading_id' => 'wc_del_' . $token_id,
-            'seq_merchant_id' => $token->get_token(), // Paygentのシーケンス番号
-        );
-        $this->paygent_request->send_paygent_request(
-            $this->test_mode, null, '093', $send_data, $this->debug
-        );
-    }
-}
+// → telegram_kind '026' で customer_id / customer_card_id を指定して削除
 ```
+
+登録時は `customer_id`（WPユーザーに紐づくID）を指定し、応答の `customer_card_id` を
+WooCommerceのペイメントトークンとして保存する。決済時は `customer_card_id` + `card_set_method='token'` を送信。
 
 ## セキュリティ注意事項
 

@@ -47,6 +47,13 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 	public $test_mode;
 
 	/**
+	 * Legacy test mode settings key, kept for settings saved by old versions.
+	 *
+	 * @var string
+	 */
+	public $testmode;
+
+	/**
 	 * 3D secure Check (for backward compatibility)
 	 *
 	 * @var string
@@ -1578,7 +1585,7 @@ jQuery(function(){
 		if ( 'yes' === $this->tds2_check
 		&& '' === $this->jp4wc_framework->get_post( 'paygent_cardholder_name' )
 		&& ( 'no' === $stored_payment_info || null === $stored_payment_info ) ) {
-			wc_add_notice( __( 'Please enter the cardholder name.', 'woocommerce-for-paygent-payment-main' ) . $test, 'error' );
+			wc_add_notice( __( 'Please enter the cardholder name.', 'woocommerce-for-paygent-payment-main' ), 'error' );
 			return false;
 		} elseif ( 'yes' === $this->tds2_check
 		&& 'no' === $stored_payment_info
@@ -1834,9 +1841,9 @@ jQuery(function(){
 	 */
 	public function paygent_token_scripts_method() {
 		if ( '1' === $this->test_mode ) {
-			$paygent_token_js_link = '//sandbox.paygent.co.jp/js/PaygentToken.js';
+			$paygent_token_js_link = 'https://sandbox.paygent.co.jp/js/PaygentToken.js';
 		} else {
-			$paygent_token_js_link = '//token.paygent.co.jp/js/PaygentToken.js';
+			$paygent_token_js_link = 'https://token.paygent.co.jp/js/PaygentToken.js';
 		}
 		if ( is_checkout() || is_add_payment_method_page() ) {
 			wp_enqueue_script(

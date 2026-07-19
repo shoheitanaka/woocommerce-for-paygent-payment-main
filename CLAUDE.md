@@ -87,12 +87,14 @@ WooCommerce Subscriptionsが有効な場合、CC/MBは`_Addon_`クラスに自�
 | コード | 決済 | 内容 |
 | --- | --- | --- |
 | `020` | CC | オーソリ申込 |
+| `021` | CC | オーソリキャンセル |
 | `022` | CC | 売上（キャプチャ） |
-| `023` | CC | オーソリ取消 |
-| `028` | CC | 売上取消 |
-| `030` | コンビニ | 申込 |
-| `010` | 仮想口座 | 申込 |
-| `040` | 銀行ネット | 申込 |
+| `023` | CC | 売上キャンセル |
+| `028` | CC | 補正オーソリ（金額変更） |
+| `029` | CC | 補正売上（金額変更） |
+| `030` | コンビニ | 申込（番号方式） |
+| `010` | 仮想口座（ATM） | 申込（ATM決済電文） |
+| `060` | 銀行ネット | 申込（ASP） |
 | `100` | キャリア | 都度課金申込 |
 | `101` | キャリア | 売上要求 |
 | `102` | キャリア | 取消要求 |
@@ -109,7 +111,7 @@ WooCommerce Subscriptionsが有効な場合、CC/MBは`_Addon_`クラスに自�
 
 ### ハッシュチェック
 
-SHA-256による改ざん検知。`order_id + telegram_kind + amount + hash_code` を連結してハッシュ化。
+SHA-256による改ざん検知。`merchant_id + connect_id + connect_password + telegram_kind + telegram_version + trading_id +（payment_id）+（payment_amount）+ request_date` を順に連結し、末尾に `hash_code` を付加してハッシュ化（`make_hash_data()`）。リクエストには `hc` と `request_date` として付与。
 
 ### Webhook
 
