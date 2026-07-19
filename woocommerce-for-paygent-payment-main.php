@@ -8,9 +8,9 @@
  * Author: Artisan Workshop
  * Author URI: https://wc.artws.info/
  * Requires at least: 5.0
- * Tested up to: 6.9.0
+ * Tested up to: 7.0
  * WC requires at least: 8.0.0
- * WC tested up to: 10.4.3
+ * WC tested up to: 10.9.4
  *
  * Text Domain: woocommerce-for-paygent-payment-main
  * Domain Path: /i18n/
