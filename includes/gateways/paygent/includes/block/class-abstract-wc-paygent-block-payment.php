@@ -49,7 +49,7 @@ abstract class Abstract_WC_Paygent_Block_Payment extends AbstractPaymentMethodTy
 	public function get_payment_method_data(): array {
 		return array(
 			'title'       => $this->settings['title'] ?? '',
-			'description' => $this->settings['description'] ?? '',
+			'description' => wp_kses_post( $this->settings['description'] ?? '' ),
 			'supports'    => $this->get_supported_features(),
 		);
 	}

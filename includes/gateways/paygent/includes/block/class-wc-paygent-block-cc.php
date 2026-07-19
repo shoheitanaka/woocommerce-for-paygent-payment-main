@@ -158,7 +158,7 @@ class WC_Paygent_Block_CC extends Abstract_WC_Paygent_Block_Payment {
 
 		return array(
 			'title'            => $settings['title'] ?? '',
-			'description'      => $settings['description'] ?? '',
+			'description'      => wp_kses_post( $settings['description'] ?? '' ),
 			'supports'         => $this->get_supported_features(),
 			'merchantId'       => $merchant_id,
 			'tokenKey'         => $token_key,
