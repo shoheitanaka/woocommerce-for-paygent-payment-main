@@ -1163,7 +1163,9 @@ jQuery(function(){
 				if ( 'yes' === $this->store_card_info && $user_wants_save_card ) {
 					$card_token = $order->get_meta( '_paygent_card_token' );
 					$user_id    = $order->get_user_id();
-					if ( false === $order->get_meta( '_paygent_customer_card_id' ) ) {
+					// get_meta() returns '' when the meta is absent, so a truthy check is
+					// required here — comparing against false would never match.
+					if ( ! $order->get_meta( '_paygent_customer_card_id' ) ) {
 						$add_card_result = $this->paygent_tds_add_stored_card( $user_id, $card_token, $order );
 						if ( false === $add_card_result ) {
 							$order->add_order_note( __( 'Failed to store card information.', 'woocommerce-for-paygent-payment-main' ) );

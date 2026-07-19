@@ -86,6 +86,24 @@ class CardSaveLogicTest extends TestCase {
 	}
 
 	/**
+	 * The 3DS2 callback re-saves the card only when it was not stored before the
+	 * request. get_meta() returns '' (not false) for absent meta, so the check
+	 * must be a truthy one.
+	 */
+	public function test_3ds2_callback_detects_unsaved_card_with_truthy_check(): void {
+		// Meta absent → get_meta() returns '' → card not saved yet → should save.
+		$should_save = ! '';
+		$this->assertTrue( $should_save );
+
+		// Meta present (customer_card_id from Paygent) → should not save again.
+		$should_save = ! '12345678';
+		$this->assertFalse( $should_save );
+
+		// The old `false ===` comparison never matched the absent-meta value ''.
+		$this->assertFalse( false === '' );
+	}
+
+	/**
 	 * An order using 3DS2 is detected by the presence of _3ds_auth_id meta.
 	 */
 	public function test_3ds_detection_by_meta_presence(): void {

@@ -327,30 +327,6 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		}
 
 		echo '</div>';
-		if ( $this->payment_method ) {
-			$payment_method = $this->payment_method;
-		} else {
-			$payment_method = null;
-		}
-		if ( null !== $payment_method && array( 0 => 10 ) !== $payment_method && is_checkout() ) {
-			echo '<fieldset style="padding-left: 40px;">' . esc_html__( 'Payment method : ', 'woocommerce-for-paygent-payment-main' ) . '<select name="number_of_payments">';
-			$installment_payment = false;
-			$number_of_payments  = $this->number_of_payments;
-			$payment_method_name = $this->payment_methods;
-			foreach ( $this->payment_method as $key => $value ) {
-				if ( '61' === $value ) {
-					$installment_payment = true;
-				} else {
-					echo '<option value="' . esc_attr( $value . '9' ) . '">' . esc_html( $payment_method_name[ $value ] ) . '</option>';
-				}
-			}
-			if ( $installment_payment ) {
-				foreach ( $number_of_payments as $key => $value ) {
-					echo '<option value="' . esc_html( $value ) . '">' . esc_html( $value ) . esc_html__( 'times', 'woocommerce-for-paygent-payment-main' ) . '</option>';
-				}
-			}
-			echo '</select></fieldset>';
-		}
 	}
 
 	/**
@@ -640,7 +616,9 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 				if ( 'yes' === $this->store_card_info && $user_wants_save_card ) {
 					$card_token = $order->get_meta( '_paygent_card_token' );
 					$user_id    = $order->get_user_id();
-					if ( false === $order->get_meta( '_paygent_customer_card_id' ) ) {
+					// get_meta() returns '' when the meta is absent, so a truthy check is
+					// required here — comparing against false would never match.
+					if ( ! $order->get_meta( '_paygent_customer_card_id' ) ) {
 						$add_card_result = $this->paygent_cc->paygent_tds_add_stored_card( $user_id, $card_token, $order, $this->id );
 						if ( false === $add_card_result ) {
 							$order->add_order_note( __( 'Failed to store card information.', 'woocommerce-for-paygent-payment-main' ) );
