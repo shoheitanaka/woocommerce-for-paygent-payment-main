@@ -377,10 +377,7 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 			return false;
 		}
 		// Set Order ID for Paygent.
-		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-		if ( $paygent_order_id ) {
-			$send_data['trading_id'] = $paygent_order_id;
-		}
+		$send_data['trading_id'] = $this->get_paygent_trading_id( $order );
 		$send_data['payment_id'] = $order->get_transaction_id();
 
 		if ( $order->get_status() === 'processing' ) {// Cancel the authorization (payment status 20).
@@ -410,6 +407,28 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Resolve the Paygent trading ID for an order.
+	 *
+	 * Prefers the trading_id returned by Paygent on application (stored as
+	 * _paygent_order_id meta), falling back to the same construction rule
+	 * as process_payment() for orders that lack the meta.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return string
+	 */
+	private function get_paygent_trading_id( $order ) {
+		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
+		if ( $paygent_order_id ) {
+			return $paygent_order_id;
+		}
+		$prefix_order = get_option( 'wc-paygent-prefix_order' );
+		if ( $prefix_order ) {
+			return $prefix_order . $order->get_id();
+		}
+		return 'wc_' . $order->get_id();
+	}
+
+	/**
 	 * Update Sale from Auth to Paygent System
 	 *
 	 * @param int $order_id Order ID.
@@ -419,10 +438,7 @@ class WC_Gateway_Paygent_Rakuten_Pay extends WC_Payment_Gateway {
 		if ( $order && $order->get_payment_method() === $this->id ) {
 			$send_data = array();
 			// Set Order ID for Paygent.
-			$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-			if ( $paygent_order_id ) {
-				$send_data['trading_id'] = $paygent_order_id;
-			}
+			$send_data['trading_id'] = $this->get_paygent_trading_id( $order );
 			$send_data['payment_id'] = $order->get_transaction_id();
 			$telegram_kind           = '271';// Rakuten Pay sale.
 			$response                = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $send_data, $this->debug );
