@@ -855,10 +855,12 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 			return;
 		}
 		$customer_card_id = $token->get_meta( 'customer_card_id' );
+		// Use the token owner, not the session user — deletions can run without
+		// one (e.g. expired-card cleanup during a subscription renewal cron).
 		$delete_card_data = array(
-			'customer_id'      => 'wc' . get_current_user_id(),
+			'customer_id'      => 'wc' . $token->get_user_id(),
 			'customer_card_id' => $customer_card_id,
 		);
-		$delete_result    = $this->paygent_cc->delete_card( $delete_card_data, $this->id );
+		$delete_result    = $this->paygent_cc->delete_card( $delete_card_data, $this->id, $token->get_user_id() );
 	}
 }

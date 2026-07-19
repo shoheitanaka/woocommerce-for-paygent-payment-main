@@ -1866,8 +1866,9 @@ jQuery(function(){
 	 *
 	 * @param array  $delete_card_data Delete Card Data.
 	 * @param string $token_gateway_id Gateway ID whose remaining tokens get a new default (defaults to $this->id).
+	 * @param int    $user_id          Owner of the deleted token (defaults to the session user).
 	 */
-	public function delete_card( $delete_card_data, $token_gateway_id = null ) {
+	public function delete_card( $delete_card_data, $token_gateway_id = null, $user_id = null ) {
 		$telegram_kind = '026';
 		$order         = null;
 
@@ -1880,7 +1881,7 @@ jQuery(function(){
 		$delete_card_res = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $delete_card_data, $this->debug );
 		if ( '0' === $delete_card_res['result'] ) {
 			// Set the remaining card as the default.
-			$tokens = WC_Payment_Tokens::get_customer_tokens( get_current_user_id(), $token_gateway_id ?? $this->id );
+			$tokens = WC_Payment_Tokens::get_customer_tokens( $user_id ?? get_current_user_id(), $token_gateway_id ?? $this->id );
 			if ( ! empty( $tokens ) ) {
 				$default_token = reset( $tokens );
 				$default_token->set_default( true );
@@ -2023,10 +2024,12 @@ jQuery(function(){
 			return;
 		}
 		$customer_card_id = $token->get_meta( 'customer_card_id' );
+		// Use the token owner, not the session user — deletions can run without
+		// one (e.g. expired-card cleanup during a subscription renewal cron).
 		$delete_card_data = array(
-			'customer_id'      => 'wc' . get_current_user_id(),
+			'customer_id'      => 'wc' . $token->get_user_id(),
 			'customer_card_id' => $customer_card_id,
 		);
-		$delete_result    = $this->delete_card( $delete_card_data );
+		$delete_result    = $this->delete_card( $delete_card_data, null, $token->get_user_id() );
 	}
 }

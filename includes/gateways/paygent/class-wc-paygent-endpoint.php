@@ -335,8 +335,11 @@ class WC_Paygent_Endpoint {
 					$this->paygent_update_status_webhook( $order, 'cancelled' );
 					break;
 				case '40':// Sales Completed.
-					$paygent_cc = new WC_Gateway_Paygent_CC();
-					if ( 'sale' !== $paygent_cc->paymentaction ) {
+					// Read the setting directly — constructing the gateway here would
+					// register its hooks and double-fire them for this request.
+					$cc_settings   = get_option( 'woocommerce_paygent_cc_settings', array() );
+					$paymentaction = is_array( $cc_settings ) && isset( $cc_settings['paymentaction'] ) ? $cc_settings['paymentaction'] : 'sale';
+					if ( 'sale' !== $paymentaction ) {
 						$this->paygent_update_status_webhook( $order, 'completed' );
 					}
 					break;
