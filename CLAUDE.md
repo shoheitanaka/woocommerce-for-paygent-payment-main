@@ -10,8 +10,8 @@ Paygent決済をWooCommerceに統合するWordPressプラグイン（v2.4.8）�
 | 項目 | バージョン |
 | --- | --- |
 | PHP | >= 7.4（推奨 8.2+） |
-| WordPress | >= 5.0（推奨 6.7+） |
-| WooCommerce | >= 8.0.0（推奨 9.0+） |
+| WordPress | >= 5.0（推奨 7.0+ / 7.0.2で検証済み） |
+| WooCommerce | >= 8.0.0（推奨 10.9+ / 10.9.4で検証済み） |
 | WooCommerce Subscriptions | 継続課金使用時のみ必須 |
 
 ## ファイル構成
@@ -43,7 +43,11 @@ woocommerce-for-paygent-payment-main/
 │   ├── class-wc-gateway-paygent-rakuten-pay.php ← 楽天ペイ
 │   ├── class-wc-paygent-endpoint.php          ← REST API Webhook
 │   └── includes/
-│       └── class-wc-gateway-paygent-request.php ← コアAPIクライアント
+│       ├── class-wc-gateway-paygent-request.php ← コアAPIクライアント
+│       └── block/                              ← Block Checkout統合クラス（全9決済対応）
+│
+├── src/blocks/                                ← Block Checkout用JSソース（webpack → build/）
+├── build/                                     ← ビルド成果物（コミット対象・npm run build）
 │
 ├── vendor-wc/paygent/connect/src/paygent_module/
 │   └── System/PaygentB2BModule.php            ← Paygent公式通信モジュール
@@ -128,11 +132,13 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 - **入力**: `sanitize_text_field()` / `absint()` / `wp_unslash()` 等でサニタイズ
 - **出力**: `esc_html()` / `esc_attr()` / `wp_kses_post()` でエスケープ
 - **nonce**: フォーム送信は必ず nonce 検証
+- **外部スクリプトURLは `https://` を明示**（プロトコル相対 `//` は禁止。httpサイトでは
+  ポート80へ解決され、Paygent側が遮断するためページ描画が約75秒ブロックされる）
 - `phpcs` / `phpstan` が設定されている場合はコミット前に実行
 
 ## Claude Code スキル
 
-`.claude/skills/` に5つのスキルが定義されています。関連するキーワードやファイルを編集する際に自動的に発動します。
+`.claude/skills/` に6つのスキルが定義されています。関連するキーワードやファイルを編集する際に自動的に発動します。
 
 | スキル | 発動キーワード例 | 参照先 |
 | --- | --- | --- |
@@ -141,6 +147,7 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 | `paygent-digital` | `paygent_paypay`, `paygent_paidy`, `PayPay`, `楽天ペイ`, `Apple Pay` | `.claude/skills/paygent-digital/` |
 | `paygent-bank` | `paygent_cs`, `paygent_atm`, `paygent_bn`, `コンビニ`, `仮想口座` | `.claude/skills/paygent-bank/` |
 | `paygent-carrier` | `paygent_mb`, `career_type`, `キャリア決済`, `auかんたん決済`, `d払い` | `.claude/skills/paygent-carrier/` |
+| `wc-block-payment` | `AbstractPaymentMethodType`, `registerPaymentMethod`, `onPaymentSetup`, `block-cs` | `.claude/skills/wc-block-payment/` |
 
 スキルの情報は **2025docs/ の仕様書PDFが正**。コードより仕様書を優先すること。
 
