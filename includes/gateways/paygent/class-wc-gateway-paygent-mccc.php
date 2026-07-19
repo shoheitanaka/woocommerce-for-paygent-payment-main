@@ -315,6 +315,17 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		}
 		$this->paygent_cc->paygent_token_js( $merchant_id, $token_key, $tokens, $this->id );
 
+		// Show "save card" checkbox for logged-in users (MCCC has no subscription support).
+		// The id is prefixed to stay unique when the CC gateway renders its own checkbox on the same page.
+		if ( 'yes' === $this->store_card_info && is_user_logged_in() ) {
+			echo '<p class="form-row form-row-wide">';
+			echo '<label for="paygent_mccc_save_card_info">';
+			echo '<input type="checkbox" id="paygent_mccc_save_card_info" name="paygent_save_card_info" value="yes" style="width:auto;margin-right:6px;">';
+			echo esc_html__( 'Save payment information to my account for future purchases.', 'woocommerce-for-paygent-payment-main' );
+			echo '</label>';
+			echo '</p>';
+		}
+
 		echo '</div>';
 		if ( $this->payment_method ) {
 			$payment_method = $this->payment_method;
@@ -742,7 +753,8 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 	 */
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
-		if ( $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
+		// Strict comparison: the Block checkout sends 'no' when the box is unchecked.
+		if ( 'yes' === $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );

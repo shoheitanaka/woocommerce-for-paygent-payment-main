@@ -1562,7 +1562,8 @@ jQuery(function(){
 	 */
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
-		if ( $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
+		// Strict comparison: the Block checkout sends 'no' when the box is unchecked.
+		if ( 'yes' === $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );
