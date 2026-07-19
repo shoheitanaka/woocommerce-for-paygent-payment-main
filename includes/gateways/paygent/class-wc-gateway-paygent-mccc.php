@@ -597,12 +597,12 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		if ( isset( $_GET['result'] ) && $order->get_payment_method() === $this->id ) {// phpcs:ignore
 			if ( ! empty( $_GET['3dsecure_requestor_error_code'] ) ) {// phpcs:ignore
 				$requestor_error_code = wc_clean( wp_unslash( $_GET['3dsecure_requestor_error_code'] ) );// phpcs:ignore
-				$message              = $this->tdsecure_requestor_error_codes( $requestor_error_code );
+				$message              = $this->paygent_cc->tdsecure_requestor_error_codes( $requestor_error_code );
 				$order->add_order_note( __( '3D Secure 2.0 Requestor Error Code:', 'woocommerce-for-paygent-payment-main' ) . $requestor_error_code . ', ' . $message );
 			}
 			if ( ! empty( $_GET['3dsecure_server_error_code'] ) ) {// phpcs:ignore
 				$server_error_code = wc_clean( wp_unslash( $_GET['3dsecure_server_error_code'] ) );// phpcs:ignore
-				$message           = $this->tdsecure_server_error_codes( $server_error_code );
+				$message           = $this->paygent_cc->tdsecure_server_error_codes( $server_error_code );
 				$order->add_order_note( __( '3D Secure 2.0 Server Error Code:', 'woocommerce-for-paygent-payment-main' ) . $server_error_code . ', ' . $message );
 			}
 			if ( '0' === $_GET['result'] ) {// phpcs:ignore
@@ -625,7 +625,8 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 					}
 				} elseif ( '0' === $attempt_kbn ) {// Attempt kbn is normal.
 					$order->add_order_note( __( 'Using a card that is not 3D Secure.', 'woocommerce-for-paygent-payment-main' ) );
-					$this->paygent_no_tds_card_response( $order );
+					// MCCC has no no_tds_card setting of its own, so the CC gateway's setting applies.
+					$this->paygent_cc->paygent_no_tds_card_response( $order );
 				} elseif ( '' === $attempt_kbn ) { // Null is Authentication successful.
 					$order->add_order_note( __( 'Attempt kbn is normal.', 'woocommerce-for-paygent-payment-main' ) );
 				} else {
@@ -875,6 +876,6 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 			'customer_id'      => 'wc' . get_current_user_id(),
 			'customer_card_id' => $customer_card_id,
 		);
-		$delete_result    = $this->delete_card( $delete_card_data );
+		$delete_result    = $this->paygent_cc->delete_card( $delete_card_data, $this->id );
 	}
 }

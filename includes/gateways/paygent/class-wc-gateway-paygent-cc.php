@@ -1862,9 +1862,10 @@ jQuery(function(){
 	/**
 	 * Read Paygent Token javascript
 	 *
-	 * @param array $delete_card_data Delete Card Data.
+	 * @param array  $delete_card_data Delete Card Data.
+	 * @param string $token_gateway_id Gateway ID whose remaining tokens get a new default (defaults to $this->id).
 	 */
-	public function delete_card( $delete_card_data ) {
+	public function delete_card( $delete_card_data, $token_gateway_id = null ) {
 		$telegram_kind = '026';
 		$order         = null;
 
@@ -1877,7 +1878,7 @@ jQuery(function(){
 		$delete_card_res = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $delete_card_data, $this->debug );
 		if ( '0' === $delete_card_res['result'] ) {
 			// Set the remaining card as the default.
-			$tokens = WC_Payment_Tokens::get_customer_tokens( get_current_user_id(), $this->id );
+			$tokens = WC_Payment_Tokens::get_customer_tokens( get_current_user_id(), $token_gateway_id ?? $this->id );
 			if ( ! empty( $tokens ) ) {
 				$default_token = reset( $tokens );
 				$default_token->set_default( true );
