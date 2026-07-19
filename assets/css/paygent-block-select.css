@@ -26,7 +26,8 @@
 	border: 1px solid #8c8f94;
 	border-radius: 4px;
 	font-size: 1em;
-	color: inherit;
+	/* Pair text color with the fixed background so dark themes stay readable. */
+	color: #1e1e1e;
 	background-color: #fff;
 	cursor: pointer;
 }
