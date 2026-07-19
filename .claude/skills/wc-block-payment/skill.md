@@ -202,6 +202,12 @@ entry: {
 
 - `process_payment()` は変更しない（既存ロジックをそのまま使う）
 - `get_payment_method_data()` でゲートウェイインスタンスは作らず `get_option()` 直接呼び出し
-- Paygent Token JS は外部 URL (`//token.paygent.co.jp/js/PaygentToken.js`)
+- Paygent Token JS は外部 URL (`https://token.paygent.co.jp/js/PaygentToken.js`)。
+  **`https://` を必ず明示**（プロトコル相対 `//` はhttpサイトでポート80へ解決され約75秒ハングする）
 - ビルドファイル (`build/`) はリポジトリにコミットする
 - `build/paygent-XXX.asset.php` が存在しない場合のフォールバックを必ず実装
+- `get_supported_features()` はクラシック側ゲートウェイの `$this->supports` と**一致**させる
+  （例: MCCC は subscriptions 非対応、CS は refunds 非対応）
+- `RawHTML` 描画に `decodeEntities()` を併用しない（innerHTML がエンティティを解釈するため
+  二重デコードとなり、`wp_kses_post()` を通過したエンティティ文字列が実タグ化される）
+- Block 登録は `wc-paygent-*` トグル＋ `class_exists` でゲートし、クラシック登録の条件と揃える
