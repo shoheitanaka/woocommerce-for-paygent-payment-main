@@ -431,10 +431,19 @@ class WC_Gateway_Paygent_CS extends WC_Payment_Gateway {
 			// Other transaction error.
 			$order->add_order_note( __( 'Paygent Payment failed. Sysmte Error: ', 'woocommerce-for-paygent-payment-main' ) . $response['responseCode'] . ':' . mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) . ':wc_' . $order_id );
 			wc_add_notice( __( 'Sorry, there was an error.', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) . ' Error Code:' . $response['responseCode'], $notice_type = 'error' );
+			// Returning null here fatals in the Store API, which array_merges this result.
+			return array(
+				'result'   => 'failure',
+				'redirect' => wc_get_checkout_url(),
+			);
 		} else {
 			// No response or unexpected response.
 			$order->add_order_note( __( 'Paygent Payment failed. Some trouble happened.', 'woocommerce-for-paygent-payment-main' ) . $response['result'] . ':' . $response['responseCode'] . ':' . mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) . ':wc_' . $order_id );
 			wc_add_notice( __( 'No response from payment gateway server. Try again later or contact the site administrator.', 'woocommerce-for-paygent-payment-main' ) . $response['result'], $notice_type = 'error' );
+			return array(
+				'result'   => 'failure',
+				'redirect' => wc_get_checkout_url(),
+			);
 		}
 	}
 
