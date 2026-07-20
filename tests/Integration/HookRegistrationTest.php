@@ -32,6 +32,16 @@ class HookRegistrationTest extends TestCase {
 			has_action( 'woocommerce_order_status_completed', array( $mccc->paygent_cc, 'order_paygent_cc_status_completed' ) ),
 			'Helper CC instance must not listen to order completion.'
 		);
+		// The helper runs in no-hooks mode, so even the unconditional
+		// registrations from the CC constructor must be absent.
+		$this->assertFalse(
+			has_action( 'woocommerce_update_options_payment_gateways', array( $mccc->paygent_cc, 'process_admin_options' ) ),
+			'Helper CC instance must register no hooks at all.'
+		);
+		$this->assertFalse(
+			has_action( 'wp_ajax_paygent_cc_increase_amount', array( $mccc->paygent_cc, 'paygent_cc_process_increase_amount' ) ),
+			'Helper CC instance must not register admin-ajax handlers.'
+		);
 	}
 
 	public function test_mccc_own_delete_handler_is_registered(): void {

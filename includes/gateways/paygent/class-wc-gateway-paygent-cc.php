@@ -181,8 +181,14 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 
 	/**
 	 * Constructor for the gateway.
+	 *
+	 * @param bool $register_hooks Set to false when the instance is used as an
+	 *                             internal helper (e.g. by MCCC) so it registers
+	 *                             no global hooks — otherwise its callbacks would
+	 *                             run in addition to the registry-registered
+	 *                             gateway's and duplicate telegrams.
 	 */
-	public function __construct() {
+	public function __construct( $register_hooks = true ) {
 		$this->id                = 'paygent_cc';
 		$this->has_fields        = true;
 		$this->order_button_text = sprintf(
@@ -252,6 +258,11 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 			} elseif ( 'no' === $this->setting_card_vm && 'yes' === $this->setting_card_d && 'yes' === $this->setting_card_aj ) {
 				$this->icon = plugins_url( 'images/paygent-cards-d-a-j.png', __FILE__ );
 			}
+		}
+
+		// Helper instances register no hooks — everything below is hook registration.
+		if ( ! $register_hooks ) {
+			return;
 		}
 
 		// Actions.
@@ -1868,7 +1879,8 @@ jQuery(function(){
 	}
 
 	/**
-	 * Read Paygent Token javascript
+	 * Delete a stored card on the Paygent server (telegram 026) and promote one
+	 * of the customer's remaining WC tokens to default.
 	 *
 	 * @param array  $delete_card_data Delete Card Data.
 	 * @param string $token_gateway_id Gateway ID whose remaining tokens get a new default (defaults to $this->id).

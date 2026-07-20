@@ -148,12 +148,9 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		include_once 'includes/class-wc-gateway-paygent-request.php';
 		$this->paygent_request = new WC_Gateway_Paygent_Request();
 
-		$this->paygent_cc = new WC_Gateway_Paygent_CC();
-		// The helper instance must not act on hooks — the registry-registered CC
-		// gateway handles them. Left in place, a paygent_cc token deletion would
-		// send the Paygent delete telegram twice (once per CC instance).
-		remove_action( 'woocommerce_payment_token_deleted', array( $this->paygent_cc, 'paygent_delete_card' ), 10 );
-		remove_action( 'woocommerce_order_status_completed', array( $this->paygent_cc, 'order_paygent_cc_status_completed' ) );
+		// Hook-less helper: the registry-registered CC gateway owns all hooks.
+		// A hooked helper would run CC callbacks a second time and duplicate telegrams.
+		$this->paygent_cc = new WC_Gateway_Paygent_CC( false );
 		// Set Test mode.
 		$this->test_mode = get_option( 'wc-paygent-testmode' );
 
