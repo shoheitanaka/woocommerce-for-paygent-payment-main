@@ -135,6 +135,8 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 - **外部スクリプトURLは `https://` を明示**（プロトコル相対 `//` は禁止。httpサイトでは
   ポート80へ解決され、Paygent側が遮断するためページ描画が約75秒ブロックされる）
 - `phpcs` / `phpstan` が設定されている場合はコミット前に実行
+- **git commit / push はユーザーからの明示的な指示があるまで実行しない**。
+  修正はワーキングツリーに残した状態で報告し、コミットするかどうかの判断はユーザーに委ねる
 
 ## Claude Code スキル
 
