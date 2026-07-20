@@ -501,7 +501,7 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 		if ( 'yes' === $this->store_card_info && is_user_logged_in() && ! $is_subscription ) {
 			echo '<p class="form-row form-row-wide">';
 			echo '<label for="paygent_save_card_info">';
-			echo '<input type="checkbox" id="paygent_save_card_info" name="paygent_save_card_info" value="yes" style="width:auto;margin-right:6px;">';
+			echo '<input type="checkbox" id="paygent_save_card_info" name="paygent_cc_save_card_info" value="yes" style="width:auto;margin-right:6px;">';
 			echo esc_html__( 'Save payment information to my account for future purchases.', 'woocommerce-for-paygent-payment-main' );
 			echo '</label>';
 			echo '</p>';
@@ -739,7 +739,11 @@ jQuery(function(){
 		}
 
 		// Save user's card-save preference to meta (needed for 3DS2 callback which has no POST data).
-		$user_wants_save_card = ( true === $subscription ) || ( 'yes' === sanitize_text_field( wp_unslash( $_POST['paygent_save_card_info'] ?? '' ) ) );// phpcs:ignore
+		// The gateway-specific key from the classic checkbox wins; the shared key is the
+		// Blocks fallback. Hidden checkboxes of other gateways still submit on classic
+		// checkout, so the shared key alone would leak their state into this gateway.
+		$save_card_post       = $_POST['paygent_cc_save_card_info'] ?? $_POST['paygent_save_card_info'] ?? '';// phpcs:ignore
+		$user_wants_save_card = ( true === $subscription ) || ( 'yes' === sanitize_text_field( wp_unslash( $save_card_post ) ) );
 		$order->update_meta_data( '_paygent_save_card_preference', $user_wants_save_card ? '1' : '0' );
 		$order->save_meta_data();
 
@@ -1565,7 +1569,9 @@ jQuery(function(){
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
 		// Strict comparison: the Block checkout sends 'no' when the box is unchecked.
-		if ( 'yes' === $this->jp4wc_framework->get_post( 'paygent_save_card_info' )
+		// Classic checkout posts the gateway-specific key, Blocks the shared one.
+		if ( ( 'yes' === $this->jp4wc_framework->get_post( 'paygent_cc_save_card_info' )
+			|| 'yes' === $this->jp4wc_framework->get_post( 'paygent_save_card_info' ) )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );

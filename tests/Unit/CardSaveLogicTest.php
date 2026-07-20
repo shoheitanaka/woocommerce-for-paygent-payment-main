@@ -86,6 +86,37 @@ class CardSaveLogicTest extends TestCase {
 	}
 
 	/**
+	 * On classic checkout every gateway's payment fields share one form, and
+	 * hidden checkboxes of non-selected gateways still submit. Each gateway must
+	 * therefore read its own POST key first and use the shared key only as the
+	 * Block-checkout fallback, so another gateway's checkbox cannot leak in.
+	 *
+	 * @dataProvider save_card_key_precedence_provider
+	 */
+	public function test_save_card_key_precedence( array $post, string $expected ): void {
+		// Replicate the resolution used by WC_Gateway_Paygent_MCCC::process_payment().
+		$value = $post['paygent_mccc_save_card_info'] ?? $post['paygent_save_card_info'] ?? '';
+
+		$this->assertSame( $expected, $value );
+	}
+
+	public static function save_card_key_precedence_provider(): array {
+		return array(
+			'own classic key wins'                   => array( array( 'paygent_mccc_save_card_info' => 'yes' ), 'yes' ),
+			'shared key is the Blocks fallback'      => array( array( 'paygent_save_card_info' => 'no' ), 'no' ),
+			'other gateway checkbox does not leak'   => array( array( 'paygent_cc_save_card_info' => 'yes' ), '' ),
+			'own key beats a leaked shared key'      => array(
+				array(
+					'paygent_mccc_save_card_info' => 'yes',
+					'paygent_save_card_info'      => 'no',
+				),
+				'yes',
+			),
+			'nothing posted'                         => array( array(), '' ),
+		);
+	}
+
+	/**
 	 * The 3DS2 callback re-saves the card only when it was not stored before the
 	 * request. get_meta() returns '' (not false) for absent meta, so the check
 	 * must be a truthy one.
