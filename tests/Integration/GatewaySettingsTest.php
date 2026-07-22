@@ -171,4 +171,30 @@ class GatewaySettingsTest extends TestCase {
 
 		$this->delete_test_order( $order );
 	}
+
+	public function test_cs_process_payment_returns_failure_array_without_credentials(): void {
+		update_option( 'wc-paygent-cs', 'yes' );
+		// Ensure global credentials are empty.
+		update_option( 'wc-paygent-test-mid', '' );
+		update_option( 'wc-paygent-test-cid', '' );
+		update_option( 'wc-paygent-testmode', '1' );
+
+		WC()->payment_gateways()->payment_gateways = null;
+		WC()->payment_gateways()->init();
+
+		$gateways = WC()->payment_gateways()->payment_gateways();
+		if ( ! isset( $gateways['paygent_cs'] ) ) {
+			$this->markTestSkipped( 'paygent_cs gateway not available' );
+		}
+
+		$order  = $this->create_test_order( 'paygent_cs', 1000 );
+		$result = $gateways['paygent_cs']->process_payment( $order->get_id() );
+
+		// The error paths used to fall through with no return value; the Store
+		// API array_merges this result, so null is a fatal on Block checkout.
+		$this->assertIsArray( $result );
+		$this->assertNotSame( 'success', $result['result'] ?? null );
+
+		$this->delete_test_order( $order );
+	}
 }

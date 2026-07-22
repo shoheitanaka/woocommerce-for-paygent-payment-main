@@ -148,7 +148,9 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		include_once 'includes/class-wc-gateway-paygent-request.php';
 		$this->paygent_request = new WC_Gateway_Paygent_Request();
 
-		$this->paygent_cc = new WC_Gateway_Paygent_CC();
+		// Hook-less helper: the registry-registered CC gateway owns all hooks.
+		// A hooked helper would run CC callbacks a second time and duplicate telegrams.
+		$this->paygent_cc = new WC_Gateway_Paygent_CC( false );
 		// Set Test mode.
 		$this->test_mode = get_option( 'wc-paygent-testmode' );
 
@@ -315,31 +317,20 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		}
 		$this->paygent_cc->paygent_token_js( $merchant_id, $token_key, $tokens, $this->id );
 
+		// Show "save card" checkbox for logged-in users (MCCC has no subscription support).
+		// Both id and name are gateway-specific: hidden checkboxes of non-selected
+		// gateways still submit on classic checkout, so a shared name would leak the
+		// CC checkbox state into MCCC's save decision (and vice versa).
+		if ( 'yes' === $this->store_card_info && is_user_logged_in() ) {
+			echo '<p class="form-row form-row-wide">';
+			echo '<label for="paygent_mccc_save_card_info">';
+			echo '<input type="checkbox" id="paygent_mccc_save_card_info" name="paygent_mccc_save_card_info" value="yes" style="width:auto;margin-right:6px;">';
+			echo esc_html__( 'Save payment information to my account for future purchases.', 'woocommerce-for-paygent-payment-main' );
+			echo '</label>';
+			echo '</p>';
+		}
+
 		echo '</div>';
-		if ( $this->payment_method ) {
-			$payment_method = $this->payment_method;
-		} else {
-			$payment_method = null;
-		}
-		if ( null !== $payment_method && array( 0 => 10 ) !== $payment_method && is_checkout() ) {
-			echo '<fieldset style="padding-left: 40px;">' . esc_html__( 'Payment method : ', 'woocommerce-for-paygent-payment-main' ) . '<select name="number_of_payments">';
-			$installment_payment = false;
-			$number_of_payments  = $this->number_of_payments;
-			$payment_method_name = $this->payment_methods;
-			foreach ( $this->payment_method as $key => $value ) {
-				if ( '61' === $value ) {
-					$installment_payment = true;
-				} else {
-					echo '<option value="' . esc_attr( $value . '9' ) . '">' . esc_html( $payment_method_name[ $value ] ) . '</option>';
-				}
-			}
-			if ( $installment_payment ) {
-				foreach ( $number_of_payments as $key => $value ) {
-					echo '<option value="' . esc_html( $value ) . '">' . esc_html( $value ) . esc_html__( 'times', 'woocommerce-for-paygent-payment-main' ) . '</option>';
-				}
-			}
-			echo '</select></fieldset>';
-		}
 	}
 
 	/**
@@ -391,14 +382,24 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 			$card_user_id = 'wc' . $order_id . '-user';
 		}
 
+		// Save user's card-save preference to meta (needed for 3DS2 callback which has no POST data).
+		// The gateway-specific key from the classic checkbox wins; the shared key is the
+		// Blocks fallback. Hidden checkboxes of other gateways still submit on classic
+		// checkout, so the shared key alone would leak their state into this gateway.
+		$save_card_post       = $_POST['paygent_mccc_save_card_info'] ?? $_POST['paygent_save_card_info'] ?? '';// phpcs:ignore
+		$user_wants_save_card = ( 'yes' === sanitize_text_field( wp_unslash( $save_card_post ) ) );
+		$order->update_meta_data( '_paygent_save_card_preference', $user_wants_save_card ? '1' : '0' );
+		$order->save_meta_data();
+
 		// Card information deposit function without EMV-3DS.
-		$set_login = false;
-		if ( is_user_logged_in() && 'yes' === $this->store_card_info ) {
+		$using_stored_card = ( $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' ) === 'yes' );
+		$set_login         = false;
+		if ( is_user_logged_in() && 'yes' === $this->store_card_info && ( $user_wants_save_card || $using_stored_card ) ) {
 			$set_login = true;
-			if ( $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' ) === 'yes' ) {
+			if ( $using_stored_card ) {
 				$send_data['customer_card_id'] = $this->jp4wc_framework->get_post( 'stored-info' );
 			} else {
-				$stored_user_card_data         = $this->paygent_cc->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order );
+				$stored_user_card_data         = $this->paygent_cc->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order, $this->id );
 				$send_data['customer_card_id'] = $stored_user_card_data['result_array'][0]['customer_card_id'];
 			}
 			$order->add_meta_data( '_paygent_customer_card_id', $send_data['customer_card_id'] );
@@ -580,12 +581,12 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		if ( isset( $_GET['result'] ) && $order->get_payment_method() === $this->id ) {// phpcs:ignore
 			if ( ! empty( $_GET['3dsecure_requestor_error_code'] ) ) {// phpcs:ignore
 				$requestor_error_code = wc_clean( wp_unslash( $_GET['3dsecure_requestor_error_code'] ) );// phpcs:ignore
-				$message              = $this->tdsecure_requestor_error_codes( $requestor_error_code );
+				$message              = $this->paygent_cc->tdsecure_requestor_error_codes( $requestor_error_code );
 				$order->add_order_note( __( '3D Secure 2.0 Requestor Error Code:', 'woocommerce-for-paygent-payment-main' ) . $requestor_error_code . ', ' . $message );
 			}
 			if ( ! empty( $_GET['3dsecure_server_error_code'] ) ) {// phpcs:ignore
 				$server_error_code = wc_clean( wp_unslash( $_GET['3dsecure_server_error_code'] ) );// phpcs:ignore
-				$message           = $this->tdsecure_server_error_codes( $server_error_code );
+				$message           = $this->paygent_cc->tdsecure_server_error_codes( $server_error_code );
 				$order->add_order_note( __( '3D Secure 2.0 Server Error Code:', 'woocommerce-for-paygent-payment-main' ) . $server_error_code . ', ' . $message );
 			}
 			if ( '0' === $_GET['result'] ) {// phpcs:ignore
@@ -608,7 +609,8 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 					}
 				} elseif ( '0' === $attempt_kbn ) {// Attempt kbn is normal.
 					$order->add_order_note( __( 'Using a card that is not 3D Secure.', 'woocommerce-for-paygent-payment-main' ) );
-					$this->paygent_no_tds_card_response( $order );
+					// MCCC has no no_tds_card setting of its own, so the CC gateway's setting applies.
+					$this->paygent_cc->paygent_no_tds_card_response( $order );
 				} elseif ( '' === $attempt_kbn ) { // Null is Authentication successful.
 					$order->add_order_note( __( 'Attempt kbn is normal.', 'woocommerce-for-paygent-payment-main' ) );
 				} else {
@@ -618,11 +620,14 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 					exit;
 				}
 				// If necessary, register customer's card information.
-				if ( 'yes' === $this->store_card_info ) {
+				$user_wants_save_card = '1' === $order->get_meta( '_paygent_save_card_preference' );
+				if ( 'yes' === $this->store_card_info && $user_wants_save_card ) {
 					$card_token = $order->get_meta( '_paygent_card_token' );
 					$user_id    = $order->get_user_id();
-					if ( false === $order->get_meta( '_paygent_customer_card_id' ) ) {
-						$add_card_result = $this->paygent_tds_add_stored_card( $user_id, $card_token, $order );
+					// get_meta() returns '' when the meta is absent, so a truthy check is
+					// required here — comparing against false would never match.
+					if ( ! $order->get_meta( '_paygent_customer_card_id' ) ) {
+						$add_card_result = $this->paygent_cc->paygent_tds_add_stored_card( $user_id, $card_token, $order, $this->id );
 						if ( false === $add_card_result ) {
 							$order->add_order_note( __( 'Failed to store card information.', 'woocommerce-for-paygent-payment-main' ) );
 						}
@@ -735,7 +740,10 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 	 */
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
-		if ( $this->jp4wc_framework->get_post( 'saveinfo' )
+		// Strict comparison: the Block checkout sends 'no' when the box is unchecked.
+		// Classic checkout posts the gateway-specific key, Blocks the shared one.
+		if ( ( 'yes' === $this->jp4wc_framework->get_post( 'paygent_mccc_save_card_info' )
+			|| 'yes' === $this->jp4wc_framework->get_post( 'paygent_save_card_info' ) )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );
@@ -848,11 +856,16 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 	 * @return void
 	 */
 	public function paygent_mccc_delete_card( $token_id, $token ) {
+		if ( $token->get_gateway_id() !== $this->id ) {
+			return;
+		}
 		$customer_card_id = $token->get_meta( 'customer_card_id' );
+		// Use the token owner, not the session user — deletions can run without
+		// one (e.g. expired-card cleanup during a subscription renewal cron).
 		$delete_card_data = array(
-			'customer_id'      => 'wc' . get_current_user_id(),
+			'customer_id'      => 'wc' . $token->get_user_id(),
 			'customer_card_id' => $customer_card_id,
 		);
-		$delete_result    = $this->delete_card( $delete_card_data );
+		$delete_result    = $this->paygent_cc->delete_card( $delete_card_data, $this->id, $token->get_user_id() );
 	}
 }

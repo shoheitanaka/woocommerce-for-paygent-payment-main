@@ -87,7 +87,7 @@ class BlockMCCCTest extends TestCase {
 		$this->assertArrayHasKey( 'tokenKey', $data );
 	}
 
-	public function test_save_card_ui_is_disabled_until_issue_20(): void {
+	public function test_save_card_ui_is_enabled_when_store_card_info_is_on(): void {
 		Functions\when( 'get_option' )->justReturn( array( 'store_card_info' => 'yes' ) );
 		Functions\when( 'get_current_user_id' )->justReturn( 1 );
 
@@ -95,7 +95,9 @@ class BlockMCCCTest extends TestCase {
 		$block->initialize();
 		$data = $block->get_payment_method_data();
 
-		$this->assertFalse( $data['enableSaveCard'] );
-		$this->assertSame( array(), $data['savedCards'] );
+		// Issue #20 fix: the save-card UI is no longer force-disabled now that
+		// tokens are saved under gateway_id=paygent_mccc (see class-wc-gateway-paygent-mccc.php).
+		$this->assertTrue( $data['enableSaveCard'] );
+		$this->assertArrayHasKey( 'savedCards', $data );
 	}
 }

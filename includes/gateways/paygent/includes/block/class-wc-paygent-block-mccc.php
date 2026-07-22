@@ -107,13 +107,6 @@ class WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC {
 		unset( $data['paymentMethods'] );
 		unset( $data['numberOfPayments'] );
 
-		// The MCCC gateway does not honor the customer's save-card choice yet
-		// (it ignores paygent_save_card_info and stores tokens under the CC
-		// gateway id — see issue #20). Hide the Blocks save-card UI until that
-		// is fixed so the checkout does not offer an ineffective opt-out.
-		$data['enableSaveCard'] = false;
-		$data['savedCards']     = array();
-
 		return $data;
 	}
 

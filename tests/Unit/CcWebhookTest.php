@@ -98,6 +98,66 @@ class CcWebhookTest extends TestCase {
 	// Status 40: only updates when paymentaction is not 'sale'
 	// -------------------------------------------------------------------------
 
+	public function test_cc_webhook_40_no_update_when_paymentaction_is_sale(): void {
+		Functions\when( 'get_option' )->alias(
+			function ( $option, $default = false ) {
+				if ( 'woocommerce_paygent_cc_settings' === $option ) {
+					return array( 'paymentaction' => 'sale' );
+				}
+				return $default;
+			}
+		);
+
+		$order = $this->make_order();
+		$order->shouldNotReceive( 'update_status' );
+
+		$this->endpoint->paygent_cc_webhook( $order, array( 'payment_status' => '40' ) );
+	}
+
+	public function test_cc_webhook_40_completes_order_when_paymentaction_is_authorization(): void {
+		Functions\when( 'get_option' )->alias(
+			function ( $option, $default = false ) {
+				if ( 'woocommerce_paygent_cc_settings' === $option ) {
+					return array( 'paymentaction' => 'authorization' );
+				}
+				return $default;
+			}
+		);
+
+		$order = $this->make_order();
+		$order->shouldReceive( 'update_status' )
+			->once()
+			->with( 'completed', Mockery::any() );
+
+		$this->endpoint->paygent_cc_webhook( $order, array( 'payment_status' => '40' ) );
+	}
+
+	public function test_cc_webhook_40_defaults_to_sale_when_settings_missing(): void {
+		// get_option mocked to return '' (non-array) in setUp — must fall back to 'sale'.
+		$order = $this->make_order();
+		$order->shouldNotReceive( 'update_status' );
+
+		$this->endpoint->paygent_cc_webhook( $order, array( 'payment_status' => '40' ) );
+	}
+
+	public function test_cc_webhook_40_defaults_to_sale_when_paymentaction_is_not_a_string(): void {
+		// Corrupted option data (non-string paymentaction) must fail closed to
+		// 'sale' — i.e. no status change — never complete the order.
+		Functions\when( 'get_option' )->alias(
+			function ( $option, $default = false ) {
+				if ( 'woocommerce_paygent_cc_settings' === $option ) {
+					return array( 'paymentaction' => array( 'authorization' ) );
+				}
+				return $default;
+			}
+		);
+
+		$order = $this->make_order();
+		$order->shouldNotReceive( 'update_status' );
+
+		$this->endpoint->paygent_cc_webhook( $order, array( 'payment_status' => '40' ) );
+	}
+
 	public function test_cc_webhook_40_unknown_payment_status_is_ignored(): void {
 		$order = $this->make_order();
 		$order->shouldNotReceive( 'update_status' );

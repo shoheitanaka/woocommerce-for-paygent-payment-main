@@ -181,8 +181,14 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 
 	/**
 	 * Constructor for the gateway.
+	 *
+	 * @param bool $register_hooks Set to false when the instance is used as an
+	 *                             internal helper (e.g. by MCCC) so it registers
+	 *                             no global hooks — otherwise its callbacks would
+	 *                             run in addition to the registry-registered
+	 *                             gateway's and duplicate telegrams.
 	 */
-	public function __construct() {
+	public function __construct( $register_hooks = true ) {
 		$this->id                = 'paygent_cc';
 		$this->has_fields        = true;
 		$this->order_button_text = sprintf(
@@ -252,6 +258,11 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 			} elseif ( 'no' === $this->setting_card_vm && 'yes' === $this->setting_card_d && 'yes' === $this->setting_card_aj ) {
 				$this->icon = plugins_url( 'images/paygent-cards-d-a-j.png', __FILE__ );
 			}
+		}
+
+		// Helper instances register no hooks — everything below is hook registration.
+		if ( ! $register_hooks ) {
+			return;
 		}
 
 		// Actions.
@@ -501,7 +512,7 @@ class WC_Gateway_Paygent_CC extends WC_Payment_Gateway {
 		if ( 'yes' === $this->store_card_info && is_user_logged_in() && ! $is_subscription ) {
 			echo '<p class="form-row form-row-wide">';
 			echo '<label for="paygent_save_card_info">';
-			echo '<input type="checkbox" id="paygent_save_card_info" name="paygent_save_card_info" value="yes" style="width:auto;margin-right:6px;">';
+			echo '<input type="checkbox" id="paygent_save_card_info" name="paygent_cc_save_card_info" value="yes" style="width:auto;margin-right:6px;">';
 			echo esc_html__( 'Save payment information to my account for future purchases.', 'woocommerce-for-paygent-payment-main' );
 			echo '</label>';
 			echo '</p>';
@@ -739,7 +750,11 @@ jQuery(function(){
 		}
 
 		// Save user's card-save preference to meta (needed for 3DS2 callback which has no POST data).
-		$user_wants_save_card = ( true === $subscription ) || ( 'yes' === sanitize_text_field( wp_unslash( $_POST['paygent_save_card_info'] ?? '' ) ) );// phpcs:ignore
+		// The gateway-specific key from the classic checkbox wins; the shared key is the
+		// Blocks fallback. Hidden checkboxes of other gateways still submit on classic
+		// checkout, so the shared key alone would leak their state into this gateway.
+		$save_card_post       = $_POST['paygent_cc_save_card_info'] ?? $_POST['paygent_save_card_info'] ?? '';// phpcs:ignore
+		$user_wants_save_card = ( true === $subscription ) || ( 'yes' === sanitize_text_field( wp_unslash( $save_card_post ) ) );
 		$order->update_meta_data( '_paygent_save_card_preference', $user_wants_save_card ? '1' : '0' );
 		$order->save_meta_data();
 
@@ -1089,14 +1104,15 @@ jQuery(function(){
 	/**
 	 * Add stored card information for 3D Secure 2.0
 	 *
-	 * @param string $user_id    User ID to store the card for.
-	 * @param string $card_token Token representing the card to store.
-	 * @param object $order      Order object.
+	 * @param string $user_id          User ID to store the card for.
+	 * @param string $card_token       Token representing the card to store.
+	 * @param object $order            Order object.
+	 * @param string $token_gateway_id Gateway ID to save the WC token under (defaults to $this->id).
 	 * @return mixed Result from add_stored_user_data call
 	 */
-	public function paygent_tds_add_stored_card( $user_id, $card_token, $order ) {
+	public function paygent_tds_add_stored_card( $user_id, $card_token, $order, $token_gateway_id = null ) {
 		$card_user_id = 'wc' . $user_id;
-		$result       = $this->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order );
+		$result       = $this->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order, $token_gateway_id );
 		return $result;
 	}
 
@@ -1162,7 +1178,9 @@ jQuery(function(){
 				if ( 'yes' === $this->store_card_info && $user_wants_save_card ) {
 					$card_token = $order->get_meta( '_paygent_card_token' );
 					$user_id    = $order->get_user_id();
-					if ( false === $order->get_meta( '_paygent_customer_card_id' ) ) {
+					// get_meta() returns '' when the meta is absent, so a truthy check is
+					// required here — comparing against false would never match.
+					if ( ! $order->get_meta( '_paygent_customer_card_id' ) ) {
 						$add_card_result = $this->paygent_tds_add_stored_card( $user_id, $card_token, $order );
 						if ( false === $add_card_result ) {
 							$order->add_order_note( __( 'Failed to store card information.', 'woocommerce-for-paygent-payment-main' ) );
@@ -1493,9 +1511,10 @@ jQuery(function(){
 	 * @param bool   $test_mode    Test mode.
 	 * @param bool   $debug        Debug mode.
 	 * @param object $order WC_Order.
+	 * @param string $token_gateway_id Gateway ID to save the WC token under (defaults to $this->id).
 	 * @return mixed
 	 */
-	public function add_stored_user_data( $user_id, $card_token, $test_mode, $debug, $order = null ) {
+	public function add_stored_user_data( $user_id, $card_token, $test_mode, $debug, $order = null, $token_gateway_id = null ) {
 		$telegram_kind = '025';
 		$send_data     = array(
 			'trading_id'      => '',
@@ -1539,7 +1558,7 @@ jQuery(function(){
 			$token = new WC_Payment_Token_CC();
 			$token->set_default( true );
 			$token->set_token( $card_token );
-			$token->set_gateway_id( $this->id );
+			$token->set_gateway_id( $token_gateway_id ?? $this->id );
 			$token->set_last4( $card_last4 );
 			$token->set_card_type( $card_type );
 			$token->set_expiry_month( $expiry_month );
@@ -1560,7 +1579,10 @@ jQuery(function(){
 	 */
 	public function validate_fields() {
 		// Check for saving payment info without having or creating an account.
-		if ( $this->jp4wc_framework->get_post( 'saveinfo' )
+		// Strict comparison: the Block checkout sends 'no' when the box is unchecked.
+		// Classic checkout posts the gateway-specific key, Blocks the shared one.
+		if ( ( 'yes' === $this->jp4wc_framework->get_post( 'paygent_cc_save_card_info' )
+			|| 'yes' === $this->jp4wc_framework->get_post( 'paygent_save_card_info' ) )
 		&& ! is_user_logged_in()
 		&& ! $this->jp4wc_framework->get_post( 'createaccount' ) ) {
 			wc_add_notice( __( 'Sorry, you need to create an account in order for us to save your payment information.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );
@@ -1857,11 +1879,14 @@ jQuery(function(){
 	}
 
 	/**
-	 * Read Paygent Token javascript
+	 * Delete a stored card on the Paygent server (telegram 026) and promote one
+	 * of the customer's remaining WC tokens to default.
 	 *
-	 * @param array $delete_card_data Delete Card Data.
+	 * @param array  $delete_card_data Delete Card Data.
+	 * @param string $token_gateway_id Gateway ID whose remaining tokens get a new default (defaults to $this->id).
+	 * @param int    $user_id          Owner of the deleted token (defaults to the session user).
 	 */
-	public function delete_card( $delete_card_data ) {
+	public function delete_card( $delete_card_data, $token_gateway_id = null, $user_id = null ) {
 		$telegram_kind = '026';
 		$order         = null;
 
@@ -1874,7 +1899,7 @@ jQuery(function(){
 		$delete_card_res = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $delete_card_data, $this->debug );
 		if ( '0' === $delete_card_res['result'] ) {
 			// Set the remaining card as the default.
-			$tokens = WC_Payment_Tokens::get_customer_tokens( get_current_user_id(), $this->id );
+			$tokens = WC_Payment_Tokens::get_customer_tokens( $user_id ?? get_current_user_id(), $token_gateway_id ?? $this->id );
 			if ( ! empty( $tokens ) ) {
 				$default_token = reset( $tokens );
 				$default_token->set_default( true );
@@ -2013,11 +2038,16 @@ jQuery(function(){
 	 * @return void
 	 */
 	public function paygent_delete_card( $token_id, $token ) {
+		if ( $token->get_gateway_id() !== $this->id ) {
+			return;
+		}
 		$customer_card_id = $token->get_meta( 'customer_card_id' );
+		// Use the token owner, not the session user — deletions can run without
+		// one (e.g. expired-card cleanup during a subscription renewal cron).
 		$delete_card_data = array(
-			'customer_id'      => 'wc' . get_current_user_id(),
+			'customer_id'      => 'wc' . $token->get_user_id(),
 			'customer_card_id' => $customer_card_id,
 		);
-		$delete_result    = $this->delete_card( $delete_card_data );
+		$delete_result    = $this->delete_card( $delete_card_data, null, $token->get_user_id() );
 	}
 }
