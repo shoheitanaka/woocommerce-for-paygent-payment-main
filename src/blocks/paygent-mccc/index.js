@@ -4,6 +4,7 @@ import { decodeEntities } from '@wordpress/html-entities';
 import { __ } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
 import { PaymentLabel, PaymentDescription } from '../shared/components';
+import SavedTokenForm from '../shared/components/SavedTokenForm';
 import { createCardToken, createCvcToken, detectCardType } from '../shared/utils/tokenize';
 
 const settings = getSetting( 'paygent_mccc_data', null );
@@ -42,6 +43,10 @@ function formatExpiry( raw, prev ) {
  *  - Field names use the `paygent_mccc-` prefix (paygent_mccc-token, paygent_mccc-cvc_token)
  *  - No installment payment selector (MCCC always applies payment_class = 10 server-side)
  *
+ * Saved cards are NOT handled here: WC Blocks renders them natively as
+ * top-level payment options (showSavedCards) and SavedTokenForm collects
+ * the CVC when one is selected.
+ *
  * @param {{ eventRegistration: object, emitResponse: object, shouldSavePayment: boolean }} props
  */
 const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) => {
@@ -49,14 +54,8 @@ const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) 
 		merchantId,
 		tokenKey,
 		isTds2,
-		savedCards,
 	} = settings;
 
-	const hasSavedCards = savedCards && savedCards.length > 0;
-
-	const [ useStored,      setUseStored      ] = useState( hasSavedCards );
-	const [ selectedCardId, setSelectedCardId ] = useState( savedCards?.[ 0 ]?.customerCardId ?? '' );
-	const [ storedCvc,      setStoredCvc      ] = useState( '' );
 	const [ cardNumber,     setCardNumber     ] = useState( '' );
 	const [ expiry,         setExpiry         ] = useState( '' );
 	const [ cvc,            setCvc            ] = useState( '' );
@@ -65,24 +64,6 @@ const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) 
 	useEffect( () => {
 		const unsubscribe = eventRegistration.onPaymentSetup( async () => {
 			try {
-				if ( useStored ) {
-					const cvcRes = await createCvcToken( merchantId, tokenKey, storedCvc );
-					return {
-						type: emitResponse.responseTypes.SUCCESS,
-						meta: {
-							paymentMethodData: {
-								'paygent-use-stored-payment-info': 'yes',
-								'stored-info':                     selectedCardId,
-								'paygent_mccc-token':              '',
-								'paygent_mccc-cvc_token':          cvcRes.tokenizedCardObject.token,
-								'card_type':                       '',
-								'paygent_save_card_info':          'no',
-								'paygent_cardholder_name':         '',
-							},
-						},
-					};
-				}
-
 				const expClean = expiry.replace( /\s/g, '' ).replace( '/', '' );
 				const expMonth = expClean.slice( 0, 2 );
 				const expYear  = expClean.slice( 2, 4 );
@@ -116,7 +97,6 @@ const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) 
 		return unsubscribe;
 	}, [
 		eventRegistration, emitResponse,
-		useStored, selectedCardId, storedCvc,
 		cardNumber, expiry, cvc, cardholderName,
 		shouldSavePayment,
 		merchantId, tokenKey, isTds2,
@@ -126,76 +106,8 @@ const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) 
 	return (
 		<div className="wc-paygent-cc-form">
 
-			{ /* ── Saved cards toggle ── */ }
-			{ hasSavedCards && (
-				<fieldset className="wc-paygent-stored-card-toggle">
-					<legend className="screen-reader-text">{ __( 'Card selection', 'woocommerce-for-paygent-payment-main' ) }</legend>
-					<label>
-						<input
-							type="radio"
-							name="paygent-mccc-use-stored"
-							checked={ useStored }
-							onChange={ () => setUseStored( true ) }
-						/>
-						{ __( 'Use saved credit card', 'woocommerce-for-paygent-payment-main' ) }
-					</label>
-					<label>
-						<input
-							type="radio"
-							name="paygent-mccc-use-stored"
-							checked={ ! useStored }
-							onChange={ () => setUseStored( false ) }
-						/>
-						{ __( 'Enter a new card', 'woocommerce-for-paygent-payment-main' ) }
-					</label>
-				</fieldset>
-			) }
-
-			{ /* ── Stored card section ── */ }
-			{ hasSavedCards && useStored && (
-				<div className="wc-paygent-stored-card-section">
-					<div className="wc-paygent-cc-field">
-						<label className="wc-paygent-cc-label" htmlFor="paygent-mccc-stored-select">
-							{ __( 'Select card', 'woocommerce-for-paygent-payment-main' ) }
-						</label>
-						<select
-							id="paygent-mccc-stored-select"
-							className="wc-paygent-cc-select"
-							value={ selectedCardId }
-							onChange={ ( e ) => setSelectedCardId( e.target.value ) }
-						>
-							{ savedCards.map( ( card ) => (
-								<option key={ card.customerCardId } value={ card.customerCardId }>
-									{ card.cardType } ****{ card.last4 }
-									{ ' ' }({ card.expiryMonth }/{ card.expiryYear.slice( -2 ) })
-								</option>
-							) ) }
-						</select>
-					</div>
-					<div className="wc-paygent-cc-field">
-						<label className="wc-paygent-cc-label" htmlFor="paygent-mccc-stored-cvc">
-							{ __( 'Security code', 'woocommerce-for-paygent-payment-main' ) }
-							<span className="wc-paygent-cc-label__required" aria-hidden="true">*</span>
-						</label>
-						<input
-							id="paygent-mccc-stored-cvc"
-							className="wc-paygent-cc-input"
-							type="tel"
-							inputMode="numeric"
-							maxLength={ 4 }
-							placeholder="•••"
-							value={ storedCvc }
-							onChange={ ( e ) => setStoredCvc( e.target.value.replace( /\D/g, '' ).slice( 0, 4 ) ) }
-							autoComplete="cc-csc"
-							aria-required="true"
-						/>
-					</div>
-				</div>
-			) }
-
 			{ /* ── New card section ── */ }
-			{ ( ! hasSavedCards || ! useStored ) && (
-				<div className="wc-paygent-new-card-section">
+			<div className="wc-paygent-new-card-section">
 
 					{ /* Row 1: Card number */ }
 					<div className="wc-paygent-cc-field">
@@ -277,8 +189,7 @@ const McccCardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) 
 						</div>
 					) }
 
-				</div>
-			) }
+			</div>
 		</div>
 	);
 };
@@ -290,11 +201,19 @@ registerPaymentMethod( {
 	label: <PaymentLabel settings={ settings } />,
 	content: <McccCardForm />,
 	edit:    <PaymentDescription settings={ settings } />,
+	savedTokenComponent: (
+		<SavedTokenForm
+			gatewayId="paygent_mccc"
+			merchantId={ settings.merchantId }
+			tokenKey={ settings.tokenKey }
+			paymentOptions={ [] }
+		/>
+	),
 	canMakePayment: () => true,
 	ariaLabel: settings.title || __( 'Multi-currency credit card', 'woocommerce-for-paygent-payment-main' ),
 	supports: {
 		features:       settings.supports || [ 'products' ],
-		showSavedCards: settings.enableSaveCard && ( settings.savedCards?.length > 0 ),
-		showSaveOption: settings.enableSaveCard,
+		showSavedCards: !! settings.enableSaveCard,
+		showSaveOption: !! settings.enableSaveCard,
 	},
 } );

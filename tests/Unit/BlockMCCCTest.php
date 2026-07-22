@@ -98,6 +98,8 @@ class BlockMCCCTest extends TestCase {
 		// Issue #20 fix: the save-card UI is no longer force-disabled now that
 		// tokens are saved under gateway_id=paygent_mccc (see class-wc-gateway-paygent-mccc.php).
 		$this->assertTrue( $data['enableSaveCard'] );
-		$this->assertArrayHasKey( 'savedCards', $data );
+		// Issue #25: saved cards are rendered natively by WC Blocks and are
+		// no longer exposed to the client.
+		$this->assertArrayNotHasKey( 'savedCards', $data );
 	}
 }

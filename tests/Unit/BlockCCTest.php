@@ -113,20 +113,22 @@ class BlockCCTest extends TestCase {
 		$block->initialize();
 		$data = $block->get_payment_method_data();
 
-		foreach ( array( 'title', 'description', 'supports', 'merchantId', 'tokenKey', 'isTds2', 'enableSaveCard', 'savedCards', 'paymentMethods', 'numberOfPayments' ) as $key ) {
+		foreach ( array( 'title', 'description', 'supports', 'merchantId', 'tokenKey', 'isTds2', 'enableSaveCard', 'paymentMethods', 'numberOfPayments' ) as $key ) {
 			$this->assertArrayHasKey( $key, $data, "Missing key: $key" );
 		}
 	}
 
-	public function test_saved_cards_empty_for_guest(): void {
-		Functions\when( 'get_current_user_id' )->justReturn( 0 );
+	public function test_saved_cards_not_exposed_to_js(): void {
+		// Saved cards are rendered natively by WC Blocks (showSavedCards);
+		// customer_card_id must no longer be exposed to the client.
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
 		Functions\when( 'get_option' )->justReturn( array( 'store_card_info' => 'yes' ) );
 
 		$block = new \WC_Paygent_Block_CC();
 		$block->initialize();
 		$data = $block->get_payment_method_data();
 
-		$this->assertSame( array(), $data['savedCards'] );
+		$this->assertArrayNotHasKey( 'savedCards', $data );
 	}
 
 	public function test_tds2_flag_reflects_setting(): void {

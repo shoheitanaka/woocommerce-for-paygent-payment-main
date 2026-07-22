@@ -143,36 +143,10 @@
 	outline-offset: 2px;
 }
 
-/* ── Saved card toggle ───────────────────────────────────────────────────── */
-.wc-paygent-stored-card-toggle {
-	border: none;
-	padding: 0;
-	margin: 0 0 1rem 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.wc-paygent-stored-card-toggle legend {
-	font-weight: 600;
-	font-size: 0.875rem;
-	margin-bottom: 0.5rem;
-}
-
-.wc-paygent-stored-card-toggle label {
-	display: flex;
-	align-items: center;
-	gap: 0.5em;
-	font-size: 0.9375rem;
-	cursor: pointer;
-	min-height: 44px;
-}
-
-.wc-paygent-stored-card-toggle input[type="radio"] {
-	width: 18px;
-	height: 18px;
-	flex-shrink: 0;
-	accent-color: var(--wp--custom--button--background, #1e1e1e);
+/* ── Saved token CVC form (rendered under the native saved-card option) ──── */
+.wc-paygent-saved-token-form {
+	padding: 0.875rem 1rem;
+	margin-top: 0.5rem;
 }
 
 /* ── Saved card select ───────────────────────────────────────────────────── */
