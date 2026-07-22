@@ -37,11 +37,13 @@ const SavedTokenForm = ( {
 	const showPaymentSelector = paymentOptions.length > 1;
 	const defaultOption       = paymentOptions[ 0 ]?.value ?? '109';
 
+	// Initialize the installment selection once options are available; the
+	// guard keeps an explicit user choice from being overwritten.
 	useEffect( () => {
 		if ( ! paymentOption && paymentOptions.length ) {
 			setPaymentOption( paymentOptions[ 0 ].value );
 		}
-	}, [] ); // eslint-disable-line react-hooks/exhaustive-deps
+	}, [ paymentOption, paymentOptions ] );
 
 	// Re-register on every state change so the closure captures current values.
 	useEffect( () => {

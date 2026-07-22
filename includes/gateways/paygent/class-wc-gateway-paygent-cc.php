@@ -939,10 +939,10 @@ jQuery(function(){
 	 */
 	public function get_posted_saved_token_customer_card_id( $gateway_id ) {
 		$post_key = 'wc-' . $gateway_id . '-payment-token';
-		if ( ! isset( $_POST[ $post_key ] ) || '' === $_POST[ $post_key ] ) {// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( ! isset( $_POST[ $post_key ] ) || '' === $_POST[ $post_key ] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			return null;
 		}
-		$token_id = absint( wp_unslash( $_POST[ $post_key ] ) );// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$token_id = absint( wp_unslash( $_POST[ $post_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( ! $token_id ) {
 			return false;
 		}
