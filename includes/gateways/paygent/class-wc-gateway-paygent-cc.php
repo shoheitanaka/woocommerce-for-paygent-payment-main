@@ -1642,6 +1642,22 @@ jQuery(function(){
 		$card_cvc_token      = $this->jp4wc_framework->get_post( 'paygent_cc-cvc_token' );
 		$stored_payment_info = $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' );
 
+		// Block checkout native saved-card flow: a WC token id is posted instead
+		// of the classic stored-card fields, and paygent_cc-token is intentionally
+		// empty — skip the new-card checks but still require a valid CVC token.
+		$token_customer_card_id = $this->get_posted_saved_token_customer_card_id( $this->id );
+		if ( false === $token_customer_card_id ) {
+			wc_add_notice( __( 'The selected saved card could not be used. Please choose another payment method.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+			return false;
+		}
+		if ( null !== $token_customer_card_id ) {
+			if ( strpos( (string) $card_cvc_token, 'tok_' ) === false ) {
+				wc_add_notice( __( 'Input information of the credit card is not enough. Please check CVC.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+				return false;
+			}
+			return true;
+		}
+
 		if ( 'no' === $stored_payment_info || null === $stored_payment_info ) :
 			if ( strpos( $card_token, 'tok_' ) === false ) {
 				wc_add_notice( __( 'Input information of the credit card is not enough. Please check Credit card expiration date, etc.', 'woocommerce-for-paygent-payment-main' ), $notice_type = 'error' );

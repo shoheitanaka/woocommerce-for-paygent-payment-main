@@ -53,6 +53,11 @@ class SavedTokenResolutionTest extends TestCase {
 			wp_delete_user( $this->user_id );
 		}
 		unset( $_POST['wc-paygent_cc-payment-token'] );
+		unset( $_POST['wc-paygent_mccc-payment-token'] );
+		unset( $_POST['paygent_cc-cvc_token'] );
+		if ( function_exists( 'wc_clear_notices' ) ) {
+			wc_clear_notices();
+		}
 		delete_option( 'wc-paygent-cc' );
 		parent::tearDown();
 	}
@@ -153,5 +158,36 @@ class SavedTokenResolutionTest extends TestCase {
 		$_POST['wc-paygent_mccc-payment-token'] = (string) $token->get_id();
 		$this->assertSame( 'ccid-mccc', $this->gateway()->get_posted_saved_token_customer_card_id( 'paygent_mccc' ) );
 		unset( $_POST['wc-paygent_mccc-payment-token'] );
+	}
+
+	// -------------------------------------------------------------------------
+	// validate_fields() — the Store API calls it before process_payment()
+	// (Automattic\WooCommerce\StoreApi\Legacy), so the saved-token flow must
+	// pass validation without a paygent_cc-token value.
+	// -------------------------------------------------------------------------
+
+	public function test_validate_fields_passes_for_saved_token_with_cvc_token(): void {
+		$token = $this->create_token( $this->user_id );
+
+		$_POST['wc-paygent_cc-payment-token'] = (string) $token->get_id();
+		$_POST['paygent_cc-cvc_token']        = 'tok_test_cvc';
+
+		$this->assertTrue( $this->gateway()->validate_fields() );
+	}
+
+	public function test_validate_fields_fails_for_saved_token_without_cvc_token(): void {
+		$token = $this->create_token( $this->user_id );
+
+		$_POST['wc-paygent_cc-payment-token'] = (string) $token->get_id();
+		unset( $_POST['paygent_cc-cvc_token'] );
+
+		$this->assertFalse( $this->gateway()->validate_fields() );
+	}
+
+	public function test_validate_fields_fails_for_invalid_posted_token(): void {
+		$_POST['wc-paygent_cc-payment-token'] = '999999999';
+		$_POST['paygent_cc-cvc_token']        = 'tok_test_cvc';
+
+		$this->assertFalse( $this->gateway()->validate_fields() );
 	}
 }
