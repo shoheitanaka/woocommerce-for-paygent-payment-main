@@ -92,6 +92,21 @@ function waitForPaygentToken(page) {
 }
 
 /**
+ * Wait up to timeoutMs for the locator to become visible, returning a
+ * boolean instead of throwing. Unlike locator.isVisible() — which checks
+ * the CURRENT state only and ignores its timeout option — this actually
+ * waits for the element to appear.
+ *
+ * @param {import('@playwright/test').Locator} locator
+ * @param {number} [timeoutMs]
+ * @returns {Promise<boolean>}
+ */
+function becomesVisible(locator, timeoutMs = 3_000) {
+	return locator.waitFor({ state: 'visible', timeout: timeoutMs })
+		.then(() => true, () => false);
+}
+
+/**
  * Fill the Block checkout billing fields.
  * WooCommerce Block checkout uses id="billing-first_name" etc.
  *
@@ -108,12 +123,11 @@ async function fillBillingBlock(page, opts = {}) {
 	const lastName  = opts.lastNameOverride || '太郎';
 	const firstName = opts.lastNameOverride ? '' : 'テスト';
 
-	const lastNameVisible = await page.locator('#billing-last_name')
-		.isVisible({ timeout: 3_000 }).catch(() => false);
+	const lastNameVisible = await becomesVisible(page.locator('#billing-last_name'));
 	if (!lastNameVisible) {
 		const editBtn = page.locator('.wc-block-components-address-card__edit, button')
 			.filter({ hasText: /^Edit$/i }).first();
-		if (await editBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+		if (await becomesVisible(editBtn)) {
 			await editBtn.click();
 			await page.waitForSelector('#billing-last_name:visible', { timeout: 10_000 }).catch(() => {});
 		} else {
@@ -259,6 +273,7 @@ module.exports = {
 	routePaygentTokenJs,
 	goToBlockCheckout,
 	waitForPaygentToken,
+	becomesVisible,
 	fillBillingBlock,
 	selectPaymentMethodBlock,
 	placeOrderBlock,

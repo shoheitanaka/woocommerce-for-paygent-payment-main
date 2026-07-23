@@ -12,6 +12,7 @@ const {
 	routePaygentTokenJs,
 	goToBlockCheckout,
 	waitForPaygentToken,
+	becomesVisible,
 	fillBillingBlock,
 	selectPaymentMethodBlock,
 	placeOrderBlock,
@@ -170,9 +171,6 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 	test.setTimeout( 120_000 );
 	test.beforeEach( requireSandboxCredentials );
 
-	/** @type {string} First order ID — used to verify saved card on second checkout. */
-	let savedOrderId = '';
-
 	test( 'F-1: Member completes Block checkout with new card + save card checked', async ( { page, baseURL } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
@@ -188,9 +186,9 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 		// CardForm, which forwards it as paygent_save_card_info: 'yes' in paymentMethodData.
 		const saveCardInput = page.locator(
 			'.wc-block-components-payment-methods__save-card-info input[type="checkbox"]'
-		);
+		).first();
 
-		const checkboxVisible = await saveCardInput.isVisible( { timeout: 5_000 } ).catch( () => false );
+		const checkboxVisible = await becomesVisible( saveCardInput, 5_000 );
 		if ( checkboxVisible ) {
 			const alreadyChecked = await saveCardInput.isChecked().catch( () => false );
 			if ( ! alreadyChecked ) {
@@ -205,7 +203,6 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 		const orderId = await placeOrderAndAwaitThankyou( page );
 		if ( ! orderId ) return;
 		createdOrderIds.push( orderId );
-		savedOrderId = orderId;
 
 		// Verify WC Payment Token was created when checkbox was visible and checked.
 		const memberId = wpCli( `user get ${ MEMBER.login } --field=ID` ).trim();
@@ -248,9 +245,7 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 			.locator( 'input[name="wc-saved-payment-method-token-paygent_cc"]' )
 			.first();
 
-		const hasSavedToken = await savedTokenRadio
-			.isVisible( { timeout: 5_000 } )
-			.catch( () => false );
+		const hasSavedToken = await becomesVisible( savedTokenRadio, 5_000 );
 		if ( ! hasSavedToken ) {
 			test.skip( true, 'Native saved-card option not rendered — token may not be loaded in this session' );
 			return;

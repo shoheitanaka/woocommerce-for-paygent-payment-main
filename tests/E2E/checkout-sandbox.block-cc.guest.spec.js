@@ -14,6 +14,7 @@ const {
 	routePaygentTokenJs,
 	goToBlockCheckout,
 	waitForPaygentToken,
+	becomesVisible,
 	fillBillingBlock,
 	selectPaymentMethodBlock,
 	placeOrderBlock,
@@ -266,7 +267,7 @@ test.describe( 'Block-CC B: EMV 3DS2 frictionless (cardholder=BAVYA)', () => {
 
 		// With 3DS2, cardholder name field appears in our React form.
 		const cardholderInput = page.locator( '#paygent-cc-cardholder' );
-		if ( await cardholderInput.isVisible( { timeout: 3_000 } ).catch( () => false ) ) {
+		if ( await becomesVisible( cardholderInput ) ) {
 			await cardholderInput.fill( TDS2.CARDHOLDER_FRICTIONLESS_OK );
 		}
 
@@ -335,7 +336,7 @@ test.describe( 'Block-CC C: EMV 3DS2 challenge flow (amount=0, password=14012)',
 			await selectPaygentCCBlock( page );
 
 			const cardholderInput = page.locator( '#paygent-cc-cardholder' );
-			if ( await cardholderInput.isVisible( { timeout: 3_000 } ).catch( () => false ) ) {
+			if ( await becomesVisible( cardholderInput ) ) {
 				await cardholderInput.fill( 'TARO YAMADA' );
 			}
 
@@ -415,7 +416,7 @@ test.describe( 'Block-CC D: Admin partial refund', () => {
 
 		// Step 4: Issue partial refund.
 		const refundBtn = page.locator( '.refund-items' ).first();
-		if ( ! await refundBtn.isVisible( { timeout: 5_000 } ).catch( () => false ) ) {
+		if ( ! await becomesVisible( refundBtn, 5_000 ) ) {
 			test.skip( true, 'Refund button not visible' );
 			return;
 		}
