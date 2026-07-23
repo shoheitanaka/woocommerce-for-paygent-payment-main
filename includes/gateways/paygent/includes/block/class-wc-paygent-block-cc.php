@@ -15,9 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Registers `paygent_cc` as a Block payment method and provides
  * the data needed by the React card-form component:
  *   - Paygent merchant ID and token key (test/live)
- *   - Saved cards for the current user
  *   - Enabled payment methods (1-time, installment, bonus, revolving)
  *   - 3DS2 flag and save-card flag
+ *
+ * Saved cards are rendered natively by WooCommerce Blocks (showSavedCards);
+ * the CVC entry for a selected token is handled by savedTokenComponent and
+ * the posted wc-{gateway}-payment-token id is resolved server-side.
  */
 class WC_Paygent_Block_CC extends Abstract_WC_Paygent_Block_Payment {
 
@@ -114,26 +117,6 @@ class WC_Paygent_Block_CC extends Abstract_WC_Paygent_Block_Payment {
 			$token_key   = get_option( 'wc-paygent-tokenkey' );
 		}
 
-		// Saved cards for logged-in users.
-		$saved_cards = array();
-		$user_id     = get_current_user_id();
-		if ( $user_id && 'yes' === ( $settings['store_card_info'] ?? 'no' ) ) {
-			$tokens = WC_Payment_Tokens::get_customer_tokens( $user_id, $this->name );
-			foreach ( $tokens as $token ) {
-				$customer_card_id = $token->get_meta( 'customer_card_id' );
-				if ( $customer_card_id ) {
-					$saved_cards[] = array(
-						'tokenId'        => $token->get_id(),
-						'customerCardId' => $customer_card_id,
-						'last4'          => $token->get_last4(),
-						'expiryMonth'    => $token->get_expiry_month(),
-						'expiryYear'     => $token->get_expiry_year(),
-						'cardType'       => $token->get_card_type(),
-					);
-				}
-			}
-		}
-
 		// Payment method options (multiselect in admin).
 		$label_map       = array(
 			'10' => __( 'One-time payment', 'woocommerce-for-paygent-payment-main' ),
@@ -164,7 +147,6 @@ class WC_Paygent_Block_CC extends Abstract_WC_Paygent_Block_Payment {
 			'tokenKey'         => $token_key,
 			'isTds2'           => 'yes' === ( $settings['tds2_check'] ?? 'no' ),
 			'enableSaveCard'   => 'yes' === ( $settings['store_card_info'] ?? 'no' ),
-			'savedCards'       => $saved_cards,
 			'paymentMethods'   => $payment_methods,
 			'numberOfPayments' => $number_of_payments,
 		);

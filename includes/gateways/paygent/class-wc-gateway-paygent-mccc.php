@@ -392,11 +392,24 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		$order->save_meta_data();
 
 		// Card information deposit function without EMV-3DS.
-		$using_stored_card = ( $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' ) === 'yes' );
+		// The Block checkout native saved-card flow posts a WC token id
+		// (wc-{gateway}-payment-token) instead of the classic
+		// paygent-use-stored-payment-info / stored-info pair.
+		$token_customer_card_id = $this->paygent_cc->get_posted_saved_token_customer_card_id( $this->id );
+		if ( false === $token_customer_card_id ) {
+			wc_add_notice( __( 'The selected saved card could not be used. Please choose another payment method.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+			return array(
+				'result'   => 'failure',
+				'redirect' => wc_get_checkout_url(),
+			);
+		}
+		$using_stored_card = ( $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' ) === 'yes' ) || null !== $token_customer_card_id;
 		$set_login         = false;
 		if ( is_user_logged_in() && 'yes' === $this->store_card_info && ( $user_wants_save_card || $using_stored_card ) ) {
 			$set_login = true;
-			if ( $using_stored_card ) {
+			if ( $using_stored_card && null !== $token_customer_card_id ) {
+				$send_data['customer_card_id'] = $token_customer_card_id;
+			} elseif ( $using_stored_card ) {
 				$send_data['customer_card_id'] = $this->jp4wc_framework->get_post( 'stored-info' );
 			} else {
 				$stored_user_card_data         = $this->paygent_cc->add_stored_user_data( $card_user_id, $card_token, $this->test_mode, $this->debug, $order, $this->id );
@@ -753,6 +766,22 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		$card_token          = $this->jp4wc_framework->get_post( 'paygent_mccc-token' );
 		$card_cvc_token      = $this->jp4wc_framework->get_post( 'paygent_mccc-cvc_token' );
 		$stored_payment_info = $this->jp4wc_framework->get_post( 'paygent-use-stored-payment-info' );
+
+		// Block checkout native saved-card flow: a WC token id is posted instead
+		// of the classic stored-card fields, and paygent_mccc-token is intentionally
+		// empty — skip the new-card checks but still require a valid CVC token.
+		$token_customer_card_id = $this->paygent_cc->get_posted_saved_token_customer_card_id( $this->id );
+		if ( false === $token_customer_card_id ) {
+			wc_add_notice( __( 'The selected saved card could not be used. Please choose another payment method.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+			return false;
+		}
+		if ( null !== $token_customer_card_id ) {
+			if ( strpos( (string) $card_cvc_token, 'tok_' ) === false ) {
+				wc_add_notice( __( 'Input information of the credit card is not enough. Please check CVC.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+				return false;
+			}
+			return true;
+		}
 
 		if ( 'no' === $stored_payment_info || null === $stored_payment_info ) :
 			if ( strpos( $card_token, 'tok_' ) === false ) {

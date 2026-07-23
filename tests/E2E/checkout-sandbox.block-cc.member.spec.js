@@ -310,25 +310,26 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable' );
 
 		await fillBillingBlock( page );
-		await selectPaygentCCBlock( page );
 
-		// Our React CardForm shows "use stored card" toggle when savedCards.length > 0.
-		// The stored card radio / toggle should default to showing stored card section.
-		const storedSection = page.locator( '.wc-paygent-stored-card-section' );
-		const storedToggle  = page.locator( 'input[name="paygent-use-stored"]' ).first();
+		// Saved cards are rendered natively by WC Blocks as top-level radio
+		// options (wc-saved-payment-method-token-paygent_cc). Select the first
+		// saved token instead of the gateway's own card form.
+		const savedTokenRadio = page
+			.locator( 'input[name="wc-saved-payment-method-token-paygent_cc"]' )
+			.first();
 
-		const isStoredVisible = await storedSection.isVisible( { timeout: 5_000 } ).catch( () => false );
-		if ( ! isStoredVisible ) {
-			// savedCards was empty in get_payment_method_data — skip gracefully.
-			test.skip( true, 'Stored card UI not rendered — savedCards may not be loaded in this session' );
+		const hasSavedToken = await savedTokenRadio
+			.isVisible( { timeout: 5_000 } )
+			.catch( () => false );
+		if ( ! hasSavedToken ) {
+			test.skip( true, 'Native saved-card option not rendered — token may not be loaded in this session' );
 			return;
 		}
 
-		// Ensure "use stored card" is selected.
-		await storedToggle.check( { force: true } ).catch( () => {} );
+		await savedTokenRadio.check( { force: true } ).catch( () => {} );
 
-		// Enter CVC for stored card.
-		await page.locator( '#paygent-cc-stored-cvc' ).fill( '123' );
+		// SavedTokenForm renders below the selected token; enter the CVC.
+		await page.locator( '#paygent_cc-saved-token-cvc' ).fill( '123' );
 
 		await placeOrderBlock( page );
 		await page.waitForURL( /order-received/, { timeout: 90_000 } );
