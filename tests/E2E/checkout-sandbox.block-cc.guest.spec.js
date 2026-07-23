@@ -9,6 +9,15 @@ const {
 	setupBlockCheckoutPage,
 	teardownBlockCheckoutPage,
 } = require('./helpers/wp-cli');
+const {
+	prefetchPaygentTokenJs,
+	routePaygentTokenJs,
+	goToBlockCheckout,
+	waitForPaygentToken,
+	fillBillingBlock,
+	selectPaymentMethodBlock,
+	placeOrderBlock,
+} = require('./helpers/block-checkout');
 
 /**
  * Paygent CC Gateway — WooCommerce Block Checkout E2E tests (guest).
@@ -49,6 +58,8 @@ const TDS2 = {
 	CHALLENGE_PASSWORD_VISA:    '14012',
 };
 
+const CC_EMAIL = 'block-cc-e2e@example.com';
+
 /** @type {string} */
 let productId     = '';
 /** @type {string} */
@@ -77,21 +88,7 @@ test.beforeAll(async ( { baseURL } ) => {
 	productId   = match ? match[1] : '';
 
 	// Pre-fetch PaygentToken.js so tests don't wait on sandbox.paygent.co.jp.
-	const https = require('https');
-	cachedPaygentTokenJs = await new Promise( ( resolve ) => {
-		const req = https.get(
-			'https://sandbox.paygent.co.jp/js/PaygentToken.js',
-			{ timeout: 30_000 },
-			( res ) => {
-				const chunks = [];
-				res.on( 'data', ( c ) => chunks.push( c ) );
-				res.on( 'end',  () => resolve( Buffer.concat( chunks ).toString() ) );
-				res.on( 'error', () => resolve( '' ) );
-			}
-		);
-		req.on( 'error',   () => resolve( '' ) );
-		req.on( 'timeout', () => { req.destroy(); resolve( '' ); } );
-	} );
+	cachedPaygentTokenJs = await prefetchPaygentTokenJs();
 
 	if ( cachedPaygentTokenJs ) {
 		console.log( '  [block-cc] PaygentToken.js pre-fetched and cached.' );
@@ -127,91 +124,10 @@ function requireSandboxCredentials() {
  * @param {string} pid  Product ID to add (defaults to module-level productId).
  * @returns {Promise<boolean>}  true if window.PaygentToken is ready.
  */
-async function goToBlockCheckout( page, pid = productId ) {
-	if ( cachedPaygentTokenJs ) {
-		await page.route( /sandbox\.paygent\.co\.jp\/js\/PaygentToken/, ( route ) =>
-			route.fulfill( {
-				status:      200,
-				contentType: 'application/javascript',
-				body:        cachedPaygentTokenJs,
-			} )
-		);
-	}
-
-	// Add to cart.
-	if ( pid ) {
-		await page.goto( `${ blockCheckoutUrl.replace( /\/paygent-block-checkout-e2e\/$/, '' ) }/?add-to-cart=${ pid }`, { waitUntil: 'domcontentloaded' } );
-	}
-	await page.goto( blockCheckoutUrl, { waitUntil: 'domcontentloaded' } );
-
-	// Wait for the Block checkout container.
-	await page.waitForSelector( '.wp-block-woocommerce-checkout', { timeout: 30_000 } );
-
-	// Wait for React hydration to complete: WooCommerce removes .is-loading when ready.
-	// Without this, form fills happen before React initialises state and the values are wiped.
-	await page.waitForFunction(
-		() => ! document.querySelector( '.wp-block-woocommerce-checkout.is-loading' ),
-		{ timeout: 30_000 }
-	).catch( () => {} );
-
-	// Verify window.PaygentToken loaded.
-	const tokenReady = await page.waitForFunction(
-		() => typeof window.PaygentToken !== 'undefined',
-		{ timeout: 30_000 }
-	).then( () => true ).catch( () => false );
-
-	return tokenReady;
-}
-
-/**
- * Fill the Block checkout billing fields.
- * WooCommerce Block checkout uses id="billing-first_name" etc.
- *
- * @param {import('@playwright/test').Page} page
- * @param {string} [lastNameOverride]  Override last_name (used for 3DS2 cardholder control).
- */
-async function fillBillingBlock( page, lastNameOverride = '' ) {
-	const lastName  = lastNameOverride || '太郎';
-	const firstName = lastNameOverride ? '' : 'テスト';
-
-	const countryEl = page.locator( '#billing-country' );
-	if ( await countryEl.count() > 0 ) {
-		const val = await countryEl.inputValue().catch( () => '' );
-		if ( val !== 'JP' ) {
-			await countryEl.selectOption( 'JP' ).catch( () => {} );
-			await page.waitForTimeout( 800 );
-		}
-	}
-
-	// Fill text fields BEFORE selecting state. The state-change triggers a WC
-	// REST API call that causes React to re-render and clear fields filled
-	// afterward. networkidle is unreliable on the checkout page (WC polls
-	// continuously), so we use a fixed pause instead.
-	await page.locator( '#billing-last_name'  ).fill( lastName );
-	await page.locator( '#billing-first_name' ).fill( firstName ).catch( () => {} );
-	await page.locator( '#email'              ).fill( 'block-cc-e2e@example.com' );
-	await page.locator( '#billing-phone'      ).fill( '0312345678' ).catch( () => {} );
-	await page.locator( '#billing-postcode'   ).fill( '1000001' );
-	await page.locator( '#billing-address_1'  ).fill( '千代田区1-1-1' );
-	await page.locator( '#billing-city'       ).fill( '東京都' );
-
-	// Select prefecture LAST. WC JP state code for Tokyo is 'JP13'.
-	await page.locator( '#billing-state' ).selectOption( 'JP13' )
-		.catch( () => page.locator( '#billing-state' ).selectOption( { label: 'Tokyo' } ).catch( () => {} ) );
-
-	// Brief pause for the state-change API response, then re-fill any text
-	// fields that the API response may have reset back to empty.
-	await page.waitForTimeout( 1_500 );
-	const lastNameCurrent = await page.locator( '#billing-last_name' ).inputValue().catch( () => '' );
-	if ( ! lastNameCurrent ) {
-		await page.locator( '#billing-last_name'  ).fill( lastName );
-		await page.locator( '#billing-first_name' ).fill( firstName ).catch( () => {} );
-		await page.locator( '#email'              ).fill( 'block-cc-e2e@example.com' );
-		await page.locator( '#billing-phone'      ).fill( '0312345678' ).catch( () => {} );
-		await page.locator( '#billing-postcode'   ).fill( '1000001' );
-		await page.locator( '#billing-address_1'  ).fill( '千代田区1-1-1' );
-		await page.locator( '#billing-city'       ).fill( '東京都' );
-	}
+async function goToCcBlockCheckout( page, pid = productId ) {
+	await routePaygentTokenJs( page, cachedPaygentTokenJs );
+	await goToBlockCheckout( page, blockCheckoutUrl, pid );
+	return waitForPaygentToken( page );
 }
 
 /**
@@ -221,26 +137,7 @@ async function fillBillingBlock( page, lastNameOverride = '' ) {
  * @param {import('@playwright/test').Page} page
  */
 async function selectPaygentCCBlock( page ) {
-	// Find the CC radio option — try by value first (most stable), then by label text.
-	const radio = page.locator( 'input[value="paygent_cc"]' )
-		.or( page.locator( `input[id*="paygent_cc"]` ) )
-		.first();
-
-	if ( await radio.count() > 0 ) {
-		const isChecked = await radio.isChecked().catch( () => false );
-		if ( ! isChecked ) {
-			// Block checkout radios may be hidden; click the surrounding label.
-			const label = page.locator( `label[for="${ await radio.getAttribute( 'id' ) }"]` )
-				.or( page.locator( '.wc-block-components-radio-control label' ).filter( { hasText: /クレジットカード|Credit Card/i } ).first() );
-			await label.first().click().catch( async () => radio.check( { force: true } ) );
-		}
-	} else {
-		// Fallback: click the label by title text.
-		await page.locator( '.wc-block-components-radio-control label, .wc-block-components-payment-method-label' )
-			.filter( { hasText: /クレジットカード|Credit Card/i } )
-			.first()
-			.click();
-	}
+	await selectPaymentMethodBlock( page, 'paygent_cc', /クレジットカード|Credit Card/i );
 
 	// Our React CardForm renders once the payment option is selected.
 	await expect( page.locator( '#paygent-cc-number' ) ).toBeVisible( { timeout: 10_000 } );
@@ -260,23 +157,6 @@ async function fillCardFormBlock( page, cardNumber = CARD.OK ) {
 	await page.locator( '#paygent-cc-cvc'     ).fill( '123' );
 }
 
-/**
- * Click "Place Order" and wait for tokenisation + server round-trip.
- * In Block checkout the onPaymentSetup hook calls PaygentToken.createToken
- * just before the order is submitted, so we just need to click and wait.
- *
- * @param {import('@playwright/test').Page} page
- */
-async function placeOrderBlock( page ) {
-	const placeOrderBtn = page.locator(
-		'.wc-block-components-checkout-place-order-button, ' +
-		'.wp-block-woocommerce-checkout-actions-block button[type="submit"], ' +
-		'button.wc-block-checkout__actions_row-place-order-button'
-	).first();
-	await expect( placeOrderBtn ).toBeVisible( { timeout: 10_000 } );
-	await placeOrderBtn.click();
-}
-
 // ═════════════════════════════════════════════════════════════════════════════
 // Smoke: Block checkout page renders CC gateway
 // ═════════════════════════════════════════════════════════════════════════════
@@ -285,7 +165,12 @@ test( 'Block checkout page renders CC payment option', async ( { page } ) => {
 	requireSandboxCredentials();
 	if ( ! productId ) test.skip( true, 'Test product not found' );
 
-	await goToBlockCheckout( page );
+	await goToCcBlockCheckout( page );
+
+	// The payment section renders after a Store API round-trip — on a cold
+	// cache (first test after global setup) this can exceed 15s, so wait for
+	// the payment block container before asserting the CC option.
+	await page.waitForSelector( '.wp-block-woocommerce-checkout-payment-block', { timeout: 30_000 } ).catch( () => {} );
 
 	// The Block checkout payment section must show a Paygent CC option.
 	const ccOption = page.locator(
@@ -293,7 +178,7 @@ test( 'Block checkout page renders CC payment option', async ( { page } ) => {
 		'.wc-block-components-radio-control label'
 	).filter( { hasText: /クレジットカード|Credit Card/i } ).first();
 
-	await expect( ccOption ).toBeVisible( { timeout: 15_000 } );
+	await expect( ccOption ).toBeVisible( { timeout: 30_000 } );
 } );
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -307,10 +192,10 @@ test.describe( 'Block-CC A: Standard checkout (3DS disabled)', () => {
 	test( 'A-1: Guest completes Block checkout with standard test card', async ( { page } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable — PaygentToken.js not loaded' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: CC_EMAIL } );
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.OK );
 
@@ -329,10 +214,10 @@ test.describe( 'Block-CC A: Standard checkout (3DS disabled)', () => {
 	test( 'A-2: Auth-failure card (末尾8101) shows Block checkout error', async ( { page } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable — PaygentToken.js not loaded' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: CC_EMAIL } );
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.AUTH_NG );
 
@@ -372,11 +257,11 @@ test.describe( 'Block-CC B: EMV 3DS2 frictionless (cardholder=BAVYA)', () => {
 	test( 'B-1: Guest completes Block checkout via frictionless 3DS2 (BAVYA)', async ( { page } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable — PaygentToken.js not loaded' );
 
 		// cardholder=BAVYA triggers frictionless VISA result=0 — use last_name override.
-		await fillBillingBlock( page, TDS2.CARDHOLDER_FRICTIONLESS_OK );
+		await fillBillingBlock( page, { email: CC_EMAIL, lastNameOverride: TDS2.CARDHOLDER_FRICTIONLESS_OK } );
 		await selectPaygentCCBlock( page );
 
 		// With 3DS2, cardholder name field appears in our React form.
@@ -438,8 +323,8 @@ test.describe( 'Block-CC C: EMV 3DS2 challenge flow (amount=0, password=14012)',
 	test( 'C-1: Guest completes 3DS2 challenge (amount=0, VISA password=14012)', async ( { page } ) => {
 		if ( ! freeProductId ) test.skip( true, 'Could not create ¥0 test product' );
 
-		const tokenReady = await goToBlockCheckout( page, freeProductId );
-		await fillBillingBlock( page );
+		const tokenReady = await goToCcBlockCheckout( page, freeProductId );
+		await fillBillingBlock( page, { email: CC_EMAIL } );
 
 		const hasPayment = await page.locator( 'input[value="paygent_cc"]' ).count() > 0;
 		if ( hasPayment && ! tokenReady ) {
@@ -501,10 +386,10 @@ test.describe( 'Block-CC D: Admin partial refund', () => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
 		// Step 1: Place order as guest via Block checkout.
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: CC_EMAIL } );
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.OK );
 		await placeOrderBlock( page );
@@ -574,10 +459,10 @@ test.describe( 'Block-CC E: Installment payment (分割払い)', () => {
 	test( 'E-1: Guest selects 3-installment in Block checkout (split_count=3)', async ( { page } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: CC_EMAIL } );
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.OK );
 
@@ -604,10 +489,10 @@ test.describe( 'Block-CC E: Installment payment (分割払い)', () => {
 	test( 'E-2: Guest selects 6-installment in Block checkout (split_count=6)', async ( { page } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: CC_EMAIL } );
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.OK );
 

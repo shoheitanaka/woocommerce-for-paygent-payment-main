@@ -4,10 +4,20 @@ const {
 	wpCli,
 	getPaygentCcSettings,
 	updatePaygentCcSettings,
-	restorePaygentCcSettings,
 	setupBlockCheckoutPage,
 	teardownBlockCheckoutPage,
 } = require('./helpers/wp-cli');
+const {
+	prefetchPaygentTokenJs,
+	routePaygentTokenJs,
+	goToBlockCheckout,
+	waitForPaygentToken,
+	fillBillingBlock,
+	selectPaymentMethodBlock,
+	placeOrderBlock,
+	blockCheckoutErrorNotice,
+	raceOutcome,
+} = require('./helpers/block-checkout');
 
 /**
  * Paygent CC Gateway — WooCommerce Block Checkout E2E tests (logged-in member).
@@ -66,21 +76,7 @@ test.beforeAll( async ( { baseURL } ) => {
 	const match = out.match( /^(\d+)$/m );
 	productId   = match ? match[1] : '';
 
-	const https = require('https');
-	cachedPaygentTokenJs = await new Promise( ( resolve ) => {
-		const req = https.get(
-			'https://sandbox.paygent.co.jp/js/PaygentToken.js',
-			{ timeout: 30_000 },
-			( res ) => {
-				const chunks = [];
-				res.on( 'data', ( c ) => chunks.push( c ) );
-				res.on( 'end',  () => resolve( Buffer.concat( chunks ).toString() ) );
-				res.on( 'error', () => resolve( '' ) );
-			}
-		);
-		req.on( 'error',   () => resolve( '' ) );
-		req.on( 'timeout', () => { req.destroy(); resolve( '' ); } );
-	} );
+	cachedPaygentTokenJs = await prefetchPaygentTokenJs();
 } );
 
 test.afterAll( async () => {
@@ -109,103 +105,17 @@ function requireSandboxCredentials() {
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
+// Navigation / billing / place-order logic lives in helpers/block-checkout.js;
+// only the CC-specific pieces are defined here.
 
-async function goToBlockCheckout( page, pid = productId ) {
-	if ( cachedPaygentTokenJs ) {
-		await page.route( /sandbox\.paygent\.co\.jp\/js\/PaygentToken/, ( route ) =>
-			route.fulfill( { status: 200, contentType: 'application/javascript', body: cachedPaygentTokenJs } )
-		);
-	}
-	if ( pid ) {
-		await page.goto(
-			`${ blockCheckoutUrl.replace( /\/paygent-block-checkout-e2e\/$/, '' ) }/?add-to-cart=${ pid }`,
-			{ waitUntil: 'domcontentloaded' }
-		);
-	}
-	await page.goto( blockCheckoutUrl, { waitUntil: 'domcontentloaded' } );
-	await page.waitForSelector( '.wp-block-woocommerce-checkout', { timeout: 30_000 } );
-
-	// Wait for React hydration to complete.
-	await page.waitForFunction(
-		() => ! document.querySelector( '.wp-block-woocommerce-checkout.is-loading' ),
-		{ timeout: 30_000 }
-	).catch( () => {} );
-
-	return page.waitForFunction(
-		() => typeof window.PaygentToken !== 'undefined',
-		{ timeout: 30_000 }
-	).then( () => true ).catch( () => false );
-}
-
-async function fillBillingBlock( page ) {
-	// For logged-in members, WC Block checkout shows a collapsed billing address
-	// summary with an "Edit" button when a saved address exists. If the fields
-	// are not visible, click Edit to expand the form.
-	const lastNameField = page.locator( '#billing-last_name' );
-	const isVisible     = await lastNameField.isVisible( { timeout: 3_000 } ).catch( () => false );
-
-	if ( ! isVisible ) {
-		// Address is shown in summary mode — click Edit to expand the form.
-		const editBtn = page.locator( '.wc-block-components-address-card__edit, button' )
-			.filter( { hasText: /^Edit$/i } ).first();
-		const hasEdit = await editBtn.isVisible( { timeout: 3_000 } ).catch( () => false );
-		if ( hasEdit ) {
-			await editBtn.click();
-			await page.waitForSelector( '#billing-last_name:visible', { timeout: 10_000 } ).catch( () => {} );
-		} else {
-			// No edit button found and fields are hidden — address may already be
-			// correct from a previous run; skip filling.
-			return;
-		}
-	}
-
-	const countryEl = page.locator( '#billing-country' );
-	if ( await countryEl.count() > 0 ) {
-		const val = await countryEl.inputValue().catch( () => '' );
-		if ( val !== 'JP' ) { await countryEl.selectOption( 'JP' ).catch( () => {} ); await page.waitForTimeout( 800 ); }
-	}
-
-	// Fill text fields BEFORE selecting state to avoid the WC API response
-	// (triggered by state change) resetting them.
-	await page.locator( '#billing-last_name'  ).fill( '太郎' );
-	await page.locator( '#billing-first_name' ).fill( 'テスト' ).catch( () => {} );
-	await page.locator( '#email'              ).fill( MEMBER.email );
-	await page.locator( '#billing-phone'      ).fill( '0312345678' ).catch( () => {} );
-	await page.locator( '#billing-postcode'  ).fill( '1000001' );
-	await page.locator( '#billing-address_1' ).fill( '千代田区1-1-1' );
-	await page.locator( '#billing-city'      ).fill( '東京都' );
-
-	// Select prefecture LAST. WC JP state code for Tokyo is 'JP13'.
-	await page.locator( '#billing-state' ).selectOption( 'JP13' )
-		.catch( () => page.locator( '#billing-state' ).selectOption( { label: 'Tokyo' } ).catch( () => {} ) );
-
-	// Brief pause for the state-change API response, then re-fill if reset.
-	await page.waitForTimeout( 1_500 );
-	const lastNameCurrent = await page.locator( '#billing-last_name' ).inputValue().catch( () => '' );
-	if ( ! lastNameCurrent ) {
-		await page.locator( '#billing-last_name'  ).fill( '太郎' );
-		await page.locator( '#billing-first_name' ).fill( 'テスト' ).catch( () => {} );
-		await page.locator( '#email'              ).fill( MEMBER.email );
-		await page.locator( '#billing-phone'      ).fill( '0312345678' ).catch( () => {} );
-		await page.locator( '#billing-postcode'  ).fill( '1000001' );
-		await page.locator( '#billing-address_1' ).fill( '千代田区1-1-1' );
-		await page.locator( '#billing-city'      ).fill( '東京都' );
-	}
+async function goToCcBlockCheckout( page, pid = productId ) {
+	await routePaygentTokenJs( page, cachedPaygentTokenJs );
+	await goToBlockCheckout( page, blockCheckoutUrl, pid );
+	return waitForPaygentToken( page );
 }
 
 async function selectPaygentCCBlock( page ) {
-	const radio = page.locator( 'input[value="paygent_cc"], input[id*="paygent_cc"]' ).first();
-	if ( await radio.count() > 0 ) {
-		if ( ! await radio.isChecked().catch( () => false ) ) {
-			const label = page.locator( `label[for="${ await radio.getAttribute( 'id' ) }"]` )
-				.or( page.locator( '.wc-block-components-radio-control label' )
-					.filter( { hasText: /クレジットカード|Credit Card/i } ).first() );
-			await label.first().click().catch( async () => radio.check( { force: true } ) );
-		}
-	} else {
-		await page.locator( '.wc-block-components-radio-control label' )
-			.filter( { hasText: /クレジットカード|Credit Card/i } ).first().click();
-	}
+	await selectPaymentMethodBlock( page, 'paygent_cc', /クレジットカード|Credit Card/i );
 	// When saved cards exist the stored-card CVC field appears instead of #paygent-cc-number.
 	await expect(
 		page.locator( '#paygent-cc-number, #paygent-cc-stored-cvc' ).first()
@@ -218,13 +128,38 @@ async function fillNewCardBlock( page, cardNumber = CARD.OK ) {
 	await page.locator( '#paygent-cc-cvc'    ).fill( '123' );
 }
 
-async function placeOrderBlock( page ) {
-	const btn = page.locator(
-		'.wc-block-components-checkout-place-order-button, ' +
-		'.wp-block-woocommerce-checkout-actions-block button[type="submit"]'
-	).first();
-	await expect( btn ).toBeVisible( { timeout: 10_000 } );
-	await btn.click();
+/**
+ * Place the order and wait for the thank-you page.
+ * Environment-level sandbox rejections (unregistered source IP / connection
+ * failure) skip the test instead of failing it — real payment errors still
+ * fail with the notice text.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<string>} Order ID ('' when the test was skipped).
+ */
+async function placeOrderAndAwaitThankyou( page ) {
+	await placeOrderBlock( page );
+
+	const outcome = await raceOutcome( [
+		[ 'completed', page.waitForURL( /order-received/, { timeout: 90_000 } ) ],
+		[ 'error',     blockCheckoutErrorNotice( page ).waitFor( { state: 'visible', timeout: 60_000 } ) ],
+	], 90_000 );
+
+	if ( outcome === 'error' ) {
+		const message = ( await blockCheckoutErrorNotice( page ).textContent().catch( () => '' ) )?.trim() || '';
+		if ( /P01[56]|IPアドレス/.test( message ) ) {
+			test.skip( true, `Sandbox unreachable from this environment: ${ message }` );
+			return '';
+		}
+		throw new Error( `Block CC checkout failed with notice: ${ message }` );
+	}
+	if ( outcome === 'timeout' ) {
+		throw new Error( 'Block CC checkout did not reach order-received in time' );
+	}
+
+	const orderId = page.url().match( /order-received\/(\d+)/ )?.[1] || '';
+	expect( orderId ).toBeTruthy();
+	return orderId;
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -241,10 +176,10 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 	test( 'F-1: Member completes Block checkout with new card + save card checked', async ( { page, baseURL } ) => {
 		if ( ! productId ) test.skip( true, 'Test product not found' );
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: MEMBER.email } );
 		await selectPaygentCCBlock( page );
 
 		// WooCommerce Blocks renders the save card checkbox when showSaveOption: true.
@@ -267,15 +202,10 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 		}
 
 		await fillNewCardBlock( page );
-		await placeOrderBlock( page );
-		await page.waitForURL( /order-received/, { timeout: 90_000 } );
-
-		const orderId = page.url().match( /order-received\/(\d+)/ )?.[1];
-		expect( orderId ).toBeTruthy();
-		if ( orderId ) {
-			createdOrderIds.push( orderId );
-			savedOrderId = orderId;
-		}
+		const orderId = await placeOrderAndAwaitThankyou( page );
+		if ( ! orderId ) return;
+		createdOrderIds.push( orderId );
+		savedOrderId = orderId;
 
 		// Verify WC Payment Token was created when checkbox was visible and checked.
 		const memberId = wpCli( `user get ${ MEMBER.login } --field=ID` ).trim();
@@ -306,10 +236,10 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 			return;
 		}
 
-		const tokenReady = await goToBlockCheckout( page );
+		const tokenReady = await goToCcBlockCheckout( page );
 		if ( ! tokenReady ) test.skip( true, 'sandbox.paygent.co.jp unreachable' );
 
-		await fillBillingBlock( page );
+		await fillBillingBlock( page, { email: MEMBER.email } );
 
 		// Saved cards are rendered natively by WC Blocks as top-level radio
 		// options (wc-saved-payment-method-token-paygent_cc). Select the first
@@ -331,12 +261,9 @@ test.describe( 'Block-CC F: Saved card (保存カード)', () => {
 		// SavedTokenForm renders below the selected token; enter the CVC.
 		await page.locator( '#paygent_cc-saved-token-cvc' ).fill( '123' );
 
-		await placeOrderBlock( page );
-		await page.waitForURL( /order-received/, { timeout: 90_000 } );
-
-		const orderId = page.url().match( /order-received\/(\d+)/ )?.[1];
-		expect( orderId ).toBeTruthy();
-		if ( orderId ) createdOrderIds.push( orderId );
+		const orderId = await placeOrderAndAwaitThankyou( page );
+		if ( ! orderId ) return;
+		createdOrderIds.push( orderId );
 
 		// Verify the order used a stored card: _paygent_customer_card_id should be set.
 		const customerCardId = wpCli( `eval "echo wc_get_order(${ orderId })->get_meta('_paygent_customer_card_id');"` ).trim();
