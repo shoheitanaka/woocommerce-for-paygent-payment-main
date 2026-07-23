@@ -95,6 +95,11 @@ function waitForPaygentToken(page) {
  * Fill the Block checkout billing fields.
  * WooCommerce Block checkout uses id="billing-first_name" etc.
  *
+ * For logged-in members with a saved address, WC Blocks collapses the form
+ * into an address summary card — in that case the "Edit" button is clicked
+ * first to expand the fields. When no fields and no Edit button are present
+ * the saved address is reused as-is and filling is skipped.
+ *
  * @param {import('@playwright/test').Page} page
  * @param {{ email?: string, lastNameOverride?: string }} [opts]
  */
@@ -102,6 +107,19 @@ async function fillBillingBlock(page, opts = {}) {
 	const email     = opts.email || 'block-e2e@example.com';
 	const lastName  = opts.lastNameOverride || '太郎';
 	const firstName = opts.lastNameOverride ? '' : 'テスト';
+
+	const lastNameVisible = await page.locator('#billing-last_name')
+		.isVisible({ timeout: 3_000 }).catch(() => false);
+	if (!lastNameVisible) {
+		const editBtn = page.locator('.wc-block-components-address-card__edit, button')
+			.filter({ hasText: /^Edit$/i }).first();
+		if (await editBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
+			await editBtn.click();
+			await page.waitForSelector('#billing-last_name:visible', { timeout: 10_000 }).catch(() => {});
+		} else {
+			return;
+		}
+	}
 
 	const countryEl = page.locator('#billing-country');
 	if (await countryEl.count() > 0) {
@@ -211,11 +229,29 @@ function blockCheckoutErrorNotice(page) {
  */
 function raceOutcome(entries, timeoutMs) {
 	const never = new Promise(() => {});
-	const timer = new Promise((resolve) => setTimeout(() => resolve('timeout'), timeoutMs));
+	/** @type {NodeJS.Timeout} */
+	let timerId;
+	const timer = new Promise((resolve) => {
+		timerId = setTimeout(() => resolve('timeout'), timeoutMs);
+		timerId.unref?.();
+	});
 	return Promise.race([
 		...entries.map(([tag, promise]) => promise.then(() => tag, () => never)),
 		timer,
-	]);
+	]).finally(() => clearTimeout(timerId));
+}
+
+/**
+ * Predicate for page.waitForURL: true once the browser has left the site
+ * under test. The host is derived from baseURL instead of assuming
+ * localhost, so it also works when E2E_BASE_URL points elsewhere.
+ *
+ * @param {string} baseURL
+ * @returns {(url: URL) => boolean}
+ */
+function leftBaseHost(baseURL) {
+	const baseHost = new URL(baseURL).host;
+	return (url) => url.host !== '' && url.host !== baseHost;
 }
 
 module.exports = {
@@ -228,4 +264,5 @@ module.exports = {
 	placeOrderBlock,
 	blockCheckoutErrorNotice,
 	raceOutcome,
+	leftBaseHost,
 };

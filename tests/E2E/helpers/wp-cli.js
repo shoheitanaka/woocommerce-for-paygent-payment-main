@@ -172,6 +172,10 @@ function restoreGatewaySettings(gatewayId, snapshot) {
  * Snapshot a plain WordPress option value so it can be restored later.
  * Returns null when the option does not exist.
  *
+ * ⚠ Scalar options only (e.g. 'wc-paygent-cs' = 'yes'/'1'). Array/serialized
+ * options would be flattened to their pretty-printed string on restore —
+ * use getGatewaySettings()/restoreGatewaySettings() for settings arrays.
+ *
  * @param {string} name
  * @returns {string | null}
  */
@@ -186,7 +190,8 @@ function snapshotWpOption(name) {
 
 /**
  * Restore a plain WordPress option from a snapshotWpOption() value.
- * A null snapshot deletes the option.
+ * A null snapshot deletes the option. Scalar options only — see
+ * snapshotWpOption().
  *
  * @param {string} name
  * @param {string | null} snapshot

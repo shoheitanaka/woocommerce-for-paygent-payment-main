@@ -17,6 +17,7 @@ const {
 	placeOrderBlock,
 	blockCheckoutErrorNotice,
 	raceOutcome,
+	leftBaseHost,
 } = require('./helpers/block-checkout');
 
 /**
@@ -51,6 +52,11 @@ const {
 const REQUIRED_ENV = ['PAYGENT_TEST_MID', 'PAYGENT_TEST_CID', 'PAYGENT_TEST_CPASS'];
 
 const MB_LABEL = /キャリア|Carrier|Mobile/i;
+
+// Billing email used by every order this spec places — the afterAll cleanup
+// deletes pending MB orders by this address only, so manually created test
+// orders are left untouched.
+const MB_EMAIL = 'block-mb-e2e@example.com';
 
 const CARRIERS = [
 	{ id: '04', name: 'au (au Easy Payment)' },
@@ -104,12 +110,13 @@ test.afterAll(async () => {
 	wpCli(`cache flush`);
 
 	// Redirect tests leave pending paygent_mb orders behind (the external
-	// carrier page is never completed) — delete them all.
+	// carrier page is never completed). Delete only the ones this spec
+	// created, identified by the MB_EMAIL billing address.
 	wpCli(
 		`eval "` +
-		`\\$ids = wc_get_orders(array('limit'=>-1,'payment_method'=>'paygent_mb','status'=>'pending','return'=>'ids'));` +
+		`\\$ids = wc_get_orders(array('limit'=>-1,'payment_method'=>'paygent_mb','status'=>'pending','billing_email'=>'${MB_EMAIL}','return'=>'ids'));` +
 		`foreach (\\$ids as \\$id) { \\$o = wc_get_order(\\$id); if (\\$o) { \\$o->delete(true); } }` +
-		`echo count(\\$ids) . ' pending MB orders deleted.';` +
+		`echo count(\\$ids) . ' pending MB test orders deleted.';` +
 		`"`
 	);
 });
@@ -158,11 +165,12 @@ test.describe('Block-MB A: Carrier redirect (career_type transmission)', () => {
 	test.beforeEach(requireSandboxCredentials);
 
 	for (const carrier of CARRIERS) {
-		test(`A-${carrier.id}: ${carrier.name} checkout redirects to the carrier page`, async ({ page }) => {
+		test(`A-${carrier.id}: ${carrier.name} checkout redirects to the carrier page`, async ({ page, baseURL }) => {
 			if (!productId) test.skip(true, 'Test product not found');
+			const isExternal = leftBaseHost(String(baseURL));
 
 			await goToBlockCheckout(page, blockCheckoutUrl, productId);
-			await fillBillingBlock(page, { email: 'block-mb-e2e@example.com' });
+			await fillBillingBlock(page, { email: MB_EMAIL });
 			await selectPaygentMBBlock(page);
 			await page.locator('#paygent-mb-carrier').selectOption(carrier.id);
 
@@ -174,7 +182,7 @@ test.describe('Block-MB A: Carrier redirect (career_type transmission)', () => {
 			//   error     — sandbox rejected the telegram (carrier option not
 			//               contracted for this merchant) → skip, not fail
 			const outcome = await raceOutcome([
-				['external', page.waitForURL((url) => !url.href.includes('localhost'), { timeout: 180_000 })],
+				['external', page.waitForURL(isExternal, { timeout: 180_000 })],
 				['receipt',  page.waitForURL(/order-pay/, { timeout: 120_000 })],
 				['error',    blockCheckoutErrorNotice(page).waitFor({ state: 'visible', timeout: 120_000 })],
 			], 180_000);
@@ -192,7 +200,7 @@ test.describe('Block-MB A: Carrier redirect (career_type transmission)', () => {
 			if (outcome === 'receipt') {
 				// The order-pay page renders the stored redirect_html which
 				// auto-submits to the external carrier page.
-				const external = await page.waitForURL((url) => !url.href.includes('localhost'), { timeout: 120_000 })
+				const external = await page.waitForURL(isExternal, { timeout: 120_000 })
 					.then(() => true).catch(() => false);
 				if (!external) {
 					test.skip(true, `Carrier ${carrier.id} redirect_html did not leave the local site (external page unreachable)`);
@@ -201,7 +209,7 @@ test.describe('Block-MB A: Carrier redirect (career_type transmission)', () => {
 			}
 
 			// Redirect confirmed — the telegram carrying career_type was accepted.
-			expect(page.url()).not.toContain('localhost');
+			expect(isExternal(new URL(page.url()))).toBe(true);
 			console.log(`  [block-mb] carrier ${carrier.id} redirect URL:`, page.url());
 		});
 	}

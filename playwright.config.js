@@ -27,9 +27,11 @@ module.exports = defineConfig({
 	timeout: 120_000,
 
 	/* Maximum time for the whole test run.
-	 * Sandbox tests (E-3 card deletion, PayPay redirect) can take several minutes each.
-	 * CI keeps the tighter limit; local runs get more headroom. */
-	globalTimeout: process.env.CI ? 600_000 : 1_200_000,
+	 * Sandbox tests (E-3 card deletion, PayPay redirect, MB carrier redirects
+	 * at up to 180s each) can take several minutes apiece, and the full
+	 * e2e-guest suite now spans 6 spec files. CI keeps the tighter limit;
+	 * local runs get more headroom. */
+	globalTimeout: process.env.CI ? 600_000 : 1_800_000,
 
 	/* Retry failed tests once in CI. */
 	retries: process.env.CI ? 1 : 0,
