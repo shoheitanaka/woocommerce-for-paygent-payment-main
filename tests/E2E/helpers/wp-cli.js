@@ -128,6 +128,78 @@ function restorePaygentCcSettings(snapshot) {
 }
 
 /**
+ * Read a gateway's WooCommerce settings option as an object.
+ * e.g. gatewayId 'paygent_cs' → option 'woocommerce_paygent_cs_settings'.
+ *
+ * @param {string} gatewayId
+ * @returns {Record<string, any>}
+ */
+function getGatewaySettings(gatewayId) {
+	const raw = wpCli(`option get woocommerce_${gatewayId}_settings --format=json`);
+	try {
+		return JSON.parse(raw) || {};
+	} catch {
+		return {};
+	}
+}
+
+/**
+ * Merge partial settings into a gateway's settings option and save.
+ * Preserves all existing keys; only the provided keys are updated.
+ *
+ * @param {string} gatewayId
+ * @param {Record<string, any>} overrides
+ */
+function updateGatewaySettings(gatewayId, overrides) {
+	const current = getGatewaySettings(gatewayId);
+	const merged  = { ...current, ...overrides };
+	const json    = JSON.stringify(merged).replace(/'/g, "'\\''");
+	wpCli(`option update woocommerce_${gatewayId}_settings --format=json '${json}'`);
+}
+
+/**
+ * Restore a gateway settings snapshot (from getGatewaySettings).
+ *
+ * @param {string} gatewayId
+ * @param {Record<string, any>} snapshot
+ */
+function restoreGatewaySettings(gatewayId, snapshot) {
+	const json = JSON.stringify(snapshot || {}).replace(/'/g, "'\\''");
+	wpCli(`option update woocommerce_${gatewayId}_settings --format=json '${json}'`);
+}
+
+/**
+ * Snapshot a plain WordPress option value so it can be restored later.
+ * Returns null when the option does not exist.
+ *
+ * @param {string} name
+ * @returns {string | null}
+ */
+function snapshotWpOption(name) {
+	const out = wpCli(`option get ${name}`, { throws: false });
+	// `option get` on a missing option exits non-zero → wpCli returns ''.
+	// Distinguish "missing" from "empty string value" via option list.
+	if (out !== '') return out;
+	const exists = wpCli(`option list --search=${name} --fields=option_name --format=csv`);
+	return exists.includes(name) ? '' : null;
+}
+
+/**
+ * Restore a plain WordPress option from a snapshotWpOption() value.
+ * A null snapshot deletes the option.
+ *
+ * @param {string} name
+ * @param {string | null} snapshot
+ */
+function restoreWpOption(name, snapshot) {
+	if (snapshot === null) {
+		wpCli(`option delete ${name}`);
+	} else {
+		wpCli(`option update ${name} '${String(snapshot).replace(/'/g, "'\\''")}'`);
+	}
+}
+
+/**
  * Create (or find) a Block checkout page and set it as the WooCommerce checkout page.
  * Returns { pageId, blockCheckoutUrl, originalCheckoutPageId } for later restoration.
  *
@@ -213,6 +285,11 @@ module.exports = {
 	enableTds2,
 	disableTds2,
 	restorePaygentCcSettings,
+	getGatewaySettings,
+	updateGatewaySettings,
+	restoreGatewaySettings,
+	snapshotWpOption,
+	restoreWpOption,
 	setupBlockCheckoutPage,
 	teardownBlockCheckoutPage,
 };
