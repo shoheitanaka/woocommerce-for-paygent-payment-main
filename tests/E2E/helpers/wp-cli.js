@@ -201,14 +201,38 @@ function updateGatewaySettings(gatewayId, overrides) {
 }
 
 /**
- * Restore a gateway settings snapshot (from getGatewaySettings).
+ * Snapshot a gateway settings option for later restoration via
+ * restoreGatewaySettings(). Returns null when the option does not exist
+ * yet — distinct from an existing-but-empty settings array — so a
+ * previously-missing option is restored to "missing" instead of "present
+ * but empty". A leftover empty option would change runtime behavior:
+ * WooCommerce only falls back to form-field defaults when the option is
+ * entirely absent (see seedGatewayDefaultSettings), so the next test run
+ * seeing an empty-but-present option would skip seeding again.
  *
  * @param {string} gatewayId
- * @param {Record<string, any>} snapshot
+ * @returns {Record<string, any> | null}
+ */
+function snapshotGatewaySettings(gatewayId) {
+	if (snapshotWpOption(`woocommerce_${gatewayId}_settings`) === null) return null;
+	return getGatewaySettings(gatewayId);
+}
+
+/**
+ * Restore a gateway settings snapshot (from snapshotGatewaySettings). A
+ * null snapshot deletes the option rather than writing it back empty.
+ *
+ * @param {string} gatewayId
+ * @param {Record<string, any> | null} snapshot
  */
 function restoreGatewaySettings(gatewayId, snapshot) {
-	const json = JSON.stringify(snapshot || {}).replace(/'/g, "'\\''");
-	wpCli(`option update woocommerce_${gatewayId}_settings --format=json '${json}'`);
+	const optionName = `woocommerce_${gatewayId}_settings`;
+	if (snapshot === null || snapshot === undefined) {
+		wpCli(`option delete ${optionName}`);
+		return;
+	}
+	const json = JSON.stringify(snapshot).replace(/'/g, "'\\''");
+	wpCli(`option update ${optionName} --format=json '${json}'`);
 }
 
 /**
@@ -336,6 +360,7 @@ module.exports = {
 	disableTds2,
 	restorePaygentCcSettings,
 	getGatewaySettings,
+	snapshotGatewaySettings,
 	seedGatewayDefaultSettings,
 	updateGatewaySettings,
 	restoreGatewaySettings,

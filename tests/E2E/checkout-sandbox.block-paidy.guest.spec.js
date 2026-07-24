@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 const {
 	wpCli,
-	getGatewaySettings,
+	snapshotGatewaySettings,
 	restoreGatewaySettings,
 	updateGatewaySettings,
 	snapshotWpOption,
@@ -53,8 +53,8 @@ let blockPageId = '';
 let originalCheckoutPageId = '';
 /** @type {string | null} */
 let paidyOptionSnapshot = null;
-/** @type {Record<string, any>} */
-let paidySettingsSnapshot = {};
+/** @type {Record<string, any> | null} */
+let paidySettingsSnapshot = null;
 /** @type {string[]} */
 const createdOrderIds = [];
 
@@ -68,7 +68,7 @@ test.beforeAll(async ({ baseURL }) => {
 
 	// Enable the Paidy gateway; inject the sandbox public key when provided.
 	paidyOptionSnapshot   = snapshotWpOption('wc-paygent-paidy');
-	paidySettingsSnapshot = getGatewaySettings('paygent_paidy');
+	paidySettingsSnapshot = snapshotGatewaySettings('paygent_paidy');
 	wpCli(`option update wc-paygent-paidy yes`);
 	updateGatewaySettings('paygent_paidy', {
 		enabled: 'yes',

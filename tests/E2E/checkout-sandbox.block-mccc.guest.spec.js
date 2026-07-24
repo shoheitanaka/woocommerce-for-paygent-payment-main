@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 const {
 	wpCli,
-	getGatewaySettings,
+	snapshotGatewaySettings,
 	restoreGatewaySettings,
 	updateGatewaySettings,
 	snapshotWpOption,
@@ -71,8 +71,8 @@ let blockPageId = '';
 let originalCheckoutPageId = '';
 /** @type {string | null} */
 let mcccOptionSnapshot = null;
-/** @type {Record<string, any>} */
-let mcccSettingsSnapshot = {};
+/** @type {Record<string, any> | null} */
+let mcccSettingsSnapshot = null;
 /** @type {string} */
 let originalCurrency = '';
 /** @type {string} */
@@ -94,7 +94,7 @@ test.beforeAll(async ({ baseURL }) => {
 
 	// Enable the MCCC gateway.
 	mcccOptionSnapshot   = snapshotWpOption('wc-paygent-mccc');
-	mcccSettingsSnapshot = getGatewaySettings('paygent_mccc');
+	mcccSettingsSnapshot = snapshotGatewaySettings('paygent_mccc');
 	wpCli(`option update wc-paygent-mccc yes`);
 	updateGatewaySettings('paygent_mccc', { enabled: 'yes' });
 	wpCli(`cache flush`);

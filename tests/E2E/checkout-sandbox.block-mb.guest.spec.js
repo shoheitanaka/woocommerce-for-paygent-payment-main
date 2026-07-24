@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 const {
 	wpCli,
-	getGatewaySettings,
+	snapshotGatewaySettings,
 	restoreGatewaySettings,
 	updateGatewaySettings,
 	snapshotWpOption,
@@ -75,8 +75,8 @@ let blockPageId = '';
 let originalCheckoutPageId = '';
 /** @type {string | null} */
 let mbOptionSnapshot = null;
-/** @type {Record<string, any>} */
-let mbSettingsSnapshot = {};
+/** @type {Record<string, any> | null} */
+let mbSettingsSnapshot = null;
 
 // ─── setup / teardown ─────────────────────────────────────────────────────────
 
@@ -88,7 +88,7 @@ test.beforeAll(async ({ baseURL }) => {
 
 	// Enable the MB gateway with all three carriers.
 	mbOptionSnapshot   = snapshotWpOption('wc-paygent-mb');
-	mbSettingsSnapshot = getGatewaySettings('paygent_mb');
+	mbSettingsSnapshot = snapshotGatewaySettings('paygent_mb');
 	wpCli(`option update wc-paygent-mb yes`);
 	updateGatewaySettings('paygent_mb', {
 		enabled:       'yes',

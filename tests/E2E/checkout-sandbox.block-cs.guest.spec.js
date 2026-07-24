@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 const {
 	wpCli,
-	getGatewaySettings,
+	snapshotGatewaySettings,
 	restoreGatewaySettings,
 	updateGatewaySettings,
 	snapshotWpOption,
@@ -62,8 +62,8 @@ let blockPageId = '';
 let originalCheckoutPageId = '';
 /** @type {string | null} */
 let csOptionSnapshot = null;
-/** @type {Record<string, any>} */
-let csSettingsSnapshot = {};
+/** @type {Record<string, any> | null} */
+let csSettingsSnapshot = null;
 /** @type {string[]} */
 const createdOrderIds = [];
 
@@ -78,7 +78,7 @@ test.beforeAll(async ({ baseURL }) => {
 
 	// Enable the CS gateway (registration option + WC gateway settings).
 	csOptionSnapshot   = snapshotWpOption('wc-paygent-cs');
-	csSettingsSnapshot = getGatewaySettings('paygent_cs');
+	csSettingsSnapshot = snapshotGatewaySettings('paygent_cs');
 	wpCli(`option update wc-paygent-cs yes`);
 	updateGatewaySettings('paygent_cs', {
 		enabled:        'yes',
