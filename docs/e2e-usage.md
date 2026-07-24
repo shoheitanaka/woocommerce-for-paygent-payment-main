@@ -159,7 +159,7 @@ Branch 3（`feature/block-cs-mb-paidy`）で以下のゲートウェイが Block
 |---------------|-----------|---------|
 | `checkout-sandbox.block-cs.guest.spec.js` | `npm run e2e:block-cs` | 店舗選択 → 電文 030 → 注文完了 → サンクスページの支払い番号表示・`_paygent_cvs_id` メタ検証 |
 | `checkout-sandbox.block-mb.guest.spec.js` | `npm run e2e:block-mb` | キャリア選択（au/docomo/SoftBank）→ 電文 100/104 → 外部キャリア画面へのリダイレクトまで |
-| `checkout-sandbox.block-paidy.guest.spec.js` | `npm run e2e:block-paidy` | 注文 → order-pay ページ → Paidy モーダル起動まで（`PAYGENT_TEST_PAIDY_PUBKEY` が必要） |
+| `checkout-sandbox.block-paidy.guest.spec.js` | `npm run e2e:block-paidy` | 注文 → order-pay ページのリダイレクトまで。`PAYGENT_TEST_PAIDY_PUBKEY` 設定時は Paidy モーダル起動まで検証 |
 | `checkout-sandbox.block-mccc.guest.spec.js` | `npm run e2e:block-mccc` | 新規カードトークン決済の完了まで（電文 180）。**通貨を一時的に USD に切替**して実行 |
 
 ### サンドボックス制約による skip
