@@ -217,9 +217,11 @@ function snapshotWpOption(name) {
 	const out = wpCli(`option get ${name}`, { throws: false });
 	// `option get` on a missing option exits non-zero → wpCli returns ''.
 	// Distinguish "missing" from "empty string value" via option list.
+	// --search without wildcards is an exact match, but compare whole CSV
+	// lines anyway so a substring can never be mistaken for existence.
 	if (out !== '') return out;
 	const exists = wpCli(`option list --search=${name} --fields=option_name --format=csv`);
-	return exists.includes(name) ? '' : null;
+	return exists.split('\n').some((line) => line.trim() === name) ? '' : null;
 }
 
 /**
