@@ -185,6 +185,15 @@ function updateGatewaySettings(gatewayId, overrides) {
 	if (Object.keys(current).length === 0) {
 		seedGatewayDefaultSettings(gatewayId);
 		current = getGatewaySettings(gatewayId);
+		if (Object.keys(current).length === 0) {
+			// Writing only the overrides would leave every other gateway
+			// property null — the exact problem seeding exists to prevent.
+			throw new Error(
+				`updateGatewaySettings: could not seed defaults for "${gatewayId}" — ` +
+				`the gateway is not registered. Set its wc-paygent-* registration ` +
+				`option (e.g. "option update wc-paygent-cs yes") before calling.`
+			);
+		}
 	}
 	const merged = { ...current, ...overrides };
 	const json   = JSON.stringify(merged).replace(/'/g, "'\\''");
