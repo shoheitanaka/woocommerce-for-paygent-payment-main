@@ -29,9 +29,9 @@ module.exports = defineConfig({
 	/* Maximum time for the whole test run.
 	 * Sandbox tests (E-3 card deletion, PayPay redirect, MB carrier redirects
 	 * at up to 180s each) can take several minutes apiece, and the full
-	 * e2e-guest suite now spans 6 spec files. CI keeps the tighter limit;
-	 * local runs get more headroom. */
-	globalTimeout: process.env.CI ? 600_000 : 1_800_000,
+	 * e2e-guest suite now spans 6 spec files — the MB spec alone can consume
+	 * ~600s in worst-case waits, so the CI budget must exceed that. */
+	globalTimeout: process.env.CI ? 1_200_000 : 1_800_000,
 
 	/* Retry failed tests once in CI. */
 	retries: process.env.CI ? 1 : 0,

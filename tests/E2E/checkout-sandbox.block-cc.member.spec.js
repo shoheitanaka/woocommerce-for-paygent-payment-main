@@ -18,6 +18,7 @@ const {
 	placeOrderBlock,
 	blockCheckoutErrorNotice,
 	raceOutcome,
+	SANDBOX_ENV_ERROR,
 } = require('./helpers/block-checkout');
 
 /**
@@ -148,7 +149,7 @@ async function placeOrderAndAwaitThankyou( page ) {
 
 	if ( outcome === 'error' ) {
 		const message = ( await blockCheckoutErrorNotice( page ).textContent().catch( () => '' ) )?.trim() || '';
-		if ( /P01[56]|IPアドレス/.test( message ) ) {
+		if ( SANDBOX_ENV_ERROR.test( message ) ) {
 			test.skip( true, `Sandbox unreachable from this environment: ${ message }` );
 			return '';
 		}

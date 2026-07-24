@@ -18,6 +18,9 @@ const {
 	fillBillingBlock,
 	selectPaymentMethodBlock,
 	placeOrderBlock,
+	blockCheckoutErrorNotice,
+	raceOutcome,
+	SANDBOX_ENV_ERROR,
 } = require('./helpers/block-checkout');
 
 /**
@@ -158,6 +161,41 @@ async function fillCardFormBlock( page, cardNumber = CARD.OK ) {
 	await page.locator( '#paygent-cc-cvc'     ).fill( '123' );
 }
 
+/**
+ * Place the order and wait for the thank-you page.
+ * Environment-level sandbox rejections (unregistered source IP, connection
+ * failure, option not contracted) skip the test instead of failing it —
+ * real payment errors still fail with the notice text.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<string>} Order ID ('' when the test was skipped).
+ */
+async function placeOrderAndAwaitThankyou( page ) {
+	await placeOrderBlock( page );
+
+	const outcome = await raceOutcome( [
+		[ 'completed', page.waitForURL( /order-received/, { timeout: 90_000 } ) ],
+		[ 'error',     blockCheckoutErrorNotice( page ).waitFor( { state: 'visible', timeout: 60_000 } ) ],
+	], 90_000 );
+
+	if ( outcome === 'error' ) {
+		const message = ( await blockCheckoutErrorNotice( page ).textContent().catch( () => '' ) )?.trim() || '';
+		if ( SANDBOX_ENV_ERROR.test( message ) ) {
+			test.skip( true, `Sandbox constraint (contract/IP): ${ message }` );
+			return '';
+		}
+		throw new Error( `Block CC checkout failed with notice: ${ message }` );
+	}
+	if ( outcome === 'timeout' ) {
+		throw new Error( 'Block CC checkout did not reach order-received in time' );
+	}
+
+	const orderId = page.url().match( /order-received\/(\d+)/ )?.[1] || '';
+	expect( orderId ).toBeTruthy();
+	if ( orderId ) createdOrderIds.push( orderId );
+	return orderId;
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // Smoke: Block checkout page renders CC gateway
 // ═════════════════════════════════════════════════════════════════════════════
@@ -200,12 +238,8 @@ test.describe( 'Block-CC A: Standard checkout (3DS disabled)', () => {
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.OK );
 
-		await placeOrderBlock( page );
-		await page.waitForURL( /order-received/, { timeout: 90_000 } );
-
-		const orderId = page.url().match( /order-received\/(\d+)/ )?.[1];
-		expect( orderId ).toBeTruthy();
-		if ( orderId ) createdOrderIds.push( orderId );
+		const orderId = await placeOrderAndAwaitThankyou( page );
+		if ( ! orderId ) return;
 
 		await expect(
 			page.locator( '.wc-block-order-confirmation-status, .woocommerce-thankyou-order-received, h2' ).first()
@@ -393,12 +427,8 @@ test.describe( 'Block-CC D: Admin partial refund', () => {
 		await fillBillingBlock( page, { email: CC_EMAIL } );
 		await selectPaygentCCBlock( page );
 		await fillCardFormBlock( page, CARD.OK );
-		await placeOrderBlock( page );
-		await page.waitForURL( /order-received/, { timeout: 90_000 } );
-
-		const orderId = page.url().match( /order-received\/(\d+)/ )?.[1];
-		if ( ! orderId ) { test.skip( true, 'Could not capture order ID' ); return; }
-		createdOrderIds.push( orderId );
+		const orderId = await placeOrderAndAwaitThankyou( page );
+		if ( ! orderId ) return;
 
 		// Step 2: Log in to admin.
 		await page.goto( `${ baseURL }/wp-login.php` );
@@ -472,13 +502,8 @@ test.describe( 'Block-CC E: Installment payment (分割払い)', () => {
 		await expect( paymentSelect ).toBeVisible( { timeout: 10_000 } );
 		await paymentSelect.selectOption( '3' ); // 3-installment value
 
-		await placeOrderBlock( page );
-		await page.waitForURL( /order-received/, { timeout: 90_000 } );
-
-		const orderId = page.url().match( /order-received\/(\d+)/ )?.[1];
-		expect( orderId ).toBeTruthy();
+		const orderId = await placeOrderAndAwaitThankyou( page );
 		if ( ! orderId ) return;
-		createdOrderIds.push( orderId );
 
 		// Verify order meta: PHP stores _payment_class=61 and _split_count=3.
 		const paymentClass = wpCli( `eval "echo wc_get_order(${ orderId })->get_meta('_payment_class');"` ).trim();
@@ -501,13 +526,8 @@ test.describe( 'Block-CC E: Installment payment (分割払い)', () => {
 		await expect( paymentSelect ).toBeVisible( { timeout: 10_000 } );
 		await paymentSelect.selectOption( '6' );
 
-		await placeOrderBlock( page );
-		await page.waitForURL( /order-received/, { timeout: 90_000 } );
-
-		const orderId = page.url().match( /order-received\/(\d+)/ )?.[1];
-		expect( orderId ).toBeTruthy();
+		const orderId = await placeOrderAndAwaitThankyou( page );
 		if ( ! orderId ) return;
-		createdOrderIds.push( orderId );
 
 		const paymentClass = wpCli( `eval "echo wc_get_order(${ orderId })->get_meta('_payment_class');"` ).trim();
 		const splitCount   = wpCli( `eval "echo wc_get_order(${ orderId })->get_meta('_split_count');"` ).trim();

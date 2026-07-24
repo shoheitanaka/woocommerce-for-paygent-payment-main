@@ -20,6 +20,7 @@ const {
 	placeOrderBlock,
 	blockCheckoutErrorNotice,
 	raceOutcome,
+	SANDBOX_ENV_ERROR,
 } = require('./helpers/block-checkout');
 
 /**
@@ -199,9 +200,14 @@ test.describe('Block-MCCC A: New-card token checkout (telegram 180)', () => {
 		], 90_000);
 
 		if (outcome === 'error') {
-			const message = await blockCheckoutErrorNotice(page).textContent().catch(() => '');
-			test.skip(true, `Sandbox rejected telegram 180 (multi-currency option not contracted?): ${message?.trim()}`);
-			return;
+			const message = (await blockCheckoutErrorNotice(page).textContent().catch(() => ''))?.trim() || '';
+			// Only environment/contract rejections skip — anything else (e.g.
+			// missing token POST keys, validation errors) is a real regression.
+			if (SANDBOX_ENV_ERROR.test(message)) {
+				test.skip(true, `Sandbox constraint (contract/IP): ${message}`);
+				return;
+			}
+			throw new Error(`MCCC checkout failed with notice: ${message}`);
 		}
 		if (outcome === 'timeout') {
 			test.skip(true, 'MCCC checkout did not complete in time');

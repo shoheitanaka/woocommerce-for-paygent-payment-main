@@ -18,6 +18,7 @@ const {
 	blockCheckoutErrorNotice,
 	raceOutcome,
 	leftBaseHost,
+	SANDBOX_ENV_ERROR,
 } = require('./helpers/block-checkout');
 
 /**
@@ -110,13 +111,14 @@ test.afterAll(async () => {
 	wpCli(`cache flush`);
 
 	// Redirect tests leave pending paygent_mb orders behind (the external
-	// carrier page is never completed). Delete only the ones this spec
-	// created, identified by the MB_EMAIL billing address.
+	// carrier page is never completed) and rejected telegrams leave failed
+	// ones. Delete only the orders this spec created, identified by the
+	// MB_EMAIL billing address.
 	wpCli(
 		`eval "` +
-		`\\$ids = wc_get_orders(array('limit'=>-1,'payment_method'=>'paygent_mb','status'=>'pending','billing_email'=>'${MB_EMAIL}','return'=>'ids'));` +
+		`\\$ids = wc_get_orders(array('limit'=>-1,'payment_method'=>'paygent_mb','status'=>array('pending','failed'),'billing_email'=>'${MB_EMAIL}','return'=>'ids'));` +
 		`foreach (\\$ids as \\$id) { \\$o = wc_get_order(\\$id); if (\\$o) { \\$o->delete(true); } }` +
-		`echo count(\\$ids) . ' pending MB test orders deleted.';` +
+		`echo count(\\$ids) . ' MB test orders deleted.';` +
 		`"`
 	);
 });
@@ -188,9 +190,14 @@ test.describe('Block-MB A: Carrier redirect (career_type transmission)', () => {
 			], 180_000);
 
 			if (outcome === 'error') {
-				const message = await blockCheckoutErrorNotice(page).textContent().catch(() => '');
-				test.skip(true, `Sandbox rejected carrier ${carrier.id} (option not contracted?): ${message?.trim()}`);
-				return;
+				const message = (await blockCheckoutErrorNotice(page).textContent().catch(() => ''))?.trim() || '';
+				// Only environment/contract rejections skip — anything else
+				// (e.g. career_type not reaching process_payment) must fail.
+				if (SANDBOX_ENV_ERROR.test(message)) {
+					test.skip(true, `Sandbox constraint for carrier ${carrier.id} (contract/IP): ${message}`);
+					return;
+				}
+				throw new Error(`MB checkout (carrier ${carrier.id}) failed with notice: ${message}`);
 			}
 			if (outcome === 'timeout') {
 				test.skip(true, `Carrier ${carrier.id} redirect did not start in time (shared sandbox latency)`);

@@ -256,6 +256,15 @@ function raceOutcome(entries, timeoutMs) {
 }
 
 /**
+ * Matches checkout error notices caused by the sandbox ENVIRONMENT rather
+ * than the plugin: P007 (payment method not contracted for the merchant),
+ * P015 (source IP not registered), P016 (connection failure), and their
+ * Japanese message fragments. Specs skip on these and fail on anything
+ * else, so real checkout regressions are still reported as failures.
+ */
+const SANDBOX_ENV_ERROR = /P007|P01[56]|IPアドレス|未契約/;
+
+/**
  * Predicate for page.waitForURL: true once the browser has left the site
  * under test. The host is derived from baseURL instead of assuming
  * localhost, so it also works when E2E_BASE_URL points elsewhere.
@@ -280,4 +289,5 @@ module.exports = {
 	blockCheckoutErrorNotice,
 	raceOutcome,
 	leftBaseHost,
+	SANDBOX_ENV_ERROR,
 };

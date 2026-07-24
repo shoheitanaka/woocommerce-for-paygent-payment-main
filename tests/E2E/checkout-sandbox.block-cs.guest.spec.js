@@ -17,6 +17,7 @@ const {
 	placeOrderBlock,
 	blockCheckoutErrorNotice,
 	raceOutcome,
+	SANDBOX_ENV_ERROR,
 } = require('./helpers/block-checkout');
 
 /**
@@ -145,7 +146,7 @@ async function placeOrderAndAwaitThankyou(page) {
 
 	if (outcome === 'error') {
 		const message = (await blockCheckoutErrorNotice(page).textContent().catch(() => ''))?.trim() || '';
-		if (/P007|P01[56]|IPアドレス|未契約/.test(message)) {
+		if (SANDBOX_ENV_ERROR.test(message)) {
 			test.skip(true, `Sandbox constraint (contract/IP): ${message}`);
 			return '';
 		}
