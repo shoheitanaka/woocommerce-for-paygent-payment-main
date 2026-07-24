@@ -266,7 +266,7 @@ class WC_Gateway_Paygent_Addon_MB extends WC_Gateway_Paygent_MB {
 			$this->jp4wc_framework->jp4wc_debug_log( $message, true, 'wc-paygent' );
 			wc_add_notice( $message, 'error' );
 			$order->update_status( 'failed', $message );
-			return array( 'result' => 'failed' );
+			return array( 'result' => 'failure' );
 		}
 		$send_data['trading_id'] = $this->set_trading_id( $current_subscription );
 		// amount hook.

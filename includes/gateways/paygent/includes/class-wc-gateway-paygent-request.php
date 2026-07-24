@@ -403,16 +403,34 @@ class WC_Gateway_Paygent_Request {
 			}
 
 			$order->add_order_note( __( 'paygent Payment failed. Sysmte Error: ', 'woocommerce-for-paygent-payment-main' ) . $response['responseCode'] . ':' . mb_convert_encoding( $message, 'UTF-8', 'auto' ) . ':' . $response['responseDetail'] );
-			if ( is_checkout() ) {
+			if ( $this->is_customer_checkout_context() ) {
 				wc_add_notice( __( 'Sorry, there was an error: ', 'woocommerce-for-paygent-payment-main' ) . $response['responseCode'] . ':' . mb_convert_encoding( $message, 'UTF-8', 'auto' ), 'error' );
 			}
 		} else {
 			// No response or unexpected response.
 			$order->add_order_note( __( 'paygent Payment failed. Some trouble happened.', 'woocommerce-for-paygent-payment-main' ) . $response['result'] . ':' . $response['responseCode'] . ':' . mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'auto' ) . ':wc_' . $order_id );
-			if ( is_checkout() ) {
+			if ( $this->is_customer_checkout_context() ) {
 				wc_add_notice( __( 'No response from payment gateway server. Try again later or contact the site administrator.', 'woocommerce-for-paygent-payment-main' ), 'error' );
 			}
 		}
+	}
+
+	/**
+	 * Whether the current request is a customer-facing checkout: the classic
+	 * checkout page or a Store API (Block checkout) request. is_checkout()
+	 * alone misses Store API requests, so Block checkout customers only saw
+	 * a generic "Something went wrong" message instead of the Paygent error.
+	 * Notices queued during a Store API payment request are surfaced in the
+	 * Block checkout error response. Admin-side calls (e.g. refunds) stay
+	 * excluded so customer notices are not queued into an admin session.
+	 *
+	 * @return bool
+	 */
+	protected function is_customer_checkout_context() {
+		if ( is_checkout() ) {
+			return true;
+		}
+		return function_exists( 'WC' ) && is_callable( array( WC(), 'is_rest_api_request' ) ) && WC()->is_rest_api_request() && ! is_admin();
 	}
 
 	/**

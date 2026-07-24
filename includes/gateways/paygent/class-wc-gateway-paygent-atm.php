@@ -252,7 +252,7 @@ class WC_Gateway_Paygent_ATM extends WC_Payment_Gateway {
 
 		} else {
 			$this->paygent_request->error_response( $response, $order );
-			return array( 'result' => 'failed' );
+			return array( 'result' => 'failure' );
 		}
 	}
 

@@ -459,7 +459,7 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 					);
 				} else {
 					$this->paygent_request->error_response( $response_user, $order );
-					return array( 'result' => 'failed' );
+					return array( 'result' => 'failure' );
 				}
 			}
 		}
@@ -496,11 +496,11 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 					'redirect' => $payment_url,
 				);
 			} else {
-				return array( 'result' => 'failed' );
+				return array( 'result' => 'failure' );
 			}
 		} else {
 			$this->paygent_request->error_response( $response, $order );
-			return array( 'result' => 'failed' );
+			return array( 'result' => 'failure' );
 		}
 	}
 
