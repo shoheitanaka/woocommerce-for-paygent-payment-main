@@ -14,7 +14,13 @@ const { expect } = require('@playwright/test');
  * from cache instead of waiting 60-90s per page load. The script's own API
  * calls use absolute URLs, so caching the file does not affect tokenization.
  *
- * @returns {Promise<string>} The script source, or '' when unreachable.
+ * Only a 200 response with a JS-like content-type is cached — a sandbox
+ * error page (e.g. 403/503 HTML) would otherwise be cached as "valid" JS,
+ * causing window.PaygentToken to never be defined and every test that
+ * depends on it to skip or fail on later runs.
+ *
+ * @returns {Promise<string>} The script source, or '' when unreachable or
+ *   not actually JavaScript.
  */
 function prefetchPaygentTokenJs() {
 	const https = require('https');
@@ -23,6 +29,12 @@ function prefetchPaygentTokenJs() {
 			'https://sandbox.paygent.co.jp/js/PaygentToken.js',
 			{ timeout: 30_000 },
 			(res) => {
+				const contentType = String(res.headers['content-type'] || '');
+				if (res.statusCode !== 200 || !/javascript|ecmascript/i.test(contentType)) {
+					res.resume(); // Drain so the socket can be released.
+					resolve('');
+					return;
+				}
 				const chunks = /** @type {Buffer[]} */ ([]);
 				res.on('data', (c) => chunks.push(c));
 				res.on('end', () => resolve(Buffer.concat(chunks).toString()));
