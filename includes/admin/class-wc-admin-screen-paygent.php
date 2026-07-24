@@ -430,14 +430,14 @@ class WC_Admin_Screen_Paygent {
 				update_option( $this->prefix . 'hash_check', '' );
 			}
 			// Prefix of Order Number Setting.
-			if ( isset( $_POST['prefix_order'] ) && ! empty( $_POST['prefix_order'] ) ) {
+			if ( isset( $_POST['prefix_order'] ) ) {
 				// Letters only: the webhook resolves the WooCommerce order ID by
 				// stripping non-digit characters from trading_id, so digits in the
-				// prefix would corrupt the resolved order ID.
+				// prefix would corrupt the resolved order ID. Persist the sanitized
+				// value even when it becomes empty so an unsafe stored prefix is
+				// cleared rather than silently kept.
 				$prefix_order = preg_replace( '/[^A-Za-z]/', '', sanitize_text_field( wp_unslash( $_POST['prefix_order'] ) ) );
-				if ( '' !== $prefix_order ) {
-					update_option( $this->prefix . 'prefix_order', $prefix_order );
-				}
+				update_option( $this->prefix . 'prefix_order', $prefix_order );
 			}
 			// Paygent debug mode.
 			if ( isset( $_POST['debug'] ) ) {
