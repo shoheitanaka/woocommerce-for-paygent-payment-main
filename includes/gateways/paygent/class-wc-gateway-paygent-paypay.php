@@ -314,22 +314,15 @@ class WC_Gateway_Paygent_PayPay extends WC_Payment_Gateway {
 	 * Resolve the Paygent trading ID for an order.
 	 *
 	 * Prefers the trading_id returned by Paygent on application (stored as
-	 * _paygent_order_id meta), falling back to the same construction rule
-	 * as process_payment() for orders that lack the meta.
+	 * _paygent_order_id meta). Legacy orders without the meta rely on the
+	 * payment_id sent alongside instead of a trading_id rebuilt from the
+	 * current prefix setting, which may differ from the checkout-time value.
 	 *
 	 * @param WC_Order $order Order object.
 	 * @return string
 	 */
 	private function get_paygent_trading_id( $order ) {
-		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-		if ( $paygent_order_id ) {
-			return $paygent_order_id;
-		}
-		$prefix_order = get_option( 'wc-paygent-prefix_order' );
-		if ( $prefix_order ) {
-			return $prefix_order . $order->get_id();
-		}
-		return 'wc_' . $order->get_id();
+		return $this->paygent_request->get_paygent_trading_id( $order, ! empty( $order->get_transaction_id() ) );
 	}
 
 	/**

@@ -1808,17 +1808,9 @@ jQuery(function(){
 			wp_send_json_error( __( 'Invalid order ID or amount.', 'woocommerce-for-paygent-payment-main' ) );
 		}
 
-		$order            = wc_get_order( $order_id );
-		$transaction_id   = $order->get_transaction_id();
-		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-		$prefix_order     = get_option( 'wc-paygent-prefix_order' );
-		if ( $paygent_order_id ) {
-			$trading_id = $paygent_order_id;
-		} elseif ( $prefix_order ) {
-			$trading_id = $prefix_order . $order_id;
-		} else {
-			$trading_id = 'wc_' . $order_id;
-		}
+		$order          = wc_get_order( $order_id );
+		$transaction_id = $order->get_transaction_id();
+		$trading_id     = $this->paygent_request->get_paygent_trading_id( $order, ! empty( $transaction_id ) );
 
 		// Query current payment status via 094.
 		$check_data    = array(
@@ -2002,16 +1994,10 @@ jQuery(function(){
 		if ( $order->get_payment_method() !== $this->id ) {
 			return;
 		}
-		$telegram_kind    = '022';
-		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-		$prefix_order     = get_option( 'wc-paygent-prefix_order' );
-		if ( $paygent_order_id ) {
-			$send_data['trading_id'] = $paygent_order_id;
-		} elseif ( $prefix_order ) {
-			$send_data['trading_id'] = $prefix_order . $order_id;
-		} else {
-			$send_data['trading_id'] = 'wc_' . $order_id;
-		}
+		$telegram_kind           = '022';
+		$transaction_id          = $order->get_transaction_id();
+		$send_data['payment_id'] = $transaction_id;
+		$send_data['trading_id'] = $this->paygent_request->get_paygent_trading_id( $order, ! empty( $transaction_id ) );
 		if ( 1 !== $this->paygent_request->site_id ) {
 			$send_data['site_id'] = $this->paygent_request->site_id;
 		} else {
