@@ -185,6 +185,13 @@ pdftotext "2025docs/<path>.pdf" - | less
 
 - `process_refund()` 内で `$telegram_array` を構築して `paygent_process_refund()` に渡す
 - キャリア決済の取消は `career_type` に関係なく telegram_kind `102` で統一
+- 後続電文（返金・売上・照会）の trading_id は必ず
+  `WC_Gateway_Paygent_Request::get_paygent_trading_id( $order, $has_payment_id )` で解決する。
+  接頭辞オプションからの再構築は禁止（設定変更で不一致→33002系エラー。申込時の値は `_paygent_order_id` メタが正）
+- 仕様: payment_id / trading_id はどちらか一方で処理可・両方送ると双方一致必須。
+  メタなしの旧注文は payment_id のみ送る（trading_id は空文字＝未設定扱い）
+- 注文接頭辞（`wc-paygent-prefix_order`）は半角英字のみ（保存時に強制）。
+  Webhookが trading_id の非数字除去で注文IDを逆引きするため数字入りは不可
 
 ### サブスクリプション対応を追加するとき
 
