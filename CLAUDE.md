@@ -198,3 +198,13 @@ pdftotext "2025docs/<path>.pdf" - | less
 - 保存トークンIDは `wc-{gateway_id}-payment-token` でPOSTされる。`onPaymentSetup` がsuccessを返すと初期paymentMethodDataは丸ごと置き換わるため、savedTokenComponent側でトークンIDを再送する
 - Store APIは `process_payment()` の**前に** `validate_fields()` を呼ぶ。決済のPOSTキーを追加・変更したら `validate_fields()` の分岐も必ず更新する
 - Block共有コンポーネントは `src/blocks/shared/components/` に置く
+
+### process_payment() の戻り値・Block Checkoutでのエラー表示
+
+- `process_payment()` の `result` は **`'success'` または `'failure'` のみ**が有効値。`'failed'` 等の
+  独自文字列は WooCommerce が認識せず、Store API は `result==='failure'` の時だけ
+  `wc_add_notice()` の内容をエラーレスポンスへ変換する（それ以外は通知を無言で破棄）。
+  実際に MB/ATM/BN 等で `'failed'` を返しており、Block Checkoutで顧客にPaygentの実エラーが
+  表示されず「Something went wrong」になるバグがあった（2026-07修正）
+- Block Checkout（Store API）中かどうかの判定は `is_checkout()` だけでは不十分（Store API
+  リクエストでは false）。`wc_is_store_api_request()`（WC 6.9+）を併用する

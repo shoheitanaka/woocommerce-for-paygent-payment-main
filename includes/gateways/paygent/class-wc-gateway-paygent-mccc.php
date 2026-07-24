@@ -511,6 +511,10 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		if ( isset( $_GET['trading_id'] ) ) {// phpcs:ignore
 			$tradind_id = wc_clean( wp_unslash( $_GET['trading_id'] ) );// phpcs:ignore
 			if ( $paygent_order_id ) {
+				// The trading_id actually sent to Paygent is stored in the meta,
+				// so verify against it directly regardless of the prefix setting.
+				$base_order_id = ( $tradind_id === $paygent_order_id ) ? $order_id : '';
+			} elseif ( $prefix_order ) {
 				$base_order_id = substr( $tradind_id, strlen( $prefix_order ) );
 			} else {
 				$base_order_id = substr( $tradind_id, 3 );
@@ -859,13 +863,12 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		if ( $order->get_payment_method() !== $this->id ) {
 			return;
 		}
-		$telegram_kind = '182';
-		$prefix_order  = get_option( 'wc-paygent-prefix_order' );
-		if ( $prefix_order ) {
-			$send_data['trading_id'] = $prefix_order . $order_id;
-		} else {
-			$send_data['trading_id'] = 'wc_' . $order_id;
+		$telegram_kind  = '182';
+		$transaction_id = $order->get_transaction_id();
+		if ( $transaction_id ) {
+			$send_data['payment_id'] = $transaction_id;
 		}
+		$send_data['trading_id'] = $this->paygent_request->get_paygent_trading_id( $order, ! empty( $transaction_id ) );
 		if ( 1 !== $this->paygent_request->site_id ) {
 			$send_data['site_id'] = $this->paygent_request->site_id;
 		} else {

@@ -284,13 +284,18 @@ class WC_Gateway_Paygent_PayPay extends WC_Payment_Gateway {
 		if ( $order->get_total() >= $amount && $order->get_payment_method() === $this->id ) {
 			// Set Order ID for Paygent.
 			$send_data                     = array();
-			$send_data['trading_id']       = 'wc_' . $order_id;
+			$send_data['trading_id']       = $this->get_paygent_trading_id( $order );
 			$send_data['repayment_amount'] = $amount;
 			$send_data['payment_id']       = $order->get_transaction_id();
 			$telegram_kind                 = '421';
 			$response                      = $this->paygent_request->send_paygent_request( $this->test_mode, $order, $telegram_kind, $send_data, $this->debug );
 			if ( '0' === $response['result'] ) {
 				$order->add_order_note( __( 'Success the Refund for paygent.', 'woocommerce-for-paygent-payment-main' ) );
+				// A partial refund is assigned a new payment_id, which must be
+				// sent on any subsequent refund of this order.
+				if ( ! empty( $response['result_array'][0]['payment_id'] ) ) {
+					$order->set_transaction_id( $response['result_array'][0]['payment_id'] );
+				}
 				$order->save();
 				return true;
 			} else {
@@ -306,6 +311,21 @@ class WC_Gateway_Paygent_PayPay extends WC_Payment_Gateway {
 	}
 
 	/**
+	 * Resolve the Paygent trading ID for an order.
+	 *
+	 * Prefers the trading_id returned by Paygent on application (stored as
+	 * _paygent_order_id meta). Legacy orders without the meta rely on the
+	 * payment_id sent alongside instead of a trading_id rebuilt from the
+	 * current prefix setting, which may differ from the checkout-time value.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return string
+	 */
+	private function get_paygent_trading_id( $order ) {
+		return $this->paygent_request->get_paygent_trading_id( $order, ! empty( $order->get_transaction_id() ) );
+	}
+
+	/**
 	 * Remove redirect html text file
 	 *
 	 * @param int $order_id Order ID.
@@ -315,7 +335,7 @@ class WC_Gateway_Paygent_PayPay extends WC_Payment_Gateway {
 		if ( $order->get_payment_method() === $this->id ) {
 			// Set Order ID for Paygent.
 			$send_data                   = array();
-			$send_data['trading_id']     = 'wc_' . $order_id;
+			$send_data['trading_id']     = $this->get_paygent_trading_id( $order );
 			$send_data['payment_amount'] = $order->get_total();
 			$send_data['payment_id']     = $order->get_transaction_id();
 			$telegram_kind               = '422';

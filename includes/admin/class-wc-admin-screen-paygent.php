@@ -430,8 +430,13 @@ class WC_Admin_Screen_Paygent {
 				update_option( $this->prefix . 'hash_check', '' );
 			}
 			// Prefix of Order Number Setting.
-			if ( isset( $_POST['prefix_order'] ) && ! empty( $_POST['prefix_order'] ) ) {
-				$prefix_order = sanitize_text_field( wp_unslash( $_POST['prefix_order'] ) );
+			if ( isset( $_POST['prefix_order'] ) ) {
+				// Letters only: the webhook resolves the WooCommerce order ID by
+				// stripping non-digit characters from trading_id, so digits in the
+				// prefix would corrupt the resolved order ID. Persist the sanitized
+				// value even when it becomes empty so an unsafe stored prefix is
+				// cleared rather than silently kept.
+				$prefix_order = preg_replace( '/[^A-Za-z]/', '', sanitize_text_field( wp_unslash( $_POST['prefix_order'] ) ) );
 				update_option( $this->prefix . 'prefix_order', $prefix_order );
 			}
 			// Paygent debug mode.
@@ -701,7 +706,7 @@ class WC_Admin_Screen_Paygent {
 	 */
 	public function wc_paygent_prefix_order() {
 		$title       = __( 'Prefix of Order Number', 'woocommerce-for-paygent-payment-main' );
-		$description = $this->jp4wc_plugin->jp4wc_description_input_pattern( $title );
+		$description = $this->jp4wc_plugin->jp4wc_description_input_pattern( $title ) . '<br />' . __( 'Only single-byte alphabetic characters (A-Z, a-z) are allowed. Any other characters will be removed when saving.', 'woocommerce-for-paygent-payment-main' );
 		$this->jp4wc_plugin->jp4wc_input_text( 'prefix_order', $description, 20, '', $this->prefix, $this->post_prefix );
 	}
 

@@ -280,6 +280,35 @@ class WC_Gateway_Paygent_Request {
 	}
 
 	/**
+	 * Resolve the trading ID to send to Paygent for an order.
+	 *
+	 * Prefers the trading_id actually sent on application (stored as
+	 * _paygent_order_id meta). For legacy orders without the meta the
+	 * checkout-time trading_id cannot be reconstructed reliably (the prefix
+	 * option may have changed since), so when the telegram also carries a
+	 * payment_id the telegram relies on it alone — Paygent accepts either ID,
+	 * and an empty trading_id counts as "not set". Only when no payment_id is
+	 * available fall back to rebuilding from the current settings.
+	 *
+	 * @param WC_Order $order          Order object.
+	 * @param bool     $has_payment_id Whether the telegram also carries a payment_id.
+	 * @return string
+	 */
+	public function get_paygent_trading_id( $order, $has_payment_id = false ) {
+		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
+		if ( $paygent_order_id ) {
+			return $paygent_order_id;
+		}
+		if ( $has_payment_id ) {
+			return '';
+		}
+		if ( $this->prefix_order ) {
+			return $this->prefix_order . $order->get_id();
+		}
+		return 'wc_' . $order->get_id();
+	}
+
+	/**
 	 * Process refund for Paygent.
 	 *
 	 * @param int    $order_id Order ID.
@@ -298,21 +327,18 @@ class WC_Gateway_Paygent_Request {
 
 		$order                         = wc_get_order( $order_id );
 		$transaction_id                = $order->get_transaction_id();
+		$is_subscription               = function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id );
 		$send_data_check['payment_id'] = $transaction_id;
-		// Set Order ID for Paygent.
-		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-		if ( $paygent_order_id ) {
-			$send_data_check['trading_id'] = $paygent_order_id;
-		} else {
-			$send_data_check['trading_id'] = 'wc_' . $order_id;
-		}
+		// Set Order ID for Paygent. Subscription refunds drop the payment_id
+		// below, so they cannot rely on it and need a constructed trading_id.
+		$send_data_check['trading_id']  = $this->get_paygent_trading_id( $order, ! empty( $transaction_id ) && ! $is_subscription );
 		$send_data_refund['payment_id'] = $transaction_id;
 		$send_data_refund['trading_id'] = $send_data_check['trading_id'];
 
 		$telegram_kind_check = '094';// Information inquiry.
 		$order_result        = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_check, $send_data_check, $payment->debug );
 		$order_total         = $order->get_total();
-		if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
+		if ( $is_subscription ) {
 			unset( $send_data_refund['payment_id'] );
 		}
 		if ( $amount === $order_total ) {
@@ -465,13 +491,8 @@ class WC_Gateway_Paygent_Request {
 		$transaction_id          = $order->get_transaction_id();
 		$send_data['payment_id'] = $transaction_id;
 		// Set Order ID for Paygent.
-		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-		if ( $paygent_order_id ) {
-			$send_data['trading_id'] = $paygent_order_id;
-		} else {
-			$send_data['trading_id'] = 'wc_' . $order_id;
-		}
-		$order_result = $this->send_paygent_request( $this_gateway->test_mode, $order, $telegram_kind, $send_data, $this_gateway->debug );
+		$send_data['trading_id'] = $this->get_paygent_trading_id( $order, ! empty( $transaction_id ) );
+		$order_result            = $this->send_paygent_request( $this_gateway->test_mode, $order, $telegram_kind, $send_data, $this_gateway->debug );
 		if ( '0' !== $order_result['result'] ) {
 			// No response or unexpected response.
 			$this->error_response( $order_result, $order );
