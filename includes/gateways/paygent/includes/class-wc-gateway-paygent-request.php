@@ -421,8 +421,9 @@ class WC_Gateway_Paygent_Request {
 	 * alone misses Store API requests, so Block checkout customers only saw
 	 * a generic "Something went wrong" message instead of the Paygent error.
 	 * Notices queued during a Store API payment request are surfaced in the
-	 * Block checkout error response. Admin-side calls (e.g. refunds) stay
-	 * excluded so customer notices are not queued into an admin session.
+	 * Block checkout error response. wc_is_store_api_request() (WC 6.9+) is
+	 * used instead of the broader WC()->is_rest_api_request() so notices are
+	 * not queued into unrelated REST requests (e.g. wc/v3 admin API calls).
 	 *
 	 * @return bool
 	 */
@@ -430,7 +431,7 @@ class WC_Gateway_Paygent_Request {
 		if ( is_checkout() ) {
 			return true;
 		}
-		return function_exists( 'WC' ) && is_callable( array( WC(), 'is_rest_api_request' ) ) && WC()->is_rest_api_request() && ! is_admin();
+		return function_exists( 'wc_is_store_api_request' ) && wc_is_store_api_request();
 	}
 
 	/**
