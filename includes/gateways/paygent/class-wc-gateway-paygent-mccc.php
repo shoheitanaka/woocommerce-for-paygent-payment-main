@@ -863,9 +863,11 @@ class WC_Gateway_Paygent_MCCC extends WC_Payment_Gateway {
 		if ( $order->get_payment_method() !== $this->id ) {
 			return;
 		}
-		$telegram_kind           = '182';
-		$transaction_id          = $order->get_transaction_id();
-		$send_data['payment_id'] = $transaction_id;
+		$telegram_kind  = '182';
+		$transaction_id = $order->get_transaction_id();
+		if ( $transaction_id ) {
+			$send_data['payment_id'] = $transaction_id;
+		}
 		$send_data['trading_id'] = $this->paygent_request->get_paygent_trading_id( $order, ! empty( $transaction_id ) );
 		if ( 1 !== $this->paygent_request->site_id ) {
 			$send_data['site_id'] = $this->paygent_request->site_id;
