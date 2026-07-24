@@ -140,7 +140,7 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 
 ## Claude Code スキル
 
-`.claude/skills/` に6つのスキルが定義されています。関連するキーワードやファイルを編集する際に自動的に発動します。
+`.claude/skills/` に7つのスキルが定義されています。関連するキーワードやファイルを編集する際に自動的に発動します。
 
 | スキル | 発動キーワード例 | 参照先 |
 | --- | --- | --- |
@@ -150,6 +150,7 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 | `paygent-bank` | `paygent_cs`, `paygent_atm`, `paygent_bn`, `コンビニ`, `仮想口座` | `.claude/skills/paygent-bank/` |
 | `paygent-carrier` | `paygent_mb`, `career_type`, `キャリア決済`, `auかんたん決済`, `d払い` | `.claude/skills/paygent-carrier/` |
 | `wc-block-payment` | `AbstractPaymentMethodType`, `registerPaymentMethod`, `onPaymentSetup`, `block-cs` | `.claude/skills/wc-block-payment/` |
+| `paygent-sandbox-check` | `サンドボックス検証`, `実決済テスト`, `sandbox check`, マージ前検証 | `.claude/skills/paygent-sandbox-check/` |
 
 スキルの情報は **2025docs/ の仕様書PDFが正**。コードより仕様書を優先すること。
 
@@ -190,3 +191,10 @@ pdftotext "2025docs/<path>.pdf" - | less
 - `WC_Subscriptions_Order` クラスが存在する場合に `_Addon_` クラスが使われる
 - CC継続課金: `fingerprint`（カード識別子）をオーダーメタに保存して再利用
 - キャリア継続課金: `120`（申込）→ `121`（売上）、継続課金IDは `_paygent_running_id` に保存
+
+### Block Checkoutで保存カード（トークン）を扱うとき
+
+- 保存カードUIはWC Blocksネイティブに任せる（`supports.showSavedCards` + `savedTokenComponent`）。フォーム内に独自トグルを作らない
+- 保存トークンIDは `wc-{gateway_id}-payment-token` でPOSTされる。`onPaymentSetup` がsuccessを返すと初期paymentMethodDataは丸ごと置き換わるため、savedTokenComponent側でトークンIDを再送する
+- Store APIは `process_payment()` の**前に** `validate_fields()` を呼ぶ。決済のPOSTキーを追加・変更したら `validate_fields()` の分岐も必ず更新する
+- Block共有コンポーネントは `src/blocks/shared/components/` に置く

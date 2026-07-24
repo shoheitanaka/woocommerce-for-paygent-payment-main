@@ -139,16 +139,18 @@ class WC_Paygent_Block_CC extends Abstract_WC_Paygent_Block_Payment {
 		$raw_counts         = is_array( $raw_counts ) ? $raw_counts : array( $raw_counts );
 		$number_of_payments = array_values( $raw_counts );
 
-		return array(
-			'title'            => $settings['title'] ?? '',
-			'description'      => wp_kses_post( $settings['description'] ?? '' ),
-			'supports'         => $this->get_supported_features(),
-			'merchantId'       => $merchant_id,
-			'tokenKey'         => $token_key,
-			'isTds2'           => 'yes' === ( $settings['tds2_check'] ?? 'no' ),
-			'enableSaveCard'   => 'yes' === ( $settings['store_card_info'] ?? 'no' ),
-			'paymentMethods'   => $payment_methods,
-			'numberOfPayments' => $number_of_payments,
+		// title / description / supports come from the parent, including the
+		// default-title fallback for stores that never saved the settings form.
+		return array_merge(
+			parent::get_payment_method_data(),
+			array(
+				'merchantId'       => $merchant_id,
+				'tokenKey'         => $token_key,
+				'isTds2'           => 'yes' === ( $settings['tds2_check'] ?? 'no' ),
+				'enableSaveCard'   => 'yes' === ( $settings['store_card_info'] ?? 'no' ),
+				'paymentMethods'   => $payment_methods,
+				'numberOfPayments' => $number_of_payments,
+			)
 		);
 	}
 

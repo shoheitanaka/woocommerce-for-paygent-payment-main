@@ -128,6 +128,152 @@ function restorePaygentCcSettings(snapshot) {
 }
 
 /**
+ * Read a gateway's WooCommerce settings option as an object.
+ * e.g. gatewayId 'paygent_cs' → option 'woocommerce_paygent_cs_settings'.
+ *
+ * @param {string} gatewayId
+ * @returns {Record<string, any>}
+ */
+function getGatewaySettings(gatewayId) {
+	const raw = wpCli(`option get woocommerce_${gatewayId}_settings --format=json`);
+	try {
+		return JSON.parse(raw) || {};
+	} catch {
+		return {};
+	}
+}
+
+/**
+ * Persist a gateway's form-field defaults as its settings option.
+ *
+ * WooCommerce only falls back to form-field defaults when the settings
+ * option is entirely missing, and the Paygent gateways copy the raw
+ * settings array onto their properties (`foreach ($this->settings ...)`)
+ * — so an option created from partial overrides would leave every other
+ * property null (e.g. CS would send an empty payment_limit_date in
+ * telegram 030). Requires the gateway to be registered (its wc-paygent-*
+ * registration option must be set first); no-op otherwise.
+ *
+ * @param {string} gatewayId
+ */
+function seedGatewayDefaultSettings(gatewayId) {
+	wpCli(
+		`eval '` +
+		`$gws = WC()->payment_gateways()->payment_gateways();` +
+		`if ( isset( $gws["${gatewayId}"] ) ) {` +
+		`$gw = $gws["${gatewayId}"];` +
+		`$defaults = array();` +
+		`foreach ( array_keys( $gw->get_form_fields() ) as $k ) { $defaults[ $k ] = $gw->get_option( $k ); }` +
+		`$stored = (array) get_option( "woocommerce_${gatewayId}_settings", array() );` +
+		`update_option( "woocommerce_${gatewayId}_settings", array_merge( $defaults, $stored ) );` +
+		`echo "seeded " . count( $defaults ) . " defaults";` +
+		`} else { echo "gateway not registered"; }'`
+	);
+}
+
+/**
+ * Merge partial settings into a gateway's settings option and save.
+ * Preserves all existing keys; only the provided keys are updated.
+ * When the option does not exist yet, the gateway's form-field defaults
+ * are seeded first (see seedGatewayDefaultSettings).
+ *
+ * @param {string} gatewayId
+ * @param {Record<string, any>} overrides
+ */
+function updateGatewaySettings(gatewayId, overrides) {
+	let current = getGatewaySettings(gatewayId);
+	if (Object.keys(current).length === 0) {
+		seedGatewayDefaultSettings(gatewayId);
+		current = getGatewaySettings(gatewayId);
+		if (Object.keys(current).length === 0) {
+			// Writing only the overrides would leave every other gateway
+			// property null — the exact problem seeding exists to prevent.
+			throw new Error(
+				`updateGatewaySettings: could not seed defaults for "${gatewayId}" — ` +
+				`the gateway is not registered. Set its wc-paygent-* registration ` +
+				`option (e.g. "option update wc-paygent-cs yes") before calling.`
+			);
+		}
+	}
+	const merged = { ...current, ...overrides };
+	const json   = JSON.stringify(merged).replace(/'/g, "'\\''");
+	wpCli(`option update woocommerce_${gatewayId}_settings --format=json '${json}'`);
+}
+
+/**
+ * Snapshot a gateway settings option for later restoration via
+ * restoreGatewaySettings(). Returns null when the option does not exist
+ * yet — distinct from an existing-but-empty settings array — so a
+ * previously-missing option is restored to "missing" instead of "present
+ * but empty". A leftover empty option would change runtime behavior:
+ * WooCommerce only falls back to form-field defaults when the option is
+ * entirely absent (see seedGatewayDefaultSettings), so the next test run
+ * seeing an empty-but-present option would skip seeding again.
+ *
+ * @param {string} gatewayId
+ * @returns {Record<string, any> | null}
+ */
+function snapshotGatewaySettings(gatewayId) {
+	if (snapshotWpOption(`woocommerce_${gatewayId}_settings`) === null) return null;
+	return getGatewaySettings(gatewayId);
+}
+
+/**
+ * Restore a gateway settings snapshot (from snapshotGatewaySettings). A
+ * null snapshot deletes the option rather than writing it back empty.
+ *
+ * @param {string} gatewayId
+ * @param {Record<string, any> | null} snapshot
+ */
+function restoreGatewaySettings(gatewayId, snapshot) {
+	const optionName = `woocommerce_${gatewayId}_settings`;
+	if (snapshot === null || snapshot === undefined) {
+		wpCli(`option delete ${optionName}`);
+		return;
+	}
+	const json = JSON.stringify(snapshot).replace(/'/g, "'\\''");
+	wpCli(`option update ${optionName} --format=json '${json}'`);
+}
+
+/**
+ * Snapshot a plain WordPress option value so it can be restored later.
+ * Returns null when the option does not exist.
+ *
+ * ⚠ Scalar options only (e.g. 'wc-paygent-cs' = 'yes'/'1'). Array/serialized
+ * options would be flattened to their pretty-printed string on restore —
+ * use getGatewaySettings()/restoreGatewaySettings() for settings arrays.
+ *
+ * @param {string} name
+ * @returns {string | null}
+ */
+function snapshotWpOption(name) {
+	const out = wpCli(`option get ${name}`, { throws: false });
+	// `option get` on a missing option exits non-zero → wpCli returns ''.
+	// Distinguish "missing" from "empty string value" via option list.
+	// --search without wildcards is an exact match, but compare whole CSV
+	// lines anyway so a substring can never be mistaken for existence.
+	if (out !== '') return out;
+	const exists = wpCli(`option list --search=${name} --fields=option_name --format=csv`);
+	return exists.split('\n').some((line) => line.trim() === name) ? '' : null;
+}
+
+/**
+ * Restore a plain WordPress option from a snapshotWpOption() value.
+ * A null snapshot deletes the option. Scalar options only — see
+ * snapshotWpOption().
+ *
+ * @param {string} name
+ * @param {string | null} snapshot
+ */
+function restoreWpOption(name, snapshot) {
+	if (snapshot === null) {
+		wpCli(`option delete ${name}`);
+	} else {
+		wpCli(`option update ${name} '${String(snapshot).replace(/'/g, "'\\''")}'`);
+	}
+}
+
+/**
  * Create (or find) a Block checkout page and set it as the WooCommerce checkout page.
  * Returns { pageId, blockCheckoutUrl, originalCheckoutPageId } for later restoration.
  *
@@ -213,6 +359,13 @@ module.exports = {
 	enableTds2,
 	disableTds2,
 	restorePaygentCcSettings,
+	getGatewaySettings,
+	snapshotGatewaySettings,
+	seedGatewayDefaultSettings,
+	updateGatewaySettings,
+	restoreGatewaySettings,
+	snapshotWpOption,
+	restoreWpOption,
 	setupBlockCheckoutPage,
 	teardownBlockCheckoutPage,
 };

@@ -48,10 +48,32 @@ abstract class Abstract_WC_Paygent_Block_Payment extends AbstractPaymentMethodTy
 	 */
 	public function get_payment_method_data(): array {
 		return array(
-			'title'       => $this->settings['title'] ?? '',
+			'title'       => $this->settings['title'] ?? $this->get_default_gateway_title(),
 			'description' => wp_kses_post( $this->settings['description'] ?? '' ),
 			'supports'    => $this->get_supported_features(),
 		);
+	}
+
+	/**
+	 * Fallback title for stores whose settings option has never been saved
+	 * from the admin form (no 'title' key stored yet). Without this the Block
+	 * checkout would render an empty payment method label.
+	 *
+	 * Read from the registered gateway instance, which resolves the
+	 * form-field default — gateways are already loaded when Block checkout
+	 * data is built, so this adds no extra initialization cost.
+	 *
+	 * @return string
+	 */
+	protected function get_default_gateway_title(): string {
+		if ( ! function_exists( 'WC' ) || null === WC()->payment_gateways() ) {
+			return '';
+		}
+		$gateways = WC()->payment_gateways()->payment_gateways();
+		if ( ! isset( $gateways[ $this->name ] ) ) {
+			return '';
+		}
+		return (string) $gateways[ $this->name ]->get_title();
 	}
 
 	/**

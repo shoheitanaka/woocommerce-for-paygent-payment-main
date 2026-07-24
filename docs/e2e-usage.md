@@ -153,8 +153,27 @@ Branch 3（`feature/block-cs-mb-paidy`）で以下のゲートウェイが Block
 | Paidy | ✅ | リダイレクト型。説明文（`paidy_description`）を表示 |
 | MCCC | ✅ | `WC_Paygent_Block_CC` を継承。`paygent_mccc-token` 送信、installment なし |
 
-これらのゲートウェイはサンドボックス専用の spec ファイルを持ちません。
-実 API を使ったコンビニ・ATM 決済のテストは `checkout-sandbox.guest.spec.js` でカバーしています。
+これらのゲートウェイには Block Checkout 用のサンドボックス spec があります（Issue #21）。
+
+| spec ファイル | npm script | 検証範囲 |
+|---------------|-----------|---------|
+| `checkout-sandbox.block-cs.guest.spec.js` | `npm run e2e:block-cs` | 店舗選択 → 電文 030 → 注文完了 → サンクスページの支払い番号表示・`_paygent_cvs_id` メタ検証 |
+| `checkout-sandbox.block-mb.guest.spec.js` | `npm run e2e:block-mb` | キャリア選択（au/docomo/SoftBank）→ 電文 100/104 → 外部キャリア画面へのリダイレクトまで |
+| `checkout-sandbox.block-paidy.guest.spec.js` | `npm run e2e:block-paidy` | 注文 → order-pay ページのリダイレクトまで。`PAYGENT_TEST_PAIDY_PUBKEY` 設定時は Paidy モーダル起動まで検証 |
+| `checkout-sandbox.block-mccc.guest.spec.js` | `npm run e2e:block-mccc` | 新規カードトークン決済の完了まで（電文 180）。**通貨を一時的に USD に切替**して実行 |
+
+### サンドボックス制約による skip
+
+- **MB**: キャリアのログイン・承認画面は外部サービスのため自動化不可。外部リダイレクト到達までを検証し、
+  キャリアオプション未契約のマーチャントではエラー電文を検出して skip する
+- **Paidy**: モーダル内の認証（SMS コード）は自動化不可。`PAYGENT_TEST_PAIDY_PUBKEY` 未設定時は
+  order-pay リダイレクト確認のみ（モーダル起動検証は annotation 付きで省略）
+- **MCCC**: JPY ストアでは非表示になるため spec 内で通貨を USD に切替（終了時に復元）。
+  多通貨オプション未契約のマーチャントではエラー電文を検出して skip する
+- **MCCC 保存カード E2E**: #20 の修正のサンドボックス実決済検証が完了してから追加する
+
+なお、クラシックチェックアウトでの実 API を使ったコンビニ・ATM 決済のテストは
+`checkout-sandbox.guest.spec.js` でカバーしています。
 
 ---
 
