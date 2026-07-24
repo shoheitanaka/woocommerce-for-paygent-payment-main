@@ -303,6 +303,8 @@ class WC_Gateway_Paygent_Request {
 		$paygent_order_id = $order->get_meta( '_paygent_order_id' );
 		if ( $paygent_order_id ) {
 			$send_data_check['trading_id'] = $paygent_order_id;
+		} elseif ( $this->prefix_order ) {
+			$send_data_check['trading_id'] = $this->prefix_order . $order_id;
 		} else {
 			$send_data_check['trading_id'] = 'wc_' . $order_id;
 		}
