@@ -144,16 +144,50 @@ function getGatewaySettings(gatewayId) {
 }
 
 /**
+ * Persist a gateway's form-field defaults as its settings option.
+ *
+ * WooCommerce only falls back to form-field defaults when the settings
+ * option is entirely missing, and the Paygent gateways copy the raw
+ * settings array onto their properties (`foreach ($this->settings ...)`)
+ * — so an option created from partial overrides would leave every other
+ * property null (e.g. CS would send an empty payment_limit_date in
+ * telegram 030). Requires the gateway to be registered (its wc-paygent-*
+ * registration option must be set first); no-op otherwise.
+ *
+ * @param {string} gatewayId
+ */
+function seedGatewayDefaultSettings(gatewayId) {
+	wpCli(
+		`eval '` +
+		`$gws = WC()->payment_gateways()->payment_gateways();` +
+		`if ( isset( $gws["${gatewayId}"] ) ) {` +
+		`$gw = $gws["${gatewayId}"];` +
+		`$defaults = array();` +
+		`foreach ( array_keys( $gw->get_form_fields() ) as $k ) { $defaults[ $k ] = $gw->get_option( $k ); }` +
+		`$stored = (array) get_option( "woocommerce_${gatewayId}_settings", array() );` +
+		`update_option( "woocommerce_${gatewayId}_settings", array_merge( $defaults, $stored ) );` +
+		`echo "seeded " . count( $defaults ) . " defaults";` +
+		`} else { echo "gateway not registered"; }'`
+	);
+}
+
+/**
  * Merge partial settings into a gateway's settings option and save.
  * Preserves all existing keys; only the provided keys are updated.
+ * When the option does not exist yet, the gateway's form-field defaults
+ * are seeded first (see seedGatewayDefaultSettings).
  *
  * @param {string} gatewayId
  * @param {Record<string, any>} overrides
  */
 function updateGatewaySettings(gatewayId, overrides) {
-	const current = getGatewaySettings(gatewayId);
-	const merged  = { ...current, ...overrides };
-	const json    = JSON.stringify(merged).replace(/'/g, "'\\''");
+	let current = getGatewaySettings(gatewayId);
+	if (Object.keys(current).length === 0) {
+		seedGatewayDefaultSettings(gatewayId);
+		current = getGatewaySettings(gatewayId);
+	}
+	const merged = { ...current, ...overrides };
+	const json   = JSON.stringify(merged).replace(/'/g, "'\\''");
 	wpCli(`option update woocommerce_${gatewayId}_settings --format=json '${json}'`);
 }
 
@@ -291,6 +325,7 @@ module.exports = {
 	disableTds2,
 	restorePaygentCcSettings,
 	getGatewaySettings,
+	seedGatewayDefaultSettings,
 	updateGatewaySettings,
 	restoreGatewaySettings,
 	snapshotWpOption,
