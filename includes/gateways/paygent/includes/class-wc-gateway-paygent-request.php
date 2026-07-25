@@ -248,7 +248,11 @@ class WC_Gateway_Paygent_Request {
 	public function order_paygent_status_completed( $order_id, $telegram_kind, $payment, $send_data = array() ) {
 		$order                = wc_get_order( $order_id );
 		$order_payment_method = $order->get_payment_method();
-		if ( isset( $payment->paymentaction ) && 'sale' !== $payment->paymentaction && $order_payment_method === $payment->id ) {
+		// Gateways without a paymentaction setting (MB, Paidy) always authorize first,
+		// so the sale request must be sent on completion; only skip when the gateway
+		// explicitly charged at purchase time (paymentaction === 'sale').
+		$paymentaction = $payment->paymentaction ?? '';
+		if ( 'sale' !== $paymentaction && $order_payment_method === $payment->id ) {
 			$send_data['payment_id'] = $order->get_transaction_id();
 			// Set Order ID for Paygent.
 			$paygent_order_id = $order->get_meta( '_paygent_order_id' );
@@ -317,10 +321,13 @@ class WC_Gateway_Paygent_Request {
 	 * @param array  $permit_statuses Permit statuses.
 	 * @param array  $send_data_refund Send data for refund.
 	 * @param object $payment Payment object.
+	 * @param array  $status_messages Optional explanations for non-refundable statuses,
+	 *                                keyed like $permit_statuses (career type or 0) then
+	 *                                by payment status. Appended to the failure note.
 	 *
 	 * @return mixed
 	 */
-	public function paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $payment ) {
+	public function paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $payment, $status_messages = array() ) {
 		if ( is_null( $amount ) ) {
 			return false;
 		}
@@ -341,20 +348,34 @@ class WC_Gateway_Paygent_Request {
 		if ( $is_subscription ) {
 			unset( $send_data_refund['payment_id'] );
 		}
+		// The inquiry response returns every field as a string while gateways may
+		// declare permit statuses as integers (and numeric career keys are always
+		// stored as integers by PHP), so both sides must be normalized before
+		// comparison. career_type is empty for non-carrier payments.
+		$order_info      = isset( $order_result['result_array'][0] ) && is_array( $order_result['result_array'][0] ) ? $order_result['result_array'][0] : array();
+		$response_status = isset( $order_info['payment_status'] ) ? (string) $order_info['payment_status'] : '';
+		$response_career = isset( $order_info['career_type'] ) && '' !== (string) $order_info['career_type'] ? (int) $order_info['career_type'] : null;
+		$status_hint     = '';
+		if ( null !== $response_career && isset( $status_messages[ $response_career ][ $response_status ] ) ) {
+			$status_hint = ' ' . $status_messages[ $response_career ][ $response_status ];
+		} elseif ( isset( $status_messages[0][ $response_status ] ) ) {
+			$status_hint = ' ' . $status_messages[0][ $response_status ];
+		}
 		if ( $amount === $order_total ) {
 			foreach ( $permit_statuses as $key => $permit_status ) {
-				if ( 0 === $key || ( isset( $order_result['result_array'][0]['career_type'] ) && $order_result['result_array'][0]['career_type'] === $key ) ) {
-					if ( isset( $permit_status['auth_cancel'] ) && in_array( $order_result['result_array'][0]['payment_status'], $permit_status['auth_cancel'], true ) === true ) {
+				if ( 0 === $key || ( null !== $response_career && (int) $key === $response_career ) ) {
+					if ( isset( $permit_status['auth_cancel'] ) && in_array( $response_status, array_map( 'strval', $permit_status['auth_cancel'] ), true ) === true ) {
 						$telegram_kind_del = $telegram_array['auth_cancel'];// Authority Cancel.
-					} elseif ( isset( $permit_status['sale_cancel'] ) && in_array( $order_result['result_array'][0]['payment_status'], $permit_status['sale_cancel'], true ) === true ) {
+					} elseif ( isset( $permit_status['sale_cancel'] ) && in_array( $response_status, array_map( 'strval', $permit_status['sale_cancel'] ), true ) === true ) {
 						$telegram_kind_del = $telegram_array['sale_cancel'];// Sales Cancel.
-					} else {
-						// translators: %s: payment status.
-						$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $order_result['result_array'][0]['payment_status'] );
-						$order->add_order_note( $message );
-						return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 					}
 				}
+			}
+			if ( ! isset( $telegram_kind_del ) ) {
+				// translators: %s: payment status.
+				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $response_status ) . $status_hint;
+				$order->add_order_note( $message );
+				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
 			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, $send_data_check, $payment->debug );
 			if ( '1' === $del_result['result'] ) {
@@ -372,18 +393,19 @@ class WC_Gateway_Paygent_Request {
 			}
 		} elseif ( $amount < $order_total ) {
 			foreach ( $permit_statuses as $key => $permit_status ) {
-				if ( 0 === $key || ( isset( $order_result['result_array'][0]['career_type'] ) && $key === $order_result['result_array'][0]['career_type'] ) ) {
-					if ( in_array( $order_result['result_array'][0]['payment_status'], $permit_status['auth_change'], true ) ) {
+				if ( 0 === $key || ( null !== $response_career && (int) $key === $response_career ) ) {
+					if ( isset( $permit_status['auth_change'] ) && in_array( $response_status, array_map( 'strval', $permit_status['auth_change'] ), true ) ) {
 						$telegram_kind_refund = $telegram_array['auth_change'];// Authory Change.
-					} elseif ( in_array( $order_result['result_array'][0]['payment_status'], $permit_status['sale_change'], true ) ) {
+					} elseif ( isset( $permit_status['sale_change'] ) && in_array( $response_status, array_map( 'strval', $permit_status['sale_change'] ), true ) ) {
 						$telegram_kind_refund = $telegram_array['sale_change'];// Sales Change.
-					} else {
-						// translators: %s: payment status.
-						$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $order_result['result_array'][0]['payment_status'] );
-						$order->add_order_note( $message );
-						return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 					}
 				}
+			}
+			if ( ! isset( $telegram_kind_refund ) ) {
+				// translators: %s: payment status.
+				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $response_status ) . $status_hint;
+				$order->add_order_note( $message );
+				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
 			$refund_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_refund, $send_data_refund, $payment->debug );
 			if ( '1' === $refund_result['result'] ) {

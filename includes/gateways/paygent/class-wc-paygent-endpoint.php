@@ -283,7 +283,9 @@ class WC_Paygent_Endpoint {
 			if ( in_array( $status, $base_status, true ) && $current_status_id ) {
 				$status_id = array_search( $status, $base_status, true );
 				if ( (int) $status_id < (int) $current_status_id ) {
-					$order->add_order_note( __( 'Order status change due to Paygent notification is abnormal. Please confirm it.', 'woocommerce-for-paygent-payment-main' ) );
+					// A notification that would move the order backwards (e.g. the
+					// capture notice arriving after the order was completed) is
+					// recorded but never applied.
 					$normal_flag = false;
 				}
 			}
@@ -299,7 +301,8 @@ class WC_Paygent_Endpoint {
 			if ( 'refunded' === $next_status ) {
 				$order->update_status( $next_status, $status_message );
 			} elseif ( 'refunded' === $status || false === $normal_flag ) {
-				$order->add_order_note( $status_message );
+				// translators: %1$s: notified status, %2$s: current status.
+				$order->add_order_note( sprintf( __( 'Received a %1$s status notification from Paygent, but the order status was left unchanged at %2$s. Please review the order if this is unexpected.', 'woocommerce-for-paygent-payment-main' ), $status_title, $current_status_title ) );
 			} else {
 				$order->update_status( $status, $status_message );
 			}
@@ -665,6 +668,7 @@ class WC_Paygent_Endpoint {
 			'13' => __( '3D secure failure', 'woocommerce-for-paygent-payment-main' ),
 			'15' => __( 'Application interruption', 'woocommerce-for-paygent-payment-main' ),
 			'20' => __( 'Authority OK', 'woocommerce-for-paygent-payment-main' ),
+			'21' => __( 'Authority Completed', 'woocommerce-for-paygent-payment-main' ),
 			'30' => __( 'Requesting sales', 'woocommerce-for-paygent-payment-main' ),
 			'31' => __( 'The authority is being canceled', 'woocommerce-for-paygent-payment-main' ),
 			'32' => __( 'Approval revoked', 'woocommerce-for-paygent-payment-main' ),

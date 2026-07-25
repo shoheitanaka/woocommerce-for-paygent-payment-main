@@ -450,6 +450,10 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 						$payment_url = $response_user['result_array'][0]['redirect_url'];
 					}
 					$order->save_meta_data();
+					// Clear the cart hash so Store API / classic checkout do not reuse this pending
+					// order as a draft and overwrite payment_method while the customer is on the
+					// carrier authentication page.
+					$order->set_cart_hash( '' );
 					$order->save();
 					// translators: Payment method name.
 					$order->update_status( 'pending', sprintf( __( 'Pending %s', 'woocommerce-for-paygent-payment-main' ), __( 'Carrier Payment', 'woocommerce-for-paygent-payment-main' ) . ':' . $mb_type ) );
@@ -478,6 +482,10 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 				$order->add_meta_data( '_redirect_html', mb_convert_encoding( $response['result_array'][0]['redirect_html'], 'UTF-8', 'SJIS' ) );
 			}
 			$order->save_meta_data();
+			// Clear the cart hash so Store API / classic checkout do not reuse this pending
+			// order as a draft and overwrite payment_method while the customer is on the
+			// carrier payment page.
+			$order->set_cart_hash( '' );
 			$order->save();
 			$order->update_status(
 				'pending',
@@ -818,7 +826,9 @@ window.onload = send_form_submit;
 			$payment_id = wc_clean( $_GET['payment_id'] );// phpcs:ignore
 			// set transaction id for Paygent Order Number.
 			$order->payment_complete( wc_clean( $payment_id ) );
-			$order->add_meta_data( 'payment_id', wc_clean( $payment_id ), true );
+			// update (not add): the thankyou hook runs on every page view and
+			// concurrent requests could otherwise persist duplicate meta rows.
+			$order->update_meta_data( 'payment_id', wc_clean( $payment_id ) );
 			if ( 'yes' === $this->update_status ) {
 				$order->update_status( 'completed' );
 			} else {
@@ -890,23 +900,46 @@ window.onload = send_form_submit;
 				'auth_change' => array( 20, 21 ),
 				'sale_change' => array( 44 ),
 			),
-			4 => array(// au.
+			4 => array(// au: correction (103) is only allowed at Authority OK (20); captured (40) payments can only be cancelled in full.
 				'auth_cancel' => array( 20 ),
 				'sale_cancel' => array( 40 ),
 				'auth_change' => array( 20 ),
-				'sale_change' => array( 40 ),
 			),
-			6 => array(// SoftBank(B).
+			6 => array(// SoftBank(B): correction (103) is only allowed at 20/21; captured (40) payments can only be cancelled in full.
 				'auth_cancel' => array( 20, 21 ),
 				'sale_cancel' => array( 40 ),
-				'auth_change' => array( 20.21 ),
-				'sale_change' => array( 40 ),
+				'auth_change' => array( 20, 21 ),
 			),
 		);
 		$send_data_refund = array(
 			'amount' => $amount,
 		);
-		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this );
+		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this, $this->mb_refund_status_messages() );
+	}
+
+	/**
+	 * Explanations for carrier statuses that reject refunds.
+	 *
+	 * docomo: cancellation is not allowed at Sales Completed (40); it becomes
+	 * refundable once the carrier completion notice moves it to Capture
+	 * Completed (44), from 3:30 AM the next day (sometimes the day after).
+	 * au / SoftBank: captured (40) payments only reject partial refunds —
+	 * correction (103) is limited to the authorized statuses by the spec.
+	 *
+	 * @return array
+	 */
+	private function mb_refund_status_messages() {
+		return array(
+			4 => array(
+				'40' => __( 'au Easy Payment allows only full refunds after capture (40). Partial refunds are only possible while the payment is authorized (20).', 'woocommerce-for-paygent-payment-main' ),
+			),
+			5 => array(
+				'40' => __( 'd-Payment cannot be refunded yet: the Paygent status is Sales Completed (40). It becomes refundable after the carrier completion notice updates it to Capture Completed (44), which happens from 3:30 AM the next day (or the day after in some cases). Please retry then.', 'woocommerce-for-paygent-payment-main' ),
+			),
+			6 => array(
+				'40' => __( 'SoftBank Matomete Payment allows only full refunds after capture (40). Partial refunds are only possible while the payment is authorized (20/21).', 'woocommerce-for-paygent-payment-main' ),
+			),
+		);
 	}
 
 	/**
@@ -938,7 +971,7 @@ window.onload = send_form_submit;
 			'running_id'        => $running_id,
 			'running_target_ym' => $target_ym,
 		);
-		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this );
+		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this, $this->mb_refund_status_messages() );
 	}
 
 	/**
@@ -1160,9 +1193,12 @@ window.onload = send_form_submit;
 		if ( isset( $_GET['mb_cancel'] ) && 'yes' === $_GET['mb_cancel'] ) { // phpcs:ignore
 			// Display a notice to the customer that their mobile payment was canceled.
 			wc_add_notice( __( 'Your mobile payment has been canceled.', 'woocommerce-for-paygent-payment-main' ), 'notice' );
-			$order_id = preg_replace( '/[^0-9]/', '', $_GET['trading_id'] ); // phpcs:ignore
+			if ( ! isset( $_GET['trading_id'] ) ) { // phpcs:ignore
+				return;
+			}
+			$order_id = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
 			$order    = wc_get_order( $order_id );
-			if ( $order ) {
+			if ( $order && $order->get_payment_method() === $this->id && $order->has_status( 'pending' ) ) {
 				$order->update_status( 'cancelled', __( 'Mobile payment was canceled.', 'woocommerce-for-paygent-payment-main' ) );
 			}
 		}
