@@ -669,11 +669,13 @@ window.onload = send_form_submit;
 						} else {
 							$order->add_order_note( 'No redirect HTML' );
 							wc_add_notice( __( 'Payment has failed. Please try again.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+							$this->restore_cart_hash_for_retry( $order );
 							wp_safe_redirect( $cart_url );
 							exit;
 						}
 					} else {
 						$this->paygent_request->error_response( $response, $order );
+						$this->restore_cart_hash_for_retry( $order );
 						wp_safe_redirect( $cart_url );
 						exit;
 					}
@@ -712,15 +714,36 @@ window.onload = send_form_submit;
 							exit;
 						} else {
 							$order->add_order_note( 'No redirect URL' );
+							$this->restore_cart_hash_for_retry( $order );
 							wp_safe_redirect( wc_get_cart_url() );
 							exit;
 						}
 					} else {
 						$this->paygent_request->error_response( $response, $order );
+						$this->restore_cart_hash_for_retry( $order );
 					}
 				}
 			}
 			$order->save_meta_data();
+		}
+	}
+
+	/**
+	 * Restore the order cart hash from the current cart.
+	 *
+	 * The hash is cleared when the application succeeds so the pending order is
+	 * not reused as a checkout draft during external authentication. When the
+	 * follow-up application fails and the customer is sent back to the cart,
+	 * the hash is restored so checkout can resume this order instead of
+	 * abandoning it and creating a fresh one.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return void
+	 */
+	private function restore_cart_hash_for_retry( $order ) {
+		if ( function_exists( 'WC' ) && WC()->cart ) {
+			$order->set_cart_hash( WC()->cart->get_cart_hash() );
+			$order->save();
 		}
 	}
 

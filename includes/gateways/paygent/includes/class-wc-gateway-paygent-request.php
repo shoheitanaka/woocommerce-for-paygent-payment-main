@@ -254,18 +254,29 @@ class WC_Gateway_Paygent_Request {
 		$paymentaction = $payment->paymentaction ?? '';
 		if ( 'sale' !== $paymentaction && $order_payment_method === $payment->id ) {
 			$send_data['payment_id'] = $order->get_transaction_id();
-			// Set Order ID for Paygent.
-			$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-			if ( $paygent_order_id ) {
-				$send_data['trading_id'] = $paygent_order_id;
-			} elseif ( $this->prefix_order ) {
-				$send_data['trading_id'] = $this->prefix_order . $order->get_id();
-			} else {
-				$send_data['trading_id'] = 'wc_' . $order_id;
-			}
+			// A trading_id rebuilt from the current prefix option can mismatch the
+			// one sent on application, so it must go through the shared resolver.
+			$send_data['trading_id'] = $this->get_paygent_trading_id( $order, ! empty( $send_data['payment_id'] ) );
 			// Set Site ID.
 			if ( '1' !== $this->site_id ) {
 				$send_data['site_id'] = $this->site_id;
+			}
+			// A completion may run after Paygent already captured the payment
+			// (e.g. status webhook moved the order to completed after an
+			// admin-site capture), so check first and skip the redundant
+			// request. Subscription sales (121) use a different lifecycle and
+			// are sent as-is.
+			if ( '121' !== $telegram_kind ) {
+				$inquiry_check  = array(
+					'payment_id' => $send_data['payment_id'],
+					'trading_id' => $send_data['trading_id'],
+				);
+				$inquiry        = $this->send_paygent_request( $payment->test_mode, $order, '094', $inquiry_check, $payment->debug );
+				$inquiry_status = isset( $inquiry['result_array'][0]['payment_status'] ) ? (string) $inquiry['result_array'][0]['payment_status'] : '';
+				if ( in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
+					$order->add_order_note( __( 'The payment is already captured at Paygent, so the capture request was skipped.', 'woocommerce-for-paygent-payment-main' ) );
+					return;
+				}
 			}
 			$response = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind, $send_data, $payment->debug );
 			if ( '0' === $response['result'] ) {

@@ -68,14 +68,44 @@ class MbStatusCompletedSaleTest extends TestCase {
 
 		$this->gateway->order_mb_status_completed( $this->order->get_id() );
 
-		$this->assertCount( 1, $this->fake_request->sent, 'Sale telegram must be sent on completion.' );
-		$this->assertSame( '101', $this->fake_request->sent[0]['kind'] );
-		$this->assertSame( '48325757', $this->fake_request->sent[0]['data']['payment_id'] );
-		$this->assertSame( 'wcpg' . $this->order->get_id(), $this->fake_request->sent[0]['data']['trading_id'] );
+		$this->assertSame( array( '094', '101' ), array_column( $this->fake_request->sent, 'kind' ), 'Status is checked first, then the sale telegram is sent.' );
+		$this->assertSame( '48325757', $this->fake_request->sent[1]['data']['payment_id'] );
+		$this->assertSame( 'wcpg' . $this->order->get_id(), $this->fake_request->sent[1]['data']['trading_id'] );
 
 		$notes = wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) );
 		$this->assertNotEmpty( $notes );
 		$this->assertStringContainsString( 'set to sale at Paygent', $notes[0]->content );
+	}
+
+	public function test_completed_does_not_rebuild_trading_id_from_prefix(): void {
+		// Orders without the application-time trading_id meta must rely on the
+		// immutable payment_id alone (empty trading_id), never on a value
+		// rebuilt from the current prefix option.
+		$this->order->delete_meta_data( '_paygent_order_id' );
+		$this->order->save();
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$this->assertSame( array( '094', '101' ), array_column( $this->fake_request->sent, 'kind' ) );
+		foreach ( $this->fake_request->sent as $telegram ) {
+			$this->assertSame( '', $telegram['data']['trading_id'], 'trading_id must be omitted when only payment_id is reliable.' );
+			$this->assertSame( '48325757', $telegram['data']['payment_id'] );
+		}
+	}
+
+	public function test_completed_skips_sale_telegram_when_already_captured(): void {
+		// A webhook-driven completion can run after Paygent already captured
+		// the payment (e.g. capture from the Paygent admin site).
+		$this->fake_request->responses['094'] = array(
+			'result'       => '0',
+			'result_array' => array( array( 'payment_status' => '40' ) ),
+		);
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$this->assertSame( array( '094' ), array_column( $this->fake_request->sent, 'kind' ), 'No capture telegram may be sent for an already-captured payment.' );
+		$notes = wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) );
+		$this->assertStringContainsString( 'already captured at Paygent', $notes[0]->content );
 	}
 
 	public function test_failed_capture_moves_order_back_to_on_hold(): void {
@@ -87,26 +117,11 @@ class MbStatusCompletedSaleTest extends TestCase {
 
 		$this->gateway->order_mb_status_completed( $this->order->get_id() );
 
-		$this->assertSame( array( '101', '094' ), array_column( $this->fake_request->sent, 'kind' ) );
+		$this->assertSame( array( '094', '101', '094' ), array_column( $this->fake_request->sent, 'kind' ), 'Pre-check, failed capture, then re-check.' );
 		$reloaded = wc_get_order( $this->order->get_id() );
 		$this->assertTrue( $reloaded->has_status( 'on-hold' ), 'A genuinely uncaptured payment must pull the order back to on-hold.' );
 		$notes = array_column( wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) ), 'content' );
 		$this->assertStringContainsString( 'moved back to on-hold', implode( "\n", $notes ) );
-	}
-
-	public function test_failed_capture_with_already_captured_payment_keeps_status(): void {
-		$this->fake_request->responses['101'] = array( 'result' => '1', 'responseCode' => '7003' );
-		$this->fake_request->responses['094'] = array(
-			'result'       => '0',
-			'result_array' => array( array( 'payment_status' => '40' ) ),
-		);
-
-		$this->gateway->order_mb_status_completed( $this->order->get_id() );
-
-		$reloaded = wc_get_order( $this->order->get_id() );
-		$this->assertTrue( $reloaded->has_status( 'pending' ), 'An already-captured payment must not change the order status.' );
-		$notes = wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) );
-		$this->assertStringContainsString( 'already reports this payment as captured', $notes[0]->content );
 	}
 
 	public function test_completed_skips_sale_telegram_when_paymentaction_is_sale(): void {
