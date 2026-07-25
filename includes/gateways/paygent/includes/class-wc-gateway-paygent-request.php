@@ -279,8 +279,45 @@ class WC_Gateway_Paygent_Request {
 				} else {
 					$order->add_order_note( __( 'Failed this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
 				}
+			} else {
+				$this->handle_failed_capture_on_completion( $order, $payment, $send_data, $response );
 			}
 		}
+	}
+
+	/**
+	 * Handle a failed capture request sent on order completion.
+	 *
+	 * The payment may in fact already be captured (e.g. carrier payments applied
+	 * with a same-time sale flag reject a second capture with a status-mismatch
+	 * error), so the actual Paygent status is checked first. Only when the
+	 * payment is really not captured is the order pulled back to on-hold so the
+	 * failure cannot go unnoticed.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @param object   $payment Payment gateway object.
+	 * @param array    $send_data Data sent with the capture telegram.
+	 * @param array    $response Failed capture response.
+	 * @return void
+	 */
+	protected function handle_failed_capture_on_completion( $order, $payment, $send_data, $response ) {
+		$send_data_check = array(
+			'payment_id' => isset( $send_data['payment_id'] ) ? $send_data['payment_id'] : '',
+			'trading_id' => isset( $send_data['trading_id'] ) ? $send_data['trading_id'] : '',
+		);
+		$inquiry         = $this->send_paygent_request( $payment->test_mode, $order, '094', $send_data_check, $payment->debug );
+		$inquiry_status  = isset( $inquiry['result_array'][0]['payment_status'] ) ? (string) $inquiry['result_array'][0]['payment_status'] : '';
+		if ( in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
+			$order->add_order_note( __( 'The capture request failed, but Paygent already reports this payment as captured. No further action is needed.', 'woocommerce-for-paygent-payment-main' ) );
+			return;
+		}
+		$error_code   = isset( $response['responseCode'] ) ? $response['responseCode'] : '';
+		$error_detail = isset( $response['responseDetail'] ) ? mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) : '';
+		$order->update_status(
+			'on-hold',
+			// translators: %1$s: Paygent error code, %2$s: Paygent error message.
+			sprintf( __( 'Capture at Paygent failed (error code: %1$s %2$s), so the order was moved back to on-hold. Please try completing the order again or capture the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code, $error_detail )
+		);
 	}
 
 	/**
@@ -377,7 +414,10 @@ class WC_Gateway_Paygent_Request {
 				$order->add_order_note( $message );
 				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
-			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, $send_data_check, $payment->debug );
+			// Subscription cancellation (122) needs the prepared refund data
+			// (running_id / running_target_ym); one-time cancellation telegrams
+			// only carry the payment / trading identifiers.
+			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, $is_subscription ? $send_data_refund : $send_data_check, $payment->debug );
 			if ( '1' === $del_result['result'] ) {
 				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $del_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $del_result['responseDetail'], 'UTF-8', 'SJIS' );
 				$order->add_order_note( $message );

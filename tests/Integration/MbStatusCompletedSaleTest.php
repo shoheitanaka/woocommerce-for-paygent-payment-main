@@ -32,17 +32,17 @@ class MbStatusCompletedSaleTest extends TestCase {
 		$this->gateway = new \WC_Gateway_Paygent_MB();
 
 		$this->fake_request = new class() extends \WC_Gateway_Paygent_Request {
-			public $sent     = array();
-			public $response = array(
-				'result'       => '0',
-				'result_array' => array( array() ),
-			);
+			public $sent      = array();
+			public $responses = array();
 			public function send_paygent_request( $test_mode, $order, $telegram_kind, $send_data, $debug = 'yes' ) {
 				$this->sent[] = array(
 					'kind' => $telegram_kind,
 					'data' => $send_data,
 				);
-				return $this->response;
+				return $this->responses[ $telegram_kind ] ?? array(
+					'result'       => '0',
+					'result_array' => array( array() ),
+				);
 			}
 		};
 
@@ -76,6 +76,37 @@ class MbStatusCompletedSaleTest extends TestCase {
 		$notes = wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) );
 		$this->assertNotEmpty( $notes );
 		$this->assertStringContainsString( 'set to sale at Paygent', $notes[0]->content );
+	}
+
+	public function test_failed_capture_moves_order_back_to_on_hold(): void {
+		$this->fake_request->responses['101'] = array( 'result' => '1', 'responseCode' => 'P004' );
+		$this->fake_request->responses['094'] = array(
+			'result'       => '0',
+			'result_array' => array( array( 'payment_status' => '21' ) ),
+		);
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$this->assertSame( array( '101', '094' ), array_column( $this->fake_request->sent, 'kind' ) );
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertTrue( $reloaded->has_status( 'on-hold' ), 'A genuinely uncaptured payment must pull the order back to on-hold.' );
+		$notes = array_column( wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) ), 'content' );
+		$this->assertStringContainsString( 'moved back to on-hold', implode( "\n", $notes ) );
+	}
+
+	public function test_failed_capture_with_already_captured_payment_keeps_status(): void {
+		$this->fake_request->responses['101'] = array( 'result' => '1', 'responseCode' => '7003' );
+		$this->fake_request->responses['094'] = array(
+			'result'       => '0',
+			'result_array' => array( array( 'payment_status' => '40' ) ),
+		);
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertTrue( $reloaded->has_status( 'pending' ), 'An already-captured payment must not change the order status.' );
+		$notes = wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) );
+		$this->assertStringContainsString( 'already reports this payment as captured', $notes[0]->content );
 	}
 
 	public function test_completed_skips_sale_telegram_when_paymentaction_is_sale(): void {

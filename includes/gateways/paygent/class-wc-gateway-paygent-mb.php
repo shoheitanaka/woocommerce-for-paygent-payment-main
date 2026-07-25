@@ -950,10 +950,10 @@ window.onload = send_form_submit;
 	 * @return mixed
 	 */
 	public function subscription_order_refund( $order_id, $amount = null ) {
-		$telegram_array   = array(
+		$telegram_array  = array(
 			'sale_cancel' => '122',
 		);
-		$permit_statuses  = array(
+		$permit_statuses = array(
 			5 => array(// docomo.
 				'sale_cancel' => array( 20, 21, 44 ),
 			),
@@ -964,8 +964,11 @@ window.onload = send_form_submit;
 				'sale_cancel' => array( 20, 21, 40 ),
 			),
 		);
-		$order            = wc_get_order( $order_id );
-		$target_ym        = date_i18n( 'YYYYMM', $order->get_date_created() );
+		$order           = wc_get_order( $order_id );
+		$date_created    = $order->get_date_created();
+		// 'YYYYMM' is not a valid date format ('Y' would repeat) and
+		// date_i18n() expects a timestamp, not a WC_DateTime.
+		$target_ym        = $date_created ? $date_created->date( 'Ym' ) : date_i18n( 'Ym' );
 		$running_id       = $order->get_meta( 'running_id', true );
 		$send_data_refund = array(
 			'running_id'        => $running_id,
@@ -1198,7 +1201,10 @@ window.onload = send_form_submit;
 			}
 			$order_id = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
 			$order    = wc_get_order( $order_id );
-			if ( $order && $order->get_payment_method() === $this->id && $order->has_status( 'pending' ) ) {
+			// The application webhook (payment_status 10) may move the order to
+			// on-hold before the customer returns, so cancellation is accepted
+			// from both pre-authorization statuses.
+			if ( $order && $order->get_payment_method() === $this->id && $order->has_status( array( 'pending', 'on-hold' ) ) ) {
 				$order->update_status( 'cancelled', __( 'Mobile payment was canceled.', 'woocommerce-for-paygent-payment-main' ) );
 			}
 		}
