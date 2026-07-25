@@ -77,6 +77,19 @@ class MbSingleOrderWebhookTest extends TestCase {
 		);
 	}
 
+	public function test_mb_webhook_shop_order_40_on_completed_order_keeps_status(): void {
+		// The capture notice (40) arrives after the shop finished the order.
+		// The order must not be moved backwards to processing, and the note must
+		// say the status was kept, not that it was changed.
+		$order = $this->make_order( 'shop_order', 'completed' );
+		$order->shouldNotReceive( 'update_status' );
+		$order->shouldReceive( 'add_order_note' )
+			->once()
+			->with( Mockery::pattern( '/left unchanged/' ) );
+
+		$this->endpoint->paygent_mb_webhook( $order, array( 'payment_status' => '40' ) );
+	}
+
 	public function test_mb_webhook_shop_order_60_adds_note_only(): void {
 		$order = $this->make_order( 'shop_order', 'processing' );
 		$order->shouldNotReceive( 'update_status' );

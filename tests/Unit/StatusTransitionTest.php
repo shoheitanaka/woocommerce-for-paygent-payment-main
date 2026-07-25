@@ -72,12 +72,12 @@ class StatusTransitionTest extends TestCase {
 		$this->endpoint->paygent_update_status_webhook( $order, 'processing' );
 	}
 
-	public function test_backward_transition_adds_abnormal_note(): void {
+	public function test_backward_transition_keeps_status_and_notes_it(): void {
 		// processing (index 2) → on-hold (index 1): backwards.
-		// Adds two notes: one "abnormal transition" warning + one status-change message.
+		// The status is kept and a single note records the ignored notification.
 		$order = $this->make_order( 'shop_order', 'processing' );
 		$order->shouldNotReceive( 'update_status' );
-		$order->shouldReceive( 'add_order_note' )->twice();
+		$order->shouldReceive( 'add_order_note' )->once()->with( Mockery::pattern( '/left unchanged/' ) );
 
 		$this->endpoint->paygent_update_status_webhook( $order, 'on-hold' );
 	}
