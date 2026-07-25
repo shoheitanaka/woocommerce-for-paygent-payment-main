@@ -248,35 +248,118 @@ class WC_Gateway_Paygent_Request {
 	public function order_paygent_status_completed( $order_id, $telegram_kind, $payment, $send_data = array() ) {
 		$order                = wc_get_order( $order_id );
 		$order_payment_method = $order->get_payment_method();
-		if ( isset( $payment->paymentaction ) && 'sale' !== $payment->paymentaction && $order_payment_method === $payment->id ) {
+		// Gateways without a paymentaction setting (MB, Paidy) always authorize first,
+		// so the sale request must be sent on completion; only skip when the gateway
+		// explicitly charged at purchase time (paymentaction === 'sale').
+		$paymentaction = $payment->paymentaction ?? '';
+		if ( 'sale' !== $paymentaction && $order_payment_method === $payment->id ) {
 			$send_data['payment_id'] = $order->get_transaction_id();
-			// Set Order ID for Paygent.
-			$paygent_order_id = $order->get_meta( '_paygent_order_id' );
-			if ( $paygent_order_id ) {
-				$send_data['trading_id'] = $paygent_order_id;
-			} elseif ( $this->prefix_order ) {
-				$send_data['trading_id'] = $this->prefix_order . $order->get_id();
-			} else {
-				$send_data['trading_id'] = 'wc_' . $order_id;
-			}
+			// A trading_id rebuilt from the current prefix option can mismatch the
+			// one sent on application, so it must go through the shared resolver.
+			$send_data['trading_id'] = $this->get_paygent_trading_id( $order, ! empty( $send_data['payment_id'] ) );
 			// Set Site ID.
 			if ( '1' !== $this->site_id ) {
 				$send_data['site_id'] = $this->site_id;
+			}
+			// A completion may run after Paygent already captured the payment or
+			// while a previous sale request is still in flight (e.g. status 30
+			// after a lost response), so the capture is only sent while the
+			// payment is verifiably authorized (20/21). Subscription sales
+			// (121) use a different lifecycle and are sent as-is.
+			if ( '121' !== $telegram_kind ) {
+				$inquiry_check  = array(
+					'payment_id' => $send_data['payment_id'],
+					'trading_id' => $send_data['trading_id'],
+				);
+				$inquiry        = $this->send_paygent_request( $payment->test_mode, $order, '094', $inquiry_check, $payment->debug );
+				$inquiry_ok     = isset( $inquiry['result'] ) && '0' === $inquiry['result'] && isset( $inquiry['result_array'][0]['payment_status'] );
+				$inquiry_status = $inquiry_ok ? (string) $inquiry['result_array'][0]['payment_status'] : '';
+				if ( $inquiry_ok && in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
+					$order->add_order_note( __( 'The payment is already captured at Paygent, so the capture request was skipped.', 'woocommerce-for-paygent-payment-main' ) );
+					return;
+				}
+				if ( ! $inquiry_ok || ! in_array( $inquiry_status, array( '20', '21' ), true ) ) {
+					$order->add_order_note(
+						// translators: %s: Paygent payment status (or "unknown").
+						sprintf( __( 'The capture request was not sent because the Paygent payment status could not be confirmed as authorized (status: %s). Please verify the payment on the Paygent admin site and complete the order again if needed.', 'woocommerce-for-paygent-payment-main' ), '' === $inquiry_status ? 'unknown' : $inquiry_status )
+					);
+					return;
+				}
 			}
 			$response = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind, $send_data, $payment->debug );
 			if ( '0' === $response['result'] ) {
 				$order->add_order_note( __( 'Success this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
 			} elseif ( 'paygent_paidy' === $order_payment_method ) {
-				// Paidy Payment.
-					$send_data['trading_id'] = $order_id;
-					$response_again          = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind, $send_data, $payment->debug );
+				// Paidy Payment: retry with the raw order ID as trading_id, but keep
+				// the resolved identifiers for the failure re-check below.
+				$retry_send_data               = $send_data;
+				$retry_send_data['trading_id'] = $order_id;
+				$response_again                = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind, $retry_send_data, $payment->debug );
 				if ( '0' === $response_again['result'] ) {
 					$order->add_order_note( __( 'Success this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
 				} else {
 					$order->add_order_note( __( 'Failed this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
+					$this->handle_failed_capture_on_completion( $order, $payment, $send_data, $response_again );
 				}
+			} elseif ( '121' === $telegram_kind ) {
+				// Subscription sales have their own inquiry lifecycle (125 with
+				// running_id), so the one-time-payment inquiry cannot tell whether
+				// this billing period was sold. Record the failure without touching
+				// the order status to avoid re-sending 121 for a sold period.
+				$error_code = isset( $response['responseCode'] ) ? $response['responseCode'] : '';
+				// translators: %s: Paygent error code.
+				$order->add_order_note( sprintf( __( 'Failed to capture the subscription sale at Paygent (error code: %s). Please check the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code ) );
+			} else {
+				$this->handle_failed_capture_on_completion( $order, $payment, $send_data, $response );
 			}
 		}
+	}
+
+	/**
+	 * Handle a failed capture request sent on order completion.
+	 *
+	 * The payment may in fact already be captured (e.g. carrier payments applied
+	 * with a same-time sale flag reject a second capture with a status-mismatch
+	 * error), so the actual Paygent status is checked first. Only when the
+	 * payment is really not captured is the order pulled back to on-hold so the
+	 * failure cannot go unnoticed.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @param object   $payment Payment gateway object.
+	 * @param array    $send_data Data sent with the capture telegram.
+	 * @param array    $response Failed capture response.
+	 * @return void
+	 */
+	protected function handle_failed_capture_on_completion( $order, $payment, $send_data, $response ) {
+		$send_data_check = array(
+			'payment_id' => isset( $send_data['payment_id'] ) ? $send_data['payment_id'] : '',
+			'trading_id' => isset( $send_data['trading_id'] ) ? $send_data['trading_id'] : '',
+		);
+		$inquiry        = $this->send_paygent_request( $payment->test_mode, $order, '094', $send_data_check, $payment->debug );
+		$inquiry_ok     = isset( $inquiry['result'] ) && '0' === $inquiry['result'] && isset( $inquiry['result_array'][0]['payment_status'] );
+		$inquiry_status = $inquiry_ok ? (string) $inquiry['result_array'][0]['payment_status'] : '';
+		if ( $inquiry_ok && in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
+			$order->add_order_note( __( 'The capture request failed, but Paygent already reports this payment as captured. No further action is needed.', 'woocommerce-for-paygent-payment-main' ) );
+			return;
+		}
+		$error_code   = isset( $response['responseCode'] ) ? $response['responseCode'] : '';
+		$error_detail = isset( $response['responseDetail'] ) ? mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) : '';
+		if ( ! $inquiry_ok || ! in_array( $inquiry_status, array( '20', '21' ), true ) ) {
+			// The remote state is not verifiably authorized: the inquiry failed
+			// (the capture may have succeeded with only the response lost) or
+			// the payment is in flight (e.g. 30). Keep the status and request
+			// manual reconciliation instead of encouraging a retry.
+			$order->add_order_note(
+				// translators: %1$s: Paygent error code, %2$s: Paygent error message.
+				sprintf( __( 'The capture request failed (error code: %1$s %2$s) and the payment could not be confirmed as still authorized. The order status was kept — please verify the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code, $error_detail )
+			);
+			return;
+		}
+		$order->update_status(
+			'on-hold',
+			// translators: %1$s: Paygent error code, %2$s: Paygent error message.
+			sprintf( __( 'Capture at Paygent failed (error code: %1$s %2$s), so the order was moved back to on-hold. Please try completing the order again or capture the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code, $error_detail )
+		);
 	}
 
 	/**
@@ -317,10 +400,13 @@ class WC_Gateway_Paygent_Request {
 	 * @param array  $permit_statuses Permit statuses.
 	 * @param array  $send_data_refund Send data for refund.
 	 * @param object $payment Payment object.
+	 * @param array  $status_messages Optional explanations for non-refundable statuses,
+	 *                                keyed like $permit_statuses (career type or 0) then
+	 *                                by payment status. Appended to the failure note.
 	 *
 	 * @return mixed
 	 */
-	public function paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $payment ) {
+	public function paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $payment, $status_messages = array() ) {
 		if ( is_null( $amount ) ) {
 			return false;
 		}
@@ -341,22 +427,40 @@ class WC_Gateway_Paygent_Request {
 		if ( $is_subscription ) {
 			unset( $send_data_refund['payment_id'] );
 		}
+		// The inquiry response returns every field as a string while gateways may
+		// declare permit statuses as integers (and numeric career keys are always
+		// stored as integers by PHP), so both sides must be normalized before
+		// comparison. career_type is empty for non-carrier payments.
+		$order_info      = isset( $order_result['result_array'][0] ) && is_array( $order_result['result_array'][0] ) ? $order_result['result_array'][0] : array();
+		$response_status = isset( $order_info['payment_status'] ) ? (string) $order_info['payment_status'] : '';
+		$response_career = isset( $order_info['career_type'] ) && '' !== (string) $order_info['career_type'] ? (int) $order_info['career_type'] : null;
+		$status_hint     = '';
+		if ( null !== $response_career && isset( $status_messages[ $response_career ][ $response_status ] ) ) {
+			$status_hint = ' ' . $status_messages[ $response_career ][ $response_status ];
+		} elseif ( isset( $status_messages[0][ $response_status ] ) ) {
+			$status_hint = ' ' . $status_messages[0][ $response_status ];
+		}
 		if ( $amount === $order_total ) {
 			foreach ( $permit_statuses as $key => $permit_status ) {
-				if ( 0 === $key || ( isset( $order_result['result_array'][0]['career_type'] ) && $order_result['result_array'][0]['career_type'] === $key ) ) {
-					if ( isset( $permit_status['auth_cancel'] ) && in_array( $order_result['result_array'][0]['payment_status'], $permit_status['auth_cancel'], true ) === true ) {
+				if ( 0 === $key || ( null !== $response_career && (int) $key === $response_career ) ) {
+					if ( isset( $permit_status['auth_cancel'] ) && in_array( $response_status, array_map( 'strval', $permit_status['auth_cancel'] ), true ) === true ) {
 						$telegram_kind_del = $telegram_array['auth_cancel'];// Authority Cancel.
-					} elseif ( isset( $permit_status['sale_cancel'] ) && in_array( $order_result['result_array'][0]['payment_status'], $permit_status['sale_cancel'], true ) === true ) {
+					} elseif ( isset( $permit_status['sale_cancel'] ) && in_array( $response_status, array_map( 'strval', $permit_status['sale_cancel'] ), true ) === true ) {
 						$telegram_kind_del = $telegram_array['sale_cancel'];// Sales Cancel.
-					} else {
-						// translators: %s: payment status.
-						$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $order_result['result_array'][0]['payment_status'] );
-						$order->add_order_note( $message );
-						return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 					}
 				}
 			}
-			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, $send_data_check, $payment->debug );
+			if ( ! isset( $telegram_kind_del ) ) {
+				// translators: %s: payment status.
+				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $response_status ) . $status_hint;
+				$order->add_order_note( $message );
+				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
+			}
+			// Carrier subscription cancellation (122) needs the prepared refund
+			// data (running_id / running_target_ym); every other cancellation
+			// telegram (102, CC 021/023, ...) carries the payment / trading
+			// identifiers, including on subscription orders of other gateways.
+			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, ( $is_subscription && '122' === $telegram_kind_del ) ? $send_data_refund : $send_data_check, $payment->debug );
 			if ( '1' === $del_result['result'] ) {
 				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $del_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $del_result['responseDetail'], 'UTF-8', 'SJIS' );
 				$order->add_order_note( $message );
@@ -372,18 +476,19 @@ class WC_Gateway_Paygent_Request {
 			}
 		} elseif ( $amount < $order_total ) {
 			foreach ( $permit_statuses as $key => $permit_status ) {
-				if ( 0 === $key || ( isset( $order_result['result_array'][0]['career_type'] ) && $key === $order_result['result_array'][0]['career_type'] ) ) {
-					if ( in_array( $order_result['result_array'][0]['payment_status'], $permit_status['auth_change'], true ) ) {
+				if ( 0 === $key || ( null !== $response_career && (int) $key === $response_career ) ) {
+					if ( isset( $permit_status['auth_change'] ) && in_array( $response_status, array_map( 'strval', $permit_status['auth_change'] ), true ) ) {
 						$telegram_kind_refund = $telegram_array['auth_change'];// Authory Change.
-					} elseif ( in_array( $order_result['result_array'][0]['payment_status'], $permit_status['sale_change'], true ) ) {
+					} elseif ( isset( $permit_status['sale_change'] ) && in_array( $response_status, array_map( 'strval', $permit_status['sale_change'] ), true ) ) {
 						$telegram_kind_refund = $telegram_array['sale_change'];// Sales Change.
-					} else {
-						// translators: %s: payment status.
-						$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $order_result['result_array'][0]['payment_status'] );
-						$order->add_order_note( $message );
-						return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 					}
 				}
+			}
+			if ( ! isset( $telegram_kind_refund ) ) {
+				// translators: %s: payment status.
+				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . sprintf( __( 'Not matched payment_status %s for refund.', 'woocommerce-for-paygent-payment-main' ), $response_status ) . $status_hint;
+				$order->add_order_note( $message );
+				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
 			$refund_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_refund, $send_data_refund, $payment->debug );
 			if ( '1' === $refund_result['result'] ) {

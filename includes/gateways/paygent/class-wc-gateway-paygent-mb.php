@@ -450,6 +450,10 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 						$payment_url = $response_user['result_array'][0]['redirect_url'];
 					}
 					$order->save_meta_data();
+					// Clear the cart hash so Store API / classic checkout do not reuse this pending
+					// order as a draft and overwrite payment_method while the customer is on the
+					// carrier authentication page.
+					$order->set_cart_hash( '' );
 					$order->save();
 					// translators: Payment method name.
 					$order->update_status( 'pending', sprintf( __( 'Pending %s', 'woocommerce-for-paygent-payment-main' ), __( 'Carrier Payment', 'woocommerce-for-paygent-payment-main' ) . ':' . $mb_type ) );
@@ -478,6 +482,10 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 				$order->add_meta_data( '_redirect_html', mb_convert_encoding( $response['result_array'][0]['redirect_html'], 'UTF-8', 'SJIS' ) );
 			}
 			$order->save_meta_data();
+			// Clear the cart hash so Store API / classic checkout do not reuse this pending
+			// order as a draft and overwrite payment_method while the customer is on the
+			// carrier payment page.
+			$order->set_cart_hash( '' );
 			$order->save();
 			$order->update_status(
 				'pending',
@@ -496,6 +504,10 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 					'redirect' => $payment_url,
 				);
 			} else {
+				// The application was accepted but no redirect field came back;
+				// restore the cart hash so checkout can resume this pending
+				// order instead of creating a duplicate one.
+				$this->restore_cart_hash_for_retry( $order );
 				return array( 'result' => 'failure' );
 			}
 		} else {
@@ -565,8 +577,8 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 		$send_data['amount'] = $order->get_total();
 
 		$send_data['return_url'] = $this->get_return_url( $order );
-		$send_data['cancel_url'] = wc_get_cart_url() . '?mb_cancel=yes';
-		$send_data['other_url']  = wc_get_cart_url() . '?mb_cancel=yes';
+		$send_data['cancel_url'] = $this->mb_cancel_url( $order );
+		$send_data['other_url']  = $this->mb_cancel_url( $order );
 		if ( $this->is_device() === 'mb-docomo' ) {
 			$send_data['pc_mobile_type'] = '1';
 		} elseif ( $this->is_device() === 'mb-au' ) {
@@ -661,11 +673,13 @@ window.onload = send_form_submit;
 						} else {
 							$order->add_order_note( 'No redirect HTML' );
 							wc_add_notice( __( 'Payment has failed. Please try again.', 'woocommerce-for-paygent-payment-main' ), 'error' );
+							$this->restore_cart_hash_for_retry( $order );
 							wp_safe_redirect( $cart_url );
 							exit;
 						}
 					} else {
 						$this->paygent_request->error_response( $response, $order );
+						$this->restore_cart_hash_for_retry( $order );
 						wp_safe_redirect( $cart_url );
 						exit;
 					}
@@ -704,15 +718,36 @@ window.onload = send_form_submit;
 							exit;
 						} else {
 							$order->add_order_note( 'No redirect URL' );
+							$this->restore_cart_hash_for_retry( $order );
 							wp_safe_redirect( wc_get_cart_url() );
 							exit;
 						}
 					} else {
 						$this->paygent_request->error_response( $response, $order );
+						$this->restore_cart_hash_for_retry( $order );
 					}
 				}
 			}
 			$order->save_meta_data();
+		}
+	}
+
+	/**
+	 * Restore the order cart hash from the current cart.
+	 *
+	 * The hash is cleared when the application succeeds so the pending order is
+	 * not reused as a checkout draft during external authentication. When the
+	 * follow-up application fails and the customer is sent back to the cart,
+	 * the hash is restored so checkout can resume this order instead of
+	 * abandoning it and creating a fresh one.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return void
+	 */
+	private function restore_cart_hash_for_retry( $order ) {
+		if ( function_exists( 'WC' ) && WC()->cart ) {
+			$order->set_cart_hash( WC()->cart->get_cart_hash() );
+			$order->save();
 		}
 	}
 
@@ -728,7 +763,7 @@ window.onload = send_form_submit;
 		$send_data['amount']         = $this->set_amount( $order );
 		$send_data['trading_id']     = $this->set_trading_id( $order );
 		$send_data['return_url']     = $this->get_return_url( $order );
-		$send_data['cancel_url']     = wc_get_cart_url() . '?mb_cancel=yes';
+		$send_data['cancel_url']     = $this->mb_cancel_url( $order );
 		$send_data['other_url']      = wc_get_cart_url();
 		$send_data['pc_mobile_type'] = $order->get_meta( '_pc_mobile_type', true );
 		$send_data['open_id']        = isset( $_GET['open_id'] ) ? sanitize_text_field( wp_unslash( $_GET['open_id'] ) ) : '';// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -818,7 +853,9 @@ window.onload = send_form_submit;
 			$payment_id = wc_clean( $_GET['payment_id'] );// phpcs:ignore
 			// set transaction id for Paygent Order Number.
 			$order->payment_complete( wc_clean( $payment_id ) );
-			$order->add_meta_data( 'payment_id', wc_clean( $payment_id ), true );
+			// update (not add): the thankyou hook runs on every page view and
+			// concurrent requests could otherwise persist duplicate meta rows.
+			$order->update_meta_data( 'payment_id', wc_clean( $payment_id ) );
 			if ( 'yes' === $this->update_status ) {
 				$order->update_status( 'completed' );
 			} else {
@@ -890,23 +927,46 @@ window.onload = send_form_submit;
 				'auth_change' => array( 20, 21 ),
 				'sale_change' => array( 44 ),
 			),
-			4 => array(// au.
+			4 => array(// au: correction (103) is only allowed at Authority OK (20); captured (40) payments can only be cancelled in full.
 				'auth_cancel' => array( 20 ),
 				'sale_cancel' => array( 40 ),
 				'auth_change' => array( 20 ),
-				'sale_change' => array( 40 ),
 			),
-			6 => array(// SoftBank(B).
+			6 => array(// SoftBank(B): correction (103) is only allowed at 20/21; captured (40) payments can only be cancelled in full.
 				'auth_cancel' => array( 20, 21 ),
 				'sale_cancel' => array( 40 ),
-				'auth_change' => array( 20.21 ),
-				'sale_change' => array( 40 ),
+				'auth_change' => array( 20, 21 ),
 			),
 		);
 		$send_data_refund = array(
 			'amount' => $amount,
 		);
-		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this );
+		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this, $this->mb_refund_status_messages() );
+	}
+
+	/**
+	 * Explanations for carrier statuses that reject refunds.
+	 *
+	 * docomo: cancellation is not allowed at Sales Completed (40); it becomes
+	 * refundable once the carrier completion notice moves it to Capture
+	 * Completed (44), from 3:30 AM the next day (sometimes the day after).
+	 * au / SoftBank: captured (40) payments only reject partial refunds —
+	 * correction (103) is limited to the authorized statuses by the spec.
+	 *
+	 * @return array
+	 */
+	private function mb_refund_status_messages() {
+		return array(
+			4 => array(
+				'40' => __( 'au Easy Payment allows only full refunds after capture (40). Partial refunds are only possible while the payment is authorized (20).', 'woocommerce-for-paygent-payment-main' ),
+			),
+			5 => array(
+				'40' => __( 'd-Payment cannot be refunded yet: the Paygent status is Sales Completed (40). It becomes refundable after the carrier completion notice updates it to Capture Completed (44), which happens from 3:30 AM the next day (or the day after in some cases). Please retry then.', 'woocommerce-for-paygent-payment-main' ),
+			),
+			6 => array(
+				'40' => __( 'SoftBank Matomete Payment allows only full refunds after capture (40). Partial refunds are only possible while the payment is authorized (20/21).', 'woocommerce-for-paygent-payment-main' ),
+			),
+		);
 	}
 
 	/**
@@ -917,10 +977,10 @@ window.onload = send_form_submit;
 	 * @return mixed
 	 */
 	public function subscription_order_refund( $order_id, $amount = null ) {
-		$telegram_array   = array(
+		$telegram_array  = array(
 			'sale_cancel' => '122',
 		);
-		$permit_statuses  = array(
+		$permit_statuses = array(
 			5 => array(// docomo.
 				'sale_cancel' => array( 20, 21, 44 ),
 			),
@@ -931,14 +991,26 @@ window.onload = send_form_submit;
 				'sale_cancel' => array( 20, 21, 40 ),
 			),
 		);
-		$order            = wc_get_order( $order_id );
-		$target_ym        = date_i18n( 'YYYYMM', $order->get_date_created() );
+		$order        = wc_get_order( $order_id );
+		$date_created = $order->get_date_created();
+		// The first subscription sale is billed the day after application
+		// (first_sales_date defaults to the next day; the au branch sets it
+		// explicitly), so the target month must come from that date — an
+		// end-of-month checkout would otherwise point 122 at a month with no
+		// matching sale.
+		if ( $date_created ) {
+			$first_sale_date = clone $date_created;
+			$first_sale_date->modify( '+1 day' );
+			$target_ym = $first_sale_date->format( 'Ym' );
+		} else {
+			$target_ym = date_i18n( 'Ym', strtotime( '+1 day' ) );
+		}
 		$running_id       = $order->get_meta( 'running_id', true );
 		$send_data_refund = array(
 			'running_id'        => $running_id,
 			'running_target_ym' => $target_ym,
 		);
-		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this );
+		return $this->paygent_request->paygent_process_refund( $order_id, $amount, $telegram_array, $permit_statuses, $send_data_refund, $this, $this->mb_refund_status_messages() );
 	}
 
 	/**
@@ -1160,11 +1232,52 @@ window.onload = send_form_submit;
 		if ( isset( $_GET['mb_cancel'] ) && 'yes' === $_GET['mb_cancel'] ) { // phpcs:ignore
 			// Display a notice to the customer that their mobile payment was canceled.
 			wc_add_notice( __( 'Your mobile payment has been canceled.', 'woocommerce-for-paygent-payment-main' ), 'notice' );
-			$order_id = preg_replace( '/[^0-9]/', '', $_GET['trading_id'] ); // phpcs:ignore
-			$order    = wc_get_order( $order_id );
-			if ( $order ) {
+			if ( ! isset( $_GET['key'] ) ) { // phpcs:ignore
+				return;
+			}
+			// Prefer the order ID carried on cancel_url: for subscription
+			// checkouts the trading_id derives from the subscription, not the
+			// checkout order, so it cannot locate the order to cancel.
+			if ( isset( $_GET['order_id'] ) ) { // phpcs:ignore
+				$order_id = absint( wp_unslash( $_GET['order_id'] ) ); // phpcs:ignore
+			} elseif ( isset( $_GET['trading_id'] ) ) { // phpcs:ignore
+				$order_id = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
+			} else {
+				return;
+			}
+			$order_key = sanitize_text_field( wp_unslash( $_GET['key'] ) ); // phpcs:ignore
+			$order     = wc_get_order( $order_id );
+			// The order key set on cancel_url proves this return belongs to the
+			// order — a trading_id alone is guessable on a public URL.
+			if ( ! $order || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+				return;
+			}
+			// The application webhook (payment_status 10) may move the order to
+			// on-hold before the customer returns, so cancellation is accepted
+			// from both pre-authorization statuses.
+			if ( $order->get_payment_method() === $this->id && $order->has_status( array( 'pending', 'on-hold' ) ) ) {
 				$order->update_status( 'cancelled', __( 'Mobile payment was canceled.', 'woocommerce-for-paygent-payment-main' ) );
 			}
 		}
+	}
+
+	/**
+	 * Build the carrier cancellation return URL for an order.
+	 *
+	 * Carries the order key so paygent_cart_cancel() can verify the return
+	 * belongs to the order before cancelling it.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return string
+	 */
+	private function mb_cancel_url( $order ) {
+		return add_query_arg(
+			array(
+				'mb_cancel' => 'yes',
+				'order_id'  => $order->get_id(),
+				'key'       => $order->get_order_key(),
+			),
+			wc_get_cart_url()
+		);
 	}
 }
