@@ -314,6 +314,26 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 		}
 
 		/**
+		 * Whitelisted 3D Secure 2.0 challenge failure messages, keyed by a short code.
+		 *
+		 * Only the code (never free text) travels through the checkout
+		 * redirect URL (`paygent_3ds2_error`), so a crafted query value can
+		 * only select one of these fixed, plugin-authored strings — never
+		 * arbitrary attacker-supplied text impersonating a payment or
+		 * support message.
+		 *
+		 * @return array<string, string> Code => translated message.
+		 */
+		public static function get_3ds2_failure_messages(): array {
+			return array(
+				'auth_failed'     => __( 'Authentication was not obtained for credit card payment.', 'woocommerce-for-paygent-payment-main' ),
+				'attempt_unknown' => __( 'Attempt kbn was not answered. Something seems to be wrong. Please try a different card or contact the site administrator.', 'woocommerce-for-paygent-payment-main' ),
+				'no_3ds_card'     => __( 'This payment uses a card that does not have 3D Secure.', 'woocommerce-for-paygent-payment-main' )
+					. ' ' . __( 'Please use a card that supports 3D Secure.', 'woocommerce-for-paygent-payment-main' ),
+			);
+		}
+
+		/**
 		 * Show the 3D Secure 2.0 challenge failure message on Block Checkout.
 		 *
 		 * The card gateway (`class-wc-gateway-paygent-cc.php`) redirects back
@@ -332,7 +352,12 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 			if ( ! is_checkout() || empty( $_GET['paygent_3ds2_error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				return;
 			}
-			$message = sanitize_text_field( wp_unslash( $_GET['paygent_3ds2_error'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$code     = sanitize_key( wp_unslash( $_GET['paygent_3ds2_error'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$messages = self::get_3ds2_failure_messages();
+			if ( ! isset( $messages[ $code ] ) ) {
+				return;
+			}
+			$message = $messages[ $code ];
 
 			wp_register_script( 'paygent-3ds2-failure-notice', false, array( 'wp-data', 'wp-notices' ), WC_PAYGENT_VERSION, true );
 			wp_enqueue_script( 'paygent-3ds2-failure-notice' );
