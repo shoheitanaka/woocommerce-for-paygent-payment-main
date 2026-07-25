@@ -282,14 +282,25 @@ class WC_Gateway_Paygent_Request {
 			if ( '0' === $response['result'] ) {
 				$order->add_order_note( __( 'Success this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
 			} elseif ( 'paygent_paidy' === $order_payment_method ) {
-				// Paidy Payment.
-					$send_data['trading_id'] = $order_id;
-					$response_again          = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind, $send_data, $payment->debug );
+				// Paidy Payment: retry with the raw order ID as trading_id, but keep
+				// the resolved identifiers for the failure re-check below.
+				$retry_send_data               = $send_data;
+				$retry_send_data['trading_id'] = $order_id;
+				$response_again                = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind, $retry_send_data, $payment->debug );
 				if ( '0' === $response_again['result'] ) {
 					$order->add_order_note( __( 'Success this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
 				} else {
 					$order->add_order_note( __( 'Failed this order set to sale at Paygent.', 'woocommerce-for-paygent-payment-main' ) );
+					$this->handle_failed_capture_on_completion( $order, $payment, $send_data, $response_again );
 				}
+			} elseif ( '121' === $telegram_kind ) {
+				// Subscription sales have their own inquiry lifecycle (125 with
+				// running_id), so the one-time-payment inquiry cannot tell whether
+				// this billing period was sold. Record the failure without touching
+				// the order status to avoid re-sending 121 for a sold period.
+				$error_code = isset( $response['responseCode'] ) ? $response['responseCode'] : '';
+				// translators: %s: Paygent error code.
+				$order->add_order_note( sprintf( __( 'Failed to capture the subscription sale at Paygent (error code: %s). Please check the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code ) );
 			} else {
 				$this->handle_failed_capture_on_completion( $order, $payment, $send_data, $response );
 			}
@@ -425,10 +436,11 @@ class WC_Gateway_Paygent_Request {
 				$order->add_order_note( $message );
 				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
-			// Subscription cancellation (122) needs the prepared refund data
-			// (running_id / running_target_ym); one-time cancellation telegrams
-			// only carry the payment / trading identifiers.
-			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, $is_subscription ? $send_data_refund : $send_data_check, $payment->debug );
+			// Carrier subscription cancellation (122) needs the prepared refund
+			// data (running_id / running_target_ym); every other cancellation
+			// telegram (102, CC 021/023, ...) carries the payment / trading
+			// identifiers, including on subscription orders of other gateways.
+			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, ( $is_subscription && '122' === $telegram_kind_del ) ? $send_data_refund : $send_data_check, $payment->debug );
 			if ( '1' === $del_result['result'] ) {
 				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $del_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $del_result['responseDetail'], 'UTF-8', 'SJIS' );
 				$order->add_order_note( $message );

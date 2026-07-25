@@ -504,6 +504,10 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 					'redirect' => $payment_url,
 				);
 			} else {
+				// The application was accepted but no redirect field came back;
+				// restore the cart hash so checkout can resume this pending
+				// order instead of creating a duplicate one.
+				$this->restore_cart_hash_for_retry( $order );
 				return array( 'result' => 'failure' );
 			}
 		} else {

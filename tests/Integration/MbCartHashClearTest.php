@@ -121,6 +121,43 @@ class MbCartHashClearTest extends TestCase {
 	}
 
 	// -------------------------------------------------------------------------
+	// Accepted application without a redirect field restores the cart hash
+	// -------------------------------------------------------------------------
+
+	public function test_sb_application_without_redirect_restores_cart_hash(): void {
+		$product = new \WC_Product_Simple();
+		$product->set_name( 'Cart hash test product' );
+		$product->set_regular_price( '100' );
+		$product->save();
+		if ( function_exists( 'wc_load_cart' ) ) {
+			wc_load_cart();
+		}
+		if ( ! WC()->cart ) {
+			$product->delete( true );
+			$this->markTestSkipped( 'Cart unavailable in this environment.' );
+		}
+		WC()->cart->empty_cart();
+		WC()->cart->add_to_cart( $product->get_id() );
+		$expected_hash = WC()->cart->get_cart_hash();
+		$this->assertNotSame( '', $expected_hash );
+
+		// Accepted (result 0) but neither redirect_url nor redirect_html.
+		$this->fake_request->response = array(
+			'result'       => '0',
+			'result_array' => array( array( 'trading_id' => 'wcpg' . $this->order->get_id() ) ),
+		);
+
+		$result = $this->gateway->payment_mb_process( $this->order, $this->base_send_data( 6 ), '100' );
+
+		$this->assertSame( 'failure', $result['result'] );
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertSame( $expected_hash, $reloaded->get_cart_hash(), 'The cart hash must be restored so checkout can resume this order.' );
+
+		WC()->cart->empty_cart();
+		$product->delete( true );
+	}
+
+	// -------------------------------------------------------------------------
 	// Failure path keeps the cart hash so checkout can resume the order
 	// -------------------------------------------------------------------------
 

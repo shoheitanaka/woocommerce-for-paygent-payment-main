@@ -124,6 +124,46 @@ class MbStatusCompletedSaleTest extends TestCase {
 		$this->assertStringContainsString( 'moved back to on-hold', implode( "\n", $notes ) );
 	}
 
+	public function test_failed_subscription_sale_keeps_status_and_adds_note(): void {
+		// 121 uses the subscription inquiry lifecycle (125 / running_id), so a
+		// failure must not trigger the one-time 094 re-check nor an on-hold
+		// rollback that could re-send 121 for an already-sold period.
+		$this->fake_request->responses['121'] = array( 'result' => '1', 'responseCode' => '7003' );
+
+		$this->fake_request->order_paygent_status_completed( $this->order->get_id(), '121', $this->gateway, array( 'running_id' => '12345' ) );
+
+		$this->assertSame( array( '121' ), array_column( $this->fake_request->sent, 'kind' ), 'No 094 inquiry may run for subscription sales.' );
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertTrue( $reloaded->has_status( 'pending' ), 'A failed subscription sale must not change the order status.' );
+		$notes = wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) );
+		$this->assertStringContainsString( 'subscription sale', $notes[0]->content );
+	}
+
+	public function test_failed_paidy_capture_retry_falls_back_to_status_check(): void {
+		$paidy_like = new class() {
+			/** @var string */
+			public $id = 'paygent_paidy';
+			/** @var string */
+			public $test_mode = 'yes';
+			/** @var string */
+			public $debug = 'no';
+		};
+		$this->order->set_payment_method( 'paygent_paidy' );
+		$this->order->save();
+
+		$this->fake_request->responses['341'] = array( 'result' => '1', 'responseCode' => 'P004' );
+		$this->fake_request->responses['094'] = array(
+			'result'       => '0',
+			'result_array' => array( array( 'payment_status' => '20' ) ),
+		);
+
+		$this->fake_request->order_paygent_status_completed( $this->order->get_id(), '341', $paidy_like );
+
+		$this->assertSame( array( '094', '341', '341', '094' ), array_column( $this->fake_request->sent, 'kind' ), 'Pre-check, capture, Paidy retry, then the failure re-check.' );
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertTrue( $reloaded->has_status( 'on-hold' ), 'An uncaptured Paidy payment must not stay completed after both attempts fail.' );
+	}
+
 	public function test_completed_skips_sale_telegram_when_paymentaction_is_sale(): void {
 		$sale_gateway                  = new class() extends \WC_Gateway_Paygent_MB {
 			public $paymentaction = 'sale';
