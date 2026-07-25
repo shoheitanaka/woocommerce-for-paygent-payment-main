@@ -34,12 +34,27 @@ class MbStatusCompletedSaleTest extends TestCase {
 		$this->fake_request = new class() extends \WC_Gateway_Paygent_Request {
 			public $sent      = array();
 			public $responses = array();
+			public $queues    = array();
 			public function send_paygent_request( $test_mode, $order, $telegram_kind, $send_data, $debug = 'yes' ) {
 				$this->sent[] = array(
 					'kind' => $telegram_kind,
 					'data' => $send_data,
 				);
-				return $this->responses[ $telegram_kind ] ?? array(
+				if ( ! empty( $this->queues[ $telegram_kind ] ) ) {
+					return array_shift( $this->queues[ $telegram_kind ] );
+				}
+				if ( isset( $this->responses[ $telegram_kind ] ) ) {
+					return $this->responses[ $telegram_kind ];
+				}
+				// The completion flow only proceeds from a verified authorized
+				// status, so the default inquiry reports 20.
+				if ( '094' === $telegram_kind ) {
+					return array(
+						'result'       => '0',
+						'result_array' => array( array( 'payment_status' => '20' ) ),
+					);
+				}
+				return array(
 					'result'       => '0',
 					'result_array' => array( array() ),
 				);
@@ -124,16 +139,55 @@ class MbStatusCompletedSaleTest extends TestCase {
 		$this->assertStringContainsString( 'moved back to on-hold', implode( "\n", $notes ) );
 	}
 
-	public function test_failed_capture_with_failed_inquiry_keeps_status(): void {
-		// If the verification inquiry itself fails, the capture may in fact
-		// have succeeded remotely, so the order must not be rolled back.
-		$this->fake_request->responses['101'] = array( 'result' => '1', 'responseCode' => 'P004' );
+	public function test_unverifiable_status_skips_capture(): void {
+		// If the pre-check inquiry fails, the remote state is unknown and no
+		// capture may be sent.
 		$this->fake_request->responses['094'] = array( 'result' => '1', 'responseCode' => 'P016' );
 
 		$this->gateway->order_mb_status_completed( $this->order->get_id() );
 
+		$this->assertSame( array( '094' ), array_column( $this->fake_request->sent, 'kind' ) );
 		$reloaded = wc_get_order( $this->order->get_id() );
-		$this->assertTrue( $reloaded->has_status( 'pending' ), 'An unverifiable capture failure must not change the order status.' );
+		$this->assertTrue( $reloaded->has_status( 'pending' ) );
+		$notes = array_column( wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) ), 'content' );
+		$this->assertStringContainsString( 'was not sent', implode( "\n", $notes ) );
+	}
+
+	public function test_in_flight_status_skips_capture(): void {
+		// 30 (Requesting sales) means a previous sale request is in flight;
+		// sending another capture would not be idempotent.
+		$this->fake_request->responses['094'] = array(
+			'result'       => '0',
+			'result_array' => array( array( 'payment_status' => '30' ) ),
+		);
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$this->assertSame( array( '094' ), array_column( $this->fake_request->sent, 'kind' ) );
+		$notes = array_column( wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) ), 'content' );
+		$this->assertStringContainsString( 'status: 30', implode( "\n", $notes ) );
+	}
+
+	public function test_failed_capture_with_in_flight_recheck_keeps_status(): void {
+		// Authorized at pre-check, capture fails, and the re-check reports the
+		// sale as in flight (30): the order must not be rolled back to on-hold.
+		$this->fake_request->queues['094']    = array(
+			array(
+				'result'       => '0',
+				'result_array' => array( array( 'payment_status' => '20' ) ),
+			),
+			array(
+				'result'       => '0',
+				'result_array' => array( array( 'payment_status' => '30' ) ),
+			),
+		);
+		$this->fake_request->responses['101'] = array( 'result' => '1', 'responseCode' => 'P004' );
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$this->assertSame( array( '094', '101', '094' ), array_column( $this->fake_request->sent, 'kind' ) );
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertTrue( $reloaded->has_status( 'pending' ), 'An in-flight sale must not be rolled back to on-hold.' );
 		$notes = array_column( wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) ), 'content' );
 		$this->assertStringContainsString( 'The order status was kept', implode( "\n", $notes ) );
 	}

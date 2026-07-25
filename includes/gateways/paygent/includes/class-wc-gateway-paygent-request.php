@@ -261,20 +261,28 @@ class WC_Gateway_Paygent_Request {
 			if ( '1' !== $this->site_id ) {
 				$send_data['site_id'] = $this->site_id;
 			}
-			// A completion may run after Paygent already captured the payment
-			// (e.g. status webhook moved the order to completed after an
-			// admin-site capture), so check first and skip the redundant
-			// request. Subscription sales (121) use a different lifecycle and
-			// are sent as-is.
+			// A completion may run after Paygent already captured the payment or
+			// while a previous sale request is still in flight (e.g. status 30
+			// after a lost response), so the capture is only sent while the
+			// payment is verifiably authorized (20/21). Subscription sales
+			// (121) use a different lifecycle and are sent as-is.
 			if ( '121' !== $telegram_kind ) {
 				$inquiry_check  = array(
 					'payment_id' => $send_data['payment_id'],
 					'trading_id' => $send_data['trading_id'],
 				);
 				$inquiry        = $this->send_paygent_request( $payment->test_mode, $order, '094', $inquiry_check, $payment->debug );
-				$inquiry_status = isset( $inquiry['result_array'][0]['payment_status'] ) ? (string) $inquiry['result_array'][0]['payment_status'] : '';
-				if ( in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
+				$inquiry_ok     = isset( $inquiry['result'] ) && '0' === $inquiry['result'] && isset( $inquiry['result_array'][0]['payment_status'] );
+				$inquiry_status = $inquiry_ok ? (string) $inquiry['result_array'][0]['payment_status'] : '';
+				if ( $inquiry_ok && in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
 					$order->add_order_note( __( 'The payment is already captured at Paygent, so the capture request was skipped.', 'woocommerce-for-paygent-payment-main' ) );
+					return;
+				}
+				if ( ! $inquiry_ok || ! in_array( $inquiry_status, array( '20', '21' ), true ) ) {
+					$order->add_order_note(
+						// translators: %s: Paygent payment status (or "unknown").
+						sprintf( __( 'The capture request was not sent because the Paygent payment status could not be confirmed as authorized (status: %s). Please verify the payment on the Paygent admin site and complete the order again if needed.', 'woocommerce-for-paygent-payment-main' ), '' === $inquiry_status ? 'unknown' : $inquiry_status )
+					);
 					return;
 				}
 			}
@@ -336,13 +344,14 @@ class WC_Gateway_Paygent_Request {
 		}
 		$error_code   = isset( $response['responseCode'] ) ? $response['responseCode'] : '';
 		$error_detail = isset( $response['responseDetail'] ) ? mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) : '';
-		if ( ! $inquiry_ok ) {
-			// The remote state could not be verified (the capture may in fact
-			// have succeeded and only the response was lost), so the status is
-			// kept and manual reconciliation is requested instead.
+		if ( ! $inquiry_ok || ! in_array( $inquiry_status, array( '20', '21' ), true ) ) {
+			// The remote state is not verifiably authorized: the inquiry failed
+			// (the capture may have succeeded with only the response lost) or
+			// the payment is in flight (e.g. 30). Keep the status and request
+			// manual reconciliation instead of encouraging a retry.
 			$order->add_order_note(
 				// translators: %1$s: Paygent error code, %2$s: Paygent error message.
-				sprintf( __( 'The capture request failed (error code: %1$s %2$s) and the follow-up status inquiry did not return a result. The order status was kept — please verify the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code, $error_detail )
+				sprintf( __( 'The capture request failed (error code: %1$s %2$s) and the payment could not be confirmed as still authorized. The order status was kept — please verify the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code, $error_detail )
 			);
 			return;
 		}

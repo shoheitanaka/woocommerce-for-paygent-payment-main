@@ -991,11 +991,20 @@ window.onload = send_form_submit;
 				'sale_cancel' => array( 20, 21, 40 ),
 			),
 		);
-		$order           = wc_get_order( $order_id );
-		$date_created    = $order->get_date_created();
-		// 'YYYYMM' is not a valid date format ('Y' would repeat) and
-		// date_i18n() expects a timestamp, not a WC_DateTime.
-		$target_ym        = $date_created ? $date_created->date( 'Ym' ) : date_i18n( 'Ym' );
+		$order        = wc_get_order( $order_id );
+		$date_created = $order->get_date_created();
+		// The first subscription sale is billed the day after application
+		// (first_sales_date defaults to the next day; the au branch sets it
+		// explicitly), so the target month must come from that date — an
+		// end-of-month checkout would otherwise point 122 at a month with no
+		// matching sale.
+		if ( $date_created ) {
+			$first_sale_date = clone $date_created;
+			$first_sale_date->modify( '+1 day' );
+			$target_ym = $first_sale_date->format( 'Ym' );
+		} else {
+			$target_ym = date_i18n( 'Ym', strtotime( '+1 day' ) );
+		}
 		$running_id       = $order->get_meta( 'running_id', true );
 		$send_data_refund = array(
 			'running_id'        => $running_id,
@@ -1223,10 +1232,19 @@ window.onload = send_form_submit;
 		if ( isset( $_GET['mb_cancel'] ) && 'yes' === $_GET['mb_cancel'] ) { // phpcs:ignore
 			// Display a notice to the customer that their mobile payment was canceled.
 			wc_add_notice( __( 'Your mobile payment has been canceled.', 'woocommerce-for-paygent-payment-main' ), 'notice' );
-			if ( ! isset( $_GET['trading_id'], $_GET['key'] ) ) { // phpcs:ignore
+			if ( ! isset( $_GET['key'] ) ) { // phpcs:ignore
 				return;
 			}
-			$order_id  = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
+			// Prefer the order ID carried on cancel_url: for subscription
+			// checkouts the trading_id derives from the subscription, not the
+			// checkout order, so it cannot locate the order to cancel.
+			if ( isset( $_GET['order_id'] ) ) { // phpcs:ignore
+				$order_id = absint( wp_unslash( $_GET['order_id'] ) ); // phpcs:ignore
+			} elseif ( isset( $_GET['trading_id'] ) ) { // phpcs:ignore
+				$order_id = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
+			} else {
+				return;
+			}
 			$order_key = sanitize_text_field( wp_unslash( $_GET['key'] ) ); // phpcs:ignore
 			$order     = wc_get_order( $order_id );
 			// The order key set on cancel_url proves this return belongs to the
@@ -1256,6 +1274,7 @@ window.onload = send_form_submit;
 		return add_query_arg(
 			array(
 				'mb_cancel' => 'yes',
+				'order_id'  => $order->get_id(),
 				'key'       => $order->get_order_key(),
 			),
 			wc_get_cart_url()
