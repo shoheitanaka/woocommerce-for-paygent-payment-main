@@ -124,6 +124,20 @@ class MbStatusCompletedSaleTest extends TestCase {
 		$this->assertStringContainsString( 'moved back to on-hold', implode( "\n", $notes ) );
 	}
 
+	public function test_failed_capture_with_failed_inquiry_keeps_status(): void {
+		// If the verification inquiry itself fails, the capture may in fact
+		// have succeeded remotely, so the order must not be rolled back.
+		$this->fake_request->responses['101'] = array( 'result' => '1', 'responseCode' => 'P004' );
+		$this->fake_request->responses['094'] = array( 'result' => '1', 'responseCode' => 'P016' );
+
+		$this->gateway->order_mb_status_completed( $this->order->get_id() );
+
+		$reloaded = wc_get_order( $this->order->get_id() );
+		$this->assertTrue( $reloaded->has_status( 'pending' ), 'An unverifiable capture failure must not change the order status.' );
+		$notes = array_column( wc_get_order_notes( array( 'order_id' => $this->order->get_id() ) ), 'content' );
+		$this->assertStringContainsString( 'The order status was kept', implode( "\n", $notes ) );
+	}
+
 	public function test_failed_subscription_sale_keeps_status_and_adds_note(): void {
 		// 121 uses the subscription inquiry lifecycle (125 / running_id), so a
 		// failure must not trigger the one-time 094 re-check nor an on-hold

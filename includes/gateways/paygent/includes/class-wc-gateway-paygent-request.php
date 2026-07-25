@@ -327,14 +327,25 @@ class WC_Gateway_Paygent_Request {
 			'payment_id' => isset( $send_data['payment_id'] ) ? $send_data['payment_id'] : '',
 			'trading_id' => isset( $send_data['trading_id'] ) ? $send_data['trading_id'] : '',
 		);
-		$inquiry         = $this->send_paygent_request( $payment->test_mode, $order, '094', $send_data_check, $payment->debug );
-		$inquiry_status  = isset( $inquiry['result_array'][0]['payment_status'] ) ? (string) $inquiry['result_array'][0]['payment_status'] : '';
-		if ( in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
+		$inquiry        = $this->send_paygent_request( $payment->test_mode, $order, '094', $send_data_check, $payment->debug );
+		$inquiry_ok     = isset( $inquiry['result'] ) && '0' === $inquiry['result'] && isset( $inquiry['result_array'][0]['payment_status'] );
+		$inquiry_status = $inquiry_ok ? (string) $inquiry['result_array'][0]['payment_status'] : '';
+		if ( $inquiry_ok && in_array( $inquiry_status, array( '40', '41', '44' ), true ) ) {
 			$order->add_order_note( __( 'The capture request failed, but Paygent already reports this payment as captured. No further action is needed.', 'woocommerce-for-paygent-payment-main' ) );
 			return;
 		}
 		$error_code   = isset( $response['responseCode'] ) ? $response['responseCode'] : '';
 		$error_detail = isset( $response['responseDetail'] ) ? mb_convert_encoding( $response['responseDetail'], 'UTF-8', 'SJIS' ) : '';
+		if ( ! $inquiry_ok ) {
+			// The remote state could not be verified (the capture may in fact
+			// have succeeded and only the response was lost), so the status is
+			// kept and manual reconciliation is requested instead.
+			$order->add_order_note(
+				// translators: %1$s: Paygent error code, %2$s: Paygent error message.
+				sprintf( __( 'The capture request failed (error code: %1$s %2$s) and the follow-up status inquiry did not return a result. The order status was kept — please verify the payment on the Paygent admin site.', 'woocommerce-for-paygent-payment-main' ), $error_code, $error_detail )
+			);
+			return;
+		}
 		$order->update_status(
 			'on-hold',
 			// translators: %1$s: Paygent error code, %2$s: Paygent error message.

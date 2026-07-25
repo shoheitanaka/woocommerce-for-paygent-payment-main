@@ -577,8 +577,8 @@ class WC_Gateway_Paygent_MB extends WC_Payment_Gateway {
 		$send_data['amount'] = $order->get_total();
 
 		$send_data['return_url'] = $this->get_return_url( $order );
-		$send_data['cancel_url'] = wc_get_cart_url() . '?mb_cancel=yes';
-		$send_data['other_url']  = wc_get_cart_url() . '?mb_cancel=yes';
+		$send_data['cancel_url'] = $this->mb_cancel_url( $order );
+		$send_data['other_url']  = $this->mb_cancel_url( $order );
 		if ( $this->is_device() === 'mb-docomo' ) {
 			$send_data['pc_mobile_type'] = '1';
 		} elseif ( $this->is_device() === 'mb-au' ) {
@@ -763,7 +763,7 @@ window.onload = send_form_submit;
 		$send_data['amount']         = $this->set_amount( $order );
 		$send_data['trading_id']     = $this->set_trading_id( $order );
 		$send_data['return_url']     = $this->get_return_url( $order );
-		$send_data['cancel_url']     = wc_get_cart_url() . '?mb_cancel=yes';
+		$send_data['cancel_url']     = $this->mb_cancel_url( $order );
 		$send_data['other_url']      = wc_get_cart_url();
 		$send_data['pc_mobile_type'] = $order->get_meta( '_pc_mobile_type', true );
 		$send_data['open_id']        = isset( $_GET['open_id'] ) ? sanitize_text_field( wp_unslash( $_GET['open_id'] ) ) : '';// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -1223,17 +1223,42 @@ window.onload = send_form_submit;
 		if ( isset( $_GET['mb_cancel'] ) && 'yes' === $_GET['mb_cancel'] ) { // phpcs:ignore
 			// Display a notice to the customer that their mobile payment was canceled.
 			wc_add_notice( __( 'Your mobile payment has been canceled.', 'woocommerce-for-paygent-payment-main' ), 'notice' );
-			if ( ! isset( $_GET['trading_id'] ) ) { // phpcs:ignore
+			if ( ! isset( $_GET['trading_id'], $_GET['key'] ) ) { // phpcs:ignore
 				return;
 			}
-			$order_id = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
-			$order    = wc_get_order( $order_id );
+			$order_id  = preg_replace( '/[^0-9]/', '', sanitize_text_field( wp_unslash( $_GET['trading_id'] ) ) ); // phpcs:ignore
+			$order_key = sanitize_text_field( wp_unslash( $_GET['key'] ) ); // phpcs:ignore
+			$order     = wc_get_order( $order_id );
+			// The order key set on cancel_url proves this return belongs to the
+			// order — a trading_id alone is guessable on a public URL.
+			if ( ! $order || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+				return;
+			}
 			// The application webhook (payment_status 10) may move the order to
 			// on-hold before the customer returns, so cancellation is accepted
 			// from both pre-authorization statuses.
-			if ( $order && $order->get_payment_method() === $this->id && $order->has_status( array( 'pending', 'on-hold' ) ) ) {
+			if ( $order->get_payment_method() === $this->id && $order->has_status( array( 'pending', 'on-hold' ) ) ) {
 				$order->update_status( 'cancelled', __( 'Mobile payment was canceled.', 'woocommerce-for-paygent-payment-main' ) );
 			}
 		}
+	}
+
+	/**
+	 * Build the carrier cancellation return URL for an order.
+	 *
+	 * Carries the order key so paygent_cart_cancel() can verify the return
+	 * belongs to the order before cancelling it.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return string
+	 */
+	private function mb_cancel_url( $order ) {
+		return add_query_arg(
+			array(
+				'mb_cancel' => 'yes',
+				'key'       => $order->get_order_key(),
+			),
+			wc_get_cart_url()
+		);
 	}
 }
