@@ -56,6 +56,8 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 			add_action( 'woocommerce_blocks_payment_method_type_registration', array( $this, 'register_block_payment_methods' ) );
 			// Enqueue icon styles on the classic (shortcode) checkout page.
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_checkout_styles' ) );
+			// Surface 3D Secure 2.0 challenge failures on Block Checkout after the redirect back from the card issuer.
+			add_action( 'wp_enqueue_scripts', array( $this, 'render_3ds2_failure_notice' ) );
 		}
 
 		/**
@@ -308,6 +310,63 @@ if ( ! class_exists( 'WC_Gateway_Paygent' ) ) :
 				WC_PAYGENT_PLUGIN_URL . 'assets/css/paygent-checkout.css',
 				array( 'woocommerce-general' ),
 				WC_PAYGENT_VERSION
+			);
+		}
+
+		/**
+		 * Whitelisted 3D Secure 2.0 challenge failure messages, keyed by a short code.
+		 *
+		 * Only the code (never free text) travels through the checkout
+		 * redirect URL (`paygent_3ds2_error`), so a crafted query value can
+		 * only select one of these fixed, plugin-authored strings — never
+		 * arbitrary attacker-supplied text impersonating a payment or
+		 * support message.
+		 *
+		 * @return array<string, string> Code => translated message.
+		 */
+		public static function get_3ds2_failure_messages(): array {
+			return array(
+				'auth_failed'     => __( 'Authentication was not obtained for credit card payment.', 'woocommerce-for-paygent-payment-main' ),
+				'attempt_unknown' => __( 'Attempt kbn was not answered. Something seems to be wrong. Please try a different card or contact the site administrator.', 'woocommerce-for-paygent-payment-main' ),
+				'no_3ds_card'     => __( 'This payment uses a card that does not have 3D Secure.', 'woocommerce-for-paygent-payment-main' )
+					. ' ' . __( 'Please use a card that supports 3D Secure.', 'woocommerce-for-paygent-payment-main' ),
+			);
+		}
+
+		/**
+		 * Show the 3D Secure 2.0 challenge failure message on Block Checkout.
+		 *
+		 * The card gateway (`class-wc-gateway-paygent-cc.php`) redirects back
+		 * here with a `paygent_3ds2_error` query arg after a failed challenge,
+		 * because `wc_add_notice()` alone never reaches the customer on Block
+		 * Checkout: that redirect is a plain page load, not a Store API
+		 * request, and the Store API discards any session notices that
+		 * weren't raised during its own request/response cycle. Dispatching
+		 * the error into the `core/notices` store client-side is how the
+		 * checkout block itself displays errors, so this reuses the same
+		 * `wc/checkout` notice area instead of introducing a separate one.
+		 *
+		 * @return void
+		 */
+		public function render_3ds2_failure_notice(): void {
+			if ( ! is_checkout() || empty( $_GET['paygent_3ds2_error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				return;
+			}
+			$code     = sanitize_key( wp_unslash( $_GET['paygent_3ds2_error'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$messages = self::get_3ds2_failure_messages();
+			if ( ! isset( $messages[ $code ] ) ) {
+				return;
+			}
+			$message = $messages[ $code ];
+
+			wp_register_script( 'paygent-3ds2-failure-notice', false, array( 'wp-data', 'wp-notices' ), WC_PAYGENT_VERSION, true );
+			wp_enqueue_script( 'paygent-3ds2-failure-notice' );
+			wp_add_inline_script(
+				'paygent-3ds2-failure-notice',
+				sprintf(
+					'window.addEventListener("load",function(){if(window.wp&&wp.data&&wp.data.dispatch("core/notices")){wp.data.dispatch("core/notices").createErrorNotice(%s,{context:"wc/checkout"});}});',
+					wp_json_encode( $message )
+				)
 			);
 		}
 

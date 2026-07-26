@@ -1166,6 +1166,29 @@ jQuery(function(){
 	}
 
 	/**
+	 * Redirect back to checkout after a 3D Secure 2.0 challenge failure.
+	 *
+	 * `wc_add_notice()` here only reaches the customer on classic (shortcode)
+	 * checkout: this runs on the order-pay page the ACS redirects back to,
+	 * a separate full-page load from any Store API request, so Block
+	 * Checkout never surfaces it (Store API discards session notices that
+	 * aren't raised during its own request/response cycle). The failure is
+	 * therefore also passed via the redirect URL — as the opaque `$code`,
+	 * never the message text — so the checkout page can look up and display
+	 * the matching whitelisted string client-side (see
+	 * `WC_Gateway_Paygent::get_3ds2_failure_messages()`) regardless of which
+	 * checkout is active, without letting the URL dictate arbitrary text.
+	 *
+	 * @param string $code Key into WC_Gateway_Paygent::get_3ds2_failure_messages().
+	 */
+	public function paygent_tds2_failure_redirect( $code ) {
+		$messages = WC_Gateway_Paygent::get_3ds2_failure_messages();
+		wc_add_notice( $messages[ $code ] ?? $messages['auth_failed'], 'error' );
+		wp_safe_redirect( add_query_arg( 'paygent_3ds2_error', $code, wc_get_checkout_url() ) );
+		exit;
+	}
+
+	/**
 	 * Html to display the screen when authorizing 3DS 2.0
 	 *
 	 * @param int $order_id Order ID.
@@ -1207,9 +1230,7 @@ jQuery(function(){
 					if ( 'yes' !== $this->attempt ) {
 						wc_increase_stock_levels( $order_id );
 						$order->update_status( 'cancelled', __( 'Failed 3D Secure 2.0.', 'woocommerce-for-paygent-payment-main' ) );
-						wc_add_notice( __( 'Authentication was not obtained for credit card payment.', 'woocommerce-for-paygent-payment-main' ), 'error' );
-						wp_safe_redirect( wc_get_checkout_url() );
-						exit;
+						$this->paygent_tds2_failure_redirect( 'auth_failed' );
 					}
 				} elseif ( '0' === $attempt_kbn ) {// Attempt kbn is normal.
 					$order->add_order_note( __( 'Using a card that is not 3D Secure.', 'woocommerce-for-paygent-payment-main' ) );
@@ -1218,9 +1239,7 @@ jQuery(function(){
 					$order->add_order_note( __( 'Attempt kbn is normal.', 'woocommerce-for-paygent-payment-main' ) );
 				} else {
 					$order->add_order_note( __( 'There was no response from Attempt kbn.', 'woocommerce-for-paygent-payment-main' ) );
-					wc_add_notice( __( 'Attempt kbn was not answered. Something seems to be wrong. Please try a different card or contact the site administrator.', 'woocommerce-for-paygent-payment-main' ), 'error' );
-					wp_safe_redirect( wc_get_checkout_url() );
-					exit;
+					$this->paygent_tds2_failure_redirect( 'attempt_unknown' );
 				}
 				// If necessary, register customer's card information.
 				$user_wants_save_card = '1' === $order->get_meta( '_paygent_save_card_preference' );
@@ -1244,18 +1263,14 @@ jQuery(function(){
 				} else {
 					wc_increase_stock_levels( $order_id );
 					$order->update_status( 'cancelled', __( 'Failed 3D Secure 2.0.', 'woocommerce-for-paygent-payment-main' ) );
-					wc_add_notice( __( 'Authentication was not obtained for credit card payment.', 'woocommerce-for-paygent-payment-main' ), 'error' );
-					wp_safe_redirect( wc_get_checkout_url() );
-					exit;
+					$this->paygent_tds2_failure_redirect( 'auth_failed' );
 				}
 			} elseif ( '1' === $_GET['result'] ) {// phpcs:ignore
 				wc_increase_stock_levels( $order_id );
 				$response_code   = wc_clean( wp_unslash( $_GET['response_code'] ?? '' ) );// phpcs:ignore
 				$response_detail = wc_clean( wp_unslash( urldecode( $_GET['response_detail'] ?? '' ) ) );// phpcs:ignore
 				$order->update_status( 'cancelled', __( 'Failed 3D Secure 2.0.', 'woocommerce-for-paygent-payment-main' ) . '[' . $response_code . ':' . $response_detail . ']' );
-				wc_add_notice( __( 'Authentication was not obtained for credit card payment.', 'woocommerce-for-paygent-payment-main' ), 'error' );
-				wp_safe_redirect( wc_get_checkout_url() );
-				exit;
+				$this->paygent_tds2_failure_redirect( 'auth_failed' );
 			}
 		} elseif ( $html && $order->get_payment_method() === $this->id ) {// First redirect to 3D Secure 2.0 Challenge flow.
 			$before = array( '<html>', '<body onload="OnLoadEvent();">', '</body>', '</html>' );
@@ -1294,13 +1309,7 @@ jQuery(function(){
 		if ( 'yes' === $this->no_tds_card ) {
 			wc_increase_stock_levels( $order->get_id() );
 			$order->update_status( 'cancelled', __( 'No 3D Secure 2.0 card.', 'woocommerce-for-paygent-payment-main' ) );
-			wc_add_notice(
-				__( 'This payment uses a card that does not have 3D Secure.', 'woocommerce-for-paygent-payment-main' )
-				. ' ' . __( 'Please use a card that supports 3D Secure.', 'woocommerce-for-paygent-payment-main' ),
-				'error'
-			);
-			wp_safe_redirect( wc_get_checkout_url() );
-			exit;
+			$this->paygent_tds2_failure_redirect( 'no_3ds_card' );
 		}
 	}
 
