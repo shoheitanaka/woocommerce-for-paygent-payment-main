@@ -140,7 +140,7 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 
 ## Claude Code スキル
 
-`.claude/skills/` に7つのスキルが定義されています。関連するキーワードやファイルを編集する際に自動的に発動します。
+`.claude/skills/` に8つのスキルが定義されています。関連するキーワードやファイルを編集する際に自動的に発動します。
 
 | スキル | 発動キーワード例 | 参照先 |
 | --- | --- | --- |
@@ -151,6 +151,7 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 | `paygent-carrier` | `paygent_mb`, `career_type`, `キャリア決済`, `auかんたん決済`, `d払い` | `.claude/skills/paygent-carrier/` |
 | `wc-block-payment` | `AbstractPaymentMethodType`, `registerPaymentMethod`, `onPaymentSetup`, `block-cs` | `.claude/skills/wc-block-payment/` |
 | `paygent-sandbox-check` | `サンドボックス検証`, `実決済テスト`, `sandbox check`, マージ前検証 | `.claude/skills/paygent-sandbox-check/` |
+| `paygent-sb-cc` | `/paygent-sb-cc <URL> [フェーズ]`, `サンドボックス決済試験`, `試験環境動作確認`（WEB試験環境をClaude in Chromeで検証） | `.claude/skills/paygent-sb-cc/` |
 
 スキルの情報は **2025docs/ の仕様書PDFが正**。コードより仕様書を優先すること。
 
@@ -230,3 +231,7 @@ pdftotext "2025docs/<path>.pdf" - | less
   表示されず「Something went wrong」になるバグがあった（2026-07修正）
 - Block Checkout（Store API）中かどうかの判定は `is_checkout()` だけでは不十分（Store API
   リクエストでは false）。`wc_is_store_api_request()`（WC 6.9+）を併用する
+- 外部認証（3DS2等）からのリダイレクト復帰後は通常ページロードのため、Block Checkout では
+  `wc_add_notice()` が顧客に届かない。復帰URLにはホワイトリスト化したエラーコードのみを付与し
+  （自由文は禁止・例: `paygent_3ds2_error`）、`core/notices` へ `context:"wc/checkout"` で
+  dispatch して表示する（2026-07 PR #34）
