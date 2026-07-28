@@ -1306,7 +1306,7 @@ jQuery(function(){
 			$message .= __( 'This order is a caution && is not eligible for cashback. Please be careful about shipping etc.', 'woocommerce-for-paygent-payment-main' );
 			wc_mail( $to, $subject, $message );
 		}
-		if ( 'yes' === $this->no_tds_card ) {
+		if ( 'no' === $this->no_tds_card ) {
 			wc_increase_stock_levels( $order->get_id() );
 			$order->update_status( 'cancelled', __( 'No 3D Secure 2.0 card.', 'woocommerce-for-paygent-payment-main' ) );
 			$this->paygent_tds2_failure_redirect( 'no_3ds_card' );

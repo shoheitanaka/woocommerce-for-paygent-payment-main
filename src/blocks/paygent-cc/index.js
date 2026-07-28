@@ -258,7 +258,7 @@ const CardForm = ( { eventRegistration, emitResponse, shouldSavePayment } ) => {
 								placeholder="TARO YAMADA"
 								pattern="[a-zA-Z\s]+"
 								value={ cardholderName }
-								onChange={ ( e ) => setCardholderName( e.target.value.toUpperCase() ) }
+								onChange={ ( e ) => setCardholderName( e.target.value ) }
 								autoComplete="cc-name"
 								aria-required="true"
 								aria-label={ __( 'Cardholder name (Latin alphabet, as printed on card)', 'woocommerce-for-paygent-payment-main' ) }
