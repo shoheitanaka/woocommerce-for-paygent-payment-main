@@ -9,7 +9,9 @@
 ## 1. 静的コードチェック（ローカルリポジトリに対して実施）
 
 対象: `class-wc-gateway-paygent-cc.php` / `class-wc-gateway-paygent-addon-cc.php` /
-`includes/block/` のCC系クラス / `class-wc-gateway-paygent-request.php`
+`includes/gateways/paygent/includes/block/` のCC系クラス
+（`class-wc-paygent-block-cc.php` / `class-wc-paygent-block-mccc.php` /
+`class-abstract-wc-paygent-block-payment.php`） / `class-wc-gateway-paygent-request.php`
 
 | 観点 | 確認内容 |
 | --- | --- |

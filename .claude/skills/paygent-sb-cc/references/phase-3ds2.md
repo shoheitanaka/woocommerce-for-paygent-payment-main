@@ -13,8 +13,8 @@
 | パターン | カード名義人 | 期待結果 | attempt区分 | レスポンス |
 | --- | --- | --- | --- | --- |
 | RB-成功 | `BAVYA` | 決済成功 | - | - |
-| RB-成功(attempt=0) | `BAVAA` | 決済成功 | 0 | - |
-| RB-成功(attempt=1) | `BAVUA` | attempt設定に依存※ | 1 | - |
+| RB-成功(attempt=0) | `BAVAA` | `no_tds_card`設定に依存※2 | 0 | - |
+| RB-成功(attempt=1) | `BAVUA` | attempt設定に依存※1 | 1 | - |
 | RB-失敗 | `BAVNA` | 決済失敗・エラー表示 | - | 31007 |
 | RB-失敗(attempt) | `BAVRA` | 決済失敗・エラー表示 | - | 31007 |
 
@@ -23,25 +23,33 @@
 | パターン | パスワード | 期待結果 | attempt区分 | レスポンス |
 | --- | --- | --- | --- | --- |
 | CH-成功 | `14012` | 認証成功→決済成功 | - | - |
-| CH-成功(attempt=1) | `14052` | attempt設定に依存※ | 1 | - |
+| CH-成功(attempt=1) | `14052` | attempt設定に依存※1 | 1 | - |
 | CH-失敗 | `14042` | 決済失敗・エラー表示 | - | 31007 |
 
 ### 異常系（全種類実施）
 
 | パターン | 設定値 | 期待結果 |
 | --- | --- | --- |
-| ERR-RB-ActiveServerエラー | 名義人 `BBErrABAB` | 処理結果0/attempt=1（attempt設定に依存※） |
+| ERR-RB-ActiveServerエラー | 名義人 `BBErrABAB` | 処理結果0/attempt=1（attempt設定に依存※1） |
 | ERR-RB-取引タイムアウト | 名義人 `BCErrTimeOut` | 同上 |
 | ERR-RB-報告電文チェックエラー | 名義人 `BDErrInvalidInput` | 同上 |
 | ERR-CH-ActiveServerエラー | `BAVCA`＋パスワード `51001` | 同上 |
 | ERR-CH-取引タイムアウト | `BAVCA`＋パスワード `30000` | 同上 |
 | ERR-CH-報告電文チェックエラー | `BAVCA`＋パスワード `40000` | 同上 |
 
-※ attempt区分=1のパターンは、CC設定 `attempt`（アテンプト認定対応）が
+※1 attempt区分=1のパターンは、CC設定 `attempt`（アテンプト認定対応）が
 yes なら決済続行＋`attempt_notice_email` へ通知メール、no なら決済不可が期待値。
 **実施前に設定値を記録し、期待値をそれに合わせて解釈する。**
 全パターンの挙動（通知メール含む）を検証するため、可能なら `attempt=yes` で実施を推奨。
 変更した場合は終了時に戻す。
+
+※2 RB-成功(attempt=0)（`BAVAA`）は `paygent_no_tds_card_response()`
+（`class-wc-gateway-paygent-cc.php`）が処理する。CC設定 `no_tds_card`
+（3D セキュア登録のないカードを受け入れる）が **no（デフォルト）の場合は
+意図的にキャンセルされる**のが正しい挙動、**yes の場合は決済成功**が期待値。
+Phase 0 で `no_tds_card` の値を記録し、期待結果をそれに合わせて解釈すること。
+デフォルト（no）のままキャンセルされた場合はバグではなく仕様通りなので、
+「決済成功」を無条件の期待値として扱わないこと。
 
 ## 2. 実行マトリクス（承認済み方針: 成功系フル・失敗系片側）
 

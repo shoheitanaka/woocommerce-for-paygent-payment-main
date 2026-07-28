@@ -10,20 +10,34 @@ Block・クラシックの両方で実施:
 
 1. 定期購入商品をカートに入れ、新規カード＋名義人 `BAVYA` で3DS2決済 → 成功
 2. 確認: 親注文ステータス／定期購入（subscription）が「有効」で作成される／
-   注文メタに `fingerprint`（カード識別子）が保存される（debugログまたは注文メモ）／
-   支払い方法が「クレジットカード決済」のまま
+   注文メタ `_paygent_customer_card_id` が保存される（注文メモ「Stored card info.
+   Customer Card Id : ...」でも確認可）／保存されたWC決済トークン
+   （`WC_Payment_Tokens::get_customer_tokens()`）にPaygentの`customer_card_id`
+   メタが付与されている／支払い方法が「クレジットカード決済」のまま
 3. チャレンジ経由（`BAVCA`＋`14012`）でも1回成功を確認
 4. メール: 新規注文・定期購入関連メールが各1通のみ
 
 ## 2. 手動による強制継続決済（依頼項目6後半）
 
+**注意**: 更新決済は注文メタの`fingerprint`のような値ではなく、
+`WC_Payment_Tokens::get_customer_default_token()`（`class-wc-gateway-paygent-addon-cc.php`
+`process_subscription_payment()`）で取得した**顧客のデフォルトWC決済トークン**の
+`customer_card_id`メタを使って送信される。つまり実際に使われるのは
+「定期購入契約時のカード」ではなく「更新実行時点で顧客のデフォルトになっている
+Paygentトークン」である点に注意（1項の直後に強制継続決済を行うのが基本だが、
+複数カードを保存している場合はデフォルトカードが入れ替わっていないか確認する）。
+
 管理画面→定期購入→対象subscriptionを開き、注文アクションから実行:
 
-1. 「更新を処理（Process renewal）」を実行 → 更新注文が作成され、保存された
-   fingerprintで**3DS2認証なしの自動決済**が成功すること
-2. 更新注文のステータス・注文メモのPaygent応答・金額を確認
-3. 「保留中の更新注文を作成（Create pending renewal order）」がある場合は挙動を記録
-4. メール: 更新注文の処理中/完了メールが各1通のみ・親注文のメールが再送されないこと
+1. 実行前に、対象顧客のWC決済トークン一覧（マイアカウント→お支払い方法、または
+   `WC_Payment_Tokens::get_customer_tokens()`）を確認し、デフォルトトークンの
+   ゲートウェイが`paygent_cc`であること・所有者が対象顧客であること・
+   `customer_card_id`メタを保持していることを確認する
+2. 「更新を処理（Process renewal）」を実行 → 更新注文が作成され、上記デフォルト
+   トークンを使って**3DS2認証なしの自動決済**が成功すること
+3. 更新注文のステータス・注文メモのPaygent応答・金額を確認
+4. 「保留中の更新注文を作成（Create pending renewal order）」がある場合は挙動を記録
+5. メール: 更新注文の処理中/完了メールが各1通のみ・親注文のメールが再送されないこと
 
 ## 3. 一時停止・再開・キャンセル（依頼項目7）
 
