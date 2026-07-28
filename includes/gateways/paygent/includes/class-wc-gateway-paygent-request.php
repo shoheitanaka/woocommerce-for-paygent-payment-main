@@ -462,15 +462,18 @@ class WC_Gateway_Paygent_Request {
 			// identifiers, including on subscription orders of other gateways.
 			$del_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_del, ( $is_subscription && '122' === $telegram_kind_del ) ? $send_data_refund : $send_data_check, $payment->debug );
 			if ( '1' === $del_result['result'] ) {
-				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $del_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $del_result['responseDetail'], 'UTF-8', 'SJIS' );
+				// translators: %s: telegram kind code (e.g. 021/023/102/122).
+				$message = sprintf( __( 'Failed Refund (telegram: %s). ', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_del ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $del_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $del_result['responseDetail'], 'UTF-8', 'SJIS' );
 				$order->add_order_note( $message );
 				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			} elseif ( '0' === $del_result['result'] ) {
-				$message = __( 'This order has been successfully refunded by Paygent.', 'woocommerce-for-paygent-payment-main' );
+				// translators: %s: telegram kind code (e.g. 021/023/102/122).
+				$message = sprintf( __( 'This order has been successfully refunded by Paygent (telegram: %s).', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_del );
 				$order->add_order_note( $message );
 				return true;
 			} else {
-				$message = __( 'Failed Refund.', 'woocommerce-for-paygent-payment-main' );
+				// translators: %s: telegram kind code (e.g. 021/023/102/122).
+				$message = sprintf( __( 'Failed Refund (telegram: %s).', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_del );
 				$order->add_order_note( $message );
 				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
@@ -492,20 +495,23 @@ class WC_Gateway_Paygent_Request {
 			}
 			$refund_result = $this->send_paygent_request( $payment->test_mode, $order, $telegram_kind_refund, $send_data_refund, $payment->debug );
 			if ( '1' === $refund_result['result'] ) {
-				$message = __( 'Failed Refund. ', 'woocommerce-for-paygent-payment-main' ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $refund_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $refund_result['responseDetail'], 'UTF-8', 'SJIS' );
+				// translators: %s: telegram kind code (e.g. 028/029).
+				$message = sprintf( __( 'Failed Refund (telegram: %s). ', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_refund ) . __( 'Error Code :', 'woocommerce-for-paygent-payment-main' ) . $refund_result['responseCode'] . __( ' Error message :', 'woocommerce-for-paygent-payment-main' ) . mb_convert_encoding( $refund_result['responseDetail'], 'UTF-8', 'SJIS' );
 				$order->add_order_note( $message );
 				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			} elseif ( '0' === $refund_result['result'] ) {
 				$order->set_transaction_id( $refund_result['result_array'][0]['payment_id'] );
 				$order->save();
 				$order->add_order_note(
-					__( 'This order has been successfully partial refunded by Paygent.', 'woocommerce-for-paygent-payment-main' )
+					// translators: %s: telegram kind code (e.g. 028/029).
+					sprintf( __( 'This order has been successfully partially refunded by Paygent (telegram: %s). ', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_refund )
 					// translators: %1$s: base_payment_id, %2$s: payment_id.
 					. sprintf( __( 'payment_id changed from %1$s to %2$s.', 'woocommerce-for-paygent-payment-main' ), $refund_result['result_array'][0]['base_payment_id'], $refund_result['result_array'][0]['payment_id'] )
 				);
 				return true;
 			} else {
-				$message = __( 'Failed Refund.', 'woocommerce-for-paygent-payment-main' );
+				// translators: %s: telegram kind code (e.g. 028/029).
+				$message = sprintf( __( 'Failed Refund (telegram: %s).', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_refund );
 				$order->add_order_note( $message );
 				return new \WP_Error( 'wc_' . $order_id . '_refund_failed', $message );
 			}
