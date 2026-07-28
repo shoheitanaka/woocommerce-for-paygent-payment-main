@@ -9,6 +9,7 @@
 /src
 /.claude
 /script
+/report
 
 # Files
 .wp-env.json
