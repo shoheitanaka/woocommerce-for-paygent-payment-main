@@ -504,7 +504,7 @@ class WC_Gateway_Paygent_Request {
 				$order->save();
 				$order->add_order_note(
 					// translators: %s: telegram kind code (e.g. 028/029).
-					sprintf( __( 'This order has been successfully partial refunded by Paygent (telegram: %s). ', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_refund )
+					sprintf( __( 'This order has been successfully partially refunded by Paygent (telegram: %s). ', 'woocommerce-for-paygent-payment-main' ), $telegram_kind_refund )
 					// translators: %1$s: base_payment_id, %2$s: payment_id.
 					. sprintf( __( 'payment_id changed from %1$s to %2$s.', 'woocommerce-for-paygent-payment-main' ), $refund_result['result_array'][0]['base_payment_id'], $refund_result['result_array'][0]['payment_id'] )
 				);
