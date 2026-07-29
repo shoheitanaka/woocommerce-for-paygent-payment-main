@@ -81,6 +81,8 @@ class WC_Paygent_Block_Redirect extends Abstract_WC_Paygent_Block_Payment {
 			);
 		}
 
+		$this->set_script_translations( 'wc-paygent-block-redirect' );
+
 		return array( 'wc-paygent-block-redirect' );
 	}
 
