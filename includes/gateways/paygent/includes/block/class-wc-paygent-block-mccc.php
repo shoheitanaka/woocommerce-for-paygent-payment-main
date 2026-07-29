@@ -91,6 +91,8 @@ class WC_Paygent_Block_MCCC extends WC_Paygent_Block_CC {
 			);
 		}
 
+		$this->set_script_translations( 'wc-paygent-block-mccc' );
+
 		return array( 'wc-paygent-block-mccc' );
 	}
 

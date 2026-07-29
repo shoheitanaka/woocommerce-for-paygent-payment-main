@@ -11,6 +11,12 @@
 /script
 /report
 
+# Compiled translation files: local development only.
+# WordPress.org language packs (translate.wordpress.org) serve production
+# translations, so these must not be deployed to SVN.
+/i18n/*.json
+/i18n/*.mo
+
 # Files
 .wp-env.json
 .gitattributes

@@ -97,6 +97,8 @@ class WC_Paygent_Block_CC extends Abstract_WC_Paygent_Block_Payment {
 			);
 		}
 
+		$this->set_script_translations( 'wc-paygent-block-cc' );
+
 		return array( 'wc-paygent-block-cc' );
 	}
 

@@ -84,4 +84,21 @@ abstract class Abstract_WC_Paygent_Block_Payment extends AbstractPaymentMethodTy
 	public function get_supported_features(): array {
 		return array( 'products' );
 	}
+
+	/**
+	 * Attaches the bundled i18n/ JSON translations to a block script handle.
+	 *
+	 * Call after wp_register_script(). When no bundled JSON exists for the
+	 * current locale, WordPress falls back to the language pack in WP_LANG_DIR.
+	 *
+	 * @param string $handle Registered script handle.
+	 * @return void
+	 */
+	protected function set_script_translations( string $handle ): void {
+		wp_set_script_translations(
+			$handle,
+			'woocommerce-for-paygent-payment-main',
+			WC_PAYGENT_ABSPATH . 'i18n'
+		);
+	}
 }

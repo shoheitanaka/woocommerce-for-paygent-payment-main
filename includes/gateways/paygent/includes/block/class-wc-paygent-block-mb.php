@@ -67,6 +67,8 @@ class WC_Paygent_Block_MB extends Abstract_WC_Paygent_Block_Payment {
 			);
 		}
 
+		$this->set_script_translations( 'wc-paygent-block-mb' );
+
 		return array( 'wc-paygent-block-mb' );
 	}
 

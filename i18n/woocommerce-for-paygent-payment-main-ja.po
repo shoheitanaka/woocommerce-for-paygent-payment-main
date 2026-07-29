@@ -1,181 +1,187 @@
-# Copyright (C) 2026 Artisan Workshop
-# This file is distributed under the same license as the PAYGENT for WooCommerce plugin.
+# Translation of Plugins - PAYGENT for WooCommerce - Stable (latest release) in Japanese
+# This file is distributed under the same license as the Plugins - PAYGENT for WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"Project-Id-Version: PAYGENT for WooCommerce 2.4.8\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-for-paygent-payment-main\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: Plugins - PAYGENT for WooCommerce - Stable (latest "
+"release)\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-for-"
+"paygent-payment-main\n"
+"POT-Creation-Date: 2026-07-29T22:38:51+00:00\n"
+"PO-Revision-Date: 2026-07-30 00:00:00+0000\n"
+"Language: ja_JP\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-29T22:38:51+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.3\n"
 
 #. Plugin Name of the plugin
 #: woocommerce-for-paygent-payment-main.php
 msgid "PAYGENT for WooCommerce"
-msgstr ""
+msgstr "PAYGENT for WooCommerce"
 
 #. Plugin URI of the plugin
 #: woocommerce-for-paygent-payment-main.php
 msgid "https://wordpress.org/plugins/woocommerce-for-paygent-payment-main/"
-msgstr ""
+msgstr "https://wordpress.org/plugins/woocommerce-for-paygent-payment-main/"
 
 #. Description of the plugin
 #: woocommerce-for-paygent-payment-main.php
 msgid "Paygent Payments for WooCommerce in Japan"
-msgstr ""
+msgstr "日本での WooCommerce のペイジェント決済"
 
 #. Author of the plugin
 #: woocommerce-for-paygent-payment-main.php
 msgid "Artisan Workshop"
-msgstr ""
+msgstr "職人工房"
 
 #. Author URI of the plugin
 #: woocommerce-for-paygent-payment-main.php
 msgid "https://wc.artws.info/"
-msgstr ""
+msgstr "https://wc.artws.info/"
 
 #: class-wc-gateway-paygent.php:211
 #: includes/admin/class-wc-admin-screen-paygent.php:452
 msgid "wc-paygent folder created."
-msgstr ""
+msgstr "wc-paygent フォルダが作成されました。"
 
 #: class-wc-gateway-paygent.php:213
 #: includes/admin/class-wc-admin-screen-paygent.php:455
 msgid "wc-paygent folder could not be created."
-msgstr ""
+msgstr "wc-paygent フォルダが作成されませんでした。"
 
 #: class-wc-gateway-paygent.php:329
 msgid "Authentication was not obtained for credit card payment."
-msgstr ""
+msgstr "クレジットカード決済で認証が得られませんでした。"
 
 #: class-wc-gateway-paygent.php:330
-msgid "Attempt kbn was not answered. Something seems to be wrong. Please try a different card or contact the site administrator."
+msgid ""
+"Attempt kbn was not answered. Something seems to be wrong. Please try a "
+"different card or contact the site administrator."
 msgstr ""
+"Attempt kbn に応答がありませんでした。問題が発生しているようです。別のカード"
+"を試すか、サイト管理者にお問い合わせください。"
 
 #: class-wc-gateway-paygent.php:331
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1305
 msgid "This payment uses a card that does not have 3D Secure."
-msgstr ""
+msgstr "EMV 3D セキュアに対応していないカードで決済されています。"
 
 #: class-wc-gateway-paygent.php:332
 msgid "Please use a card that supports 3D Secure."
-msgstr ""
+msgstr "3D セキュアに対応しているカードにて決済してください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:81
 #: includes/admin/class-wc-admin-screen-paygent.php:82
 msgid "Paygent Setting"
-msgstr ""
+msgstr "ペイジェント設定"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:122
 msgid "Client Cert File(.pem) for Production environment do not exist. "
-msgstr ""
+msgstr "本番環境用のクライアント証明書(.pem) がアップロードされていません。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:125
 msgid "CA Cert File(.crt) do not exist. "
-msgstr ""
+msgstr "CAファイル(.crt)がアップロードされていません。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:138
 msgid "Mistake your uploaded file."
-msgstr ""
+msgstr "ファイルをアップロードに失敗しました。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:160
 msgid "Basic Setting"
-msgstr ""
+msgstr "基本設定"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:166
 msgid "Server IP address"
-msgstr ""
+msgstr "接続IPアドレス"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:173
 msgid "Payment information difference notification URL"
-msgstr ""
+msgstr "決済情報差分通知 URL"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:180
 #: includes/admin/class-wc-admin-screen-paygent.php:614
 msgid "Site ID"
-msgstr ""
+msgstr "サイトID"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:187
 msgid "CA Cert File"
-msgstr ""
+msgstr "認証済みCAファイル"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:194
 #: includes/admin/class-wc-admin-screen-paygent.php:663
 msgid "Test Mode"
-msgstr ""
+msgstr "試験環境"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:201
 #: includes/admin/class-wc-admin-screen-paygent.php:672
 msgid "Telegram hash check"
-msgstr ""
+msgstr "電文ハッシュチェック"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:210
 msgid "Production environment"
-msgstr ""
+msgstr "本番環境"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:216
 #: includes/admin/class-wc-admin-screen-paygent.php:273
 #: includes/admin/class-wc-admin-screen-paygent.php:525
 #: includes/admin/class-wc-admin-screen-paygent.php:578
 msgid "Merchant ID"
-msgstr ""
+msgstr "マーチャントID"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:223
 #: includes/admin/class-wc-admin-screen-paygent.php:280
 #: includes/admin/class-wc-admin-screen-paygent.php:534
 #: includes/admin/class-wc-admin-screen-paygent.php:587
 msgid "Connect ID"
-msgstr ""
+msgstr "接続ID"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:230
 #: includes/admin/class-wc-admin-screen-paygent.php:287
 #: includes/admin/class-wc-admin-screen-paygent.php:543
 #: includes/admin/class-wc-admin-screen-paygent.php:596
 msgid "Connect Password"
-msgstr ""
+msgstr "接続パスワード"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:237
 #: includes/admin/class-wc-admin-screen-paygent.php:294
 #: includes/admin/class-wc-admin-screen-paygent.php:552
 #: includes/admin/class-wc-admin-screen-paygent.php:605
 msgid "Token Generation Key"
-msgstr ""
+msgstr "トークン生成鍵"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:244
 msgid "Client Cert File"
-msgstr ""
+msgstr "クライアント認証書"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:251
 #: includes/admin/class-wc-admin-screen-paygent.php:681
 msgid "Telegram hash check Code"
-msgstr ""
+msgstr "電文ハッシュチェックコード"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:258
 #: includes/admin/class-wc-admin-screen-paygent.php:699
 msgid "Paygent debug Mode"
-msgstr ""
+msgstr "ペイジェントデバッグモード"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:267
 msgid "Test environment"
-msgstr ""
+msgstr "試験環境"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:301
 #: includes/admin/class-wc-admin-screen-paygent.php:690
 msgid "Test Telegram hash check Code"
-msgstr ""
+msgstr "試験環境電文ハッシュチェックコード"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:310
 msgid "Paygent Payment Method"
-msgstr ""
+msgstr "ペイジェント決済方法"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:316
 #: includes/admin/class-wc-admin-screen-paygent.php:708
 msgid "Prefix of Order Number"
-msgstr ""
+msgstr "注文番号の接頭辞"
 
 #. translators: %s is the payment method name.
 #: includes/admin/class-wc-admin-screen-paygent.php:323
@@ -185,28 +191,28 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:322
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:329
 msgid "Credit Card"
-msgstr ""
+msgstr "クレジットカード"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:330
 #: includes/admin/class-wc-admin-screen-paygent.php:726
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:151
 msgid "Paidy Payment"
-msgstr ""
+msgstr "Paidy 翌月払い（コンビニ/銀行）"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:337
 #: includes/admin/class-wc-admin-screen-paygent.php:735
 msgid "PayPay Payment"
-msgstr ""
+msgstr "ペイペイ決済(ペイジェント)"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:344
 #: includes/admin/class-wc-admin-screen-paygent.php:744
 msgid "RakutenPay Payment"
-msgstr ""
+msgstr "楽天ペイ決済(ペイジェント)"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:351
 #: includes/admin/class-wc-admin-screen-paygent.php:753
 msgid "Convenience store"
-msgstr ""
+msgstr "コンビニ決済"
 
 #. translators: Bank Net.
 #: includes/admin/class-wc-admin-screen-paygent.php:358
@@ -221,7 +227,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:179
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:186
 msgid "Bank Net"
-msgstr ""
+msgstr "銀行ネット"
 
 #. translators: %s is the name of the payment method.
 #: includes/admin/class-wc-admin-screen-paygent.php:365
@@ -235,7 +241,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:165
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:245
 msgid "ATM Payment"
-msgstr ""
+msgstr "ATM決済"
 
 #. translators: Payment method name.
 #: includes/admin/class-wc-admin-screen-paygent.php:372
@@ -250,7 +256,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:459
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:493
 msgid "Carrier Payment"
-msgstr ""
+msgstr "キャリア決済"
 
 #. translators: %s is the payment method name.
 #: includes/admin/class-wc-admin-screen-paygent.php:379
@@ -259,213 +265,253 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:200
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:213
 msgid "Multi-currency Credit Card"
-msgstr ""
+msgstr "クレジット決済（多通貨）"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:465
 msgid "Client Cert File have not been uploaded."
-msgstr ""
+msgstr "Client Cert File はアップロードされていません。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:469
 msgid "Uploaded flie is not Client Cert File. Please check .pem file."
 msgstr ""
+"このファイルはClient Cert Fileではありません。.pemファイルを調べてください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:478
 msgid "CA Cert File have not been uploaded."
-msgstr ""
+msgstr "CA Cert File はアップロードされていません。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:482
 msgid "Uploaded flie is not CA Cert File. Please check .crt file."
 msgstr ""
+"このファイルはCACert Fileではありません。 .crtファイルを調べてください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:517
 msgid "Your settings have been saved."
-msgstr ""
+msgstr "設定を保存しました。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:566
 msgid "Please select Client Cert File (pem) from local."
 msgstr ""
+"ローカルのパソコンから本番環境用のクライアント認証書(.pem)を選択してくださ"
+"い。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:568
-msgid "If you want to change Client Cert File, please select New Client Cert File (pem) from local."
+msgid ""
+"If you want to change Client Cert File, please select New Client Cert File "
+"(pem) from local."
 msgstr ""
+"もし、クライアント認証書を変更したい場合は、ローカルのパソコンからクライアン"
+"ト認証書 (pem) を選択してください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:616
 msgid "If you have only one site please enter 1."
-msgstr ""
+msgstr "サイトが一つしかない場合は 1 を入力してください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:629
 msgid "Please select CA Cert(crt) File from local."
-msgstr ""
+msgstr "ローカルのパソコンから認証済みCAファイル(.crt)を選択してください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:631
-msgid "If you want to change CA Cert File, please select New CA Cert(crt) File from local."
+msgid ""
+"If you want to change CA Cert File, please select New CA Cert(crt) File from "
+"local."
 msgstr ""
+"もし、認証済みCAファイルを変更したい場合は、ローカルのパソコンから認証済みCA"
+"ファイル(crt)を選択してください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:647
-msgid "Since it is different depending on the rental server, please contact the server company if the test is not completed."
+msgid ""
+"Since it is different depending on the rental server, please contact the "
+"server company if the test is not completed."
 msgstr ""
+"レンタルサーバーなどによっては、このIPアドレスではない場合がありますので、テ"
+"ストがうまくいかないときはサーバー会社にご確認ください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:656
-msgid "This URL is the payment information difference notification URL set on the Paygent merchant administrator site."
+msgid ""
+"This URL is the payment information difference notification URL set on the "
+"Paygent merchant administrator site."
 msgstr ""
+"この URL はペイジェントの加盟店管理者サイトで設定する決済情報差分通知 URL で"
+"す。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:700
-msgid "Check it only for error checking in the production environment. Basically, please uncheck it."
+msgid ""
+"Check it only for error checking in the production environment. Basically, "
+"please uncheck it."
 msgstr ""
+"本番環境でのエラーチェックする時のみチェックしてください。基本的にはチェック"
+"を外してください。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:709
-msgid "Only single-byte alphabetic characters (A-Z, a-z) are allowed. Any other characters will be removed when saving."
+msgid ""
+"Only single-byte alphabetic characters (A-Z, a-z) are allowed. Any other "
+"characters will be removed when saving."
 msgstr ""
+"半角英字（A-Z、a-z）のみ使用できます。それ以外の文字は保存時に削除されます。"
 
 #: includes/admin/class-wc-admin-screen-paygent.php:813
 msgid "Toggle panel"
-msgstr ""
+msgstr "トグル"
 
 #: includes/admin/views/html-admin-info-screen.php:11
 msgid "Infomation of Japanese Support"
-msgstr ""
+msgstr "日本語サポート情報"
 
 #: includes/admin/views/html-admin-info-screen.php:15
-msgid "Support information and announcements for WooCommerce For Paygent will be posted here regularly."
-msgstr ""
+msgid ""
+"Support information and announcements for WooCommerce For Paygent will be "
+"posted here regularly."
+msgstr "WooCommerce For Paygent のサポート情報やお知らせを随時掲載します。"
 
 #: includes/admin/views/html-admin-info-screen.php:18
 msgid "Under construction."
-msgstr ""
+msgstr "準備中です。"
 
 #. translators: %s: framework version.
 #: includes/admin/views/html-admin-info-screen.php:23
 #, php-format
 msgid "This Plugin's framework is %s."
-msgstr ""
+msgstr "このプラグインのフレームワークはバージョン%sです。"
 
 #: includes/admin/views/html-admin-screen.php:11
 msgid "Setting"
-msgstr ""
+msgstr "設定"
 
 #: includes/admin/views/html-admin-screen.php:11
 msgid "Infomations"
-msgstr ""
+msgstr "情報"
 
 #: includes/admin/views/html-admin-setting-screen.php:12
 msgid "General Setting"
-msgstr ""
+msgstr "一般設定"
 
 #: includes/admin/views/html-admin-setting-screen.php:16
 msgid "WooCommerce Paygent"
-msgstr ""
+msgstr "WooCommerce Paygent"
 
 #: includes/admin/views/html-admin-setting-screen.php:18
 msgid "Security measures for WooCommerce"
-msgstr ""
+msgstr "セキュリティー対策 for WooCommerce"
 
 #. translators: %s: URL
 #: includes/admin/views/html-admin-setting-screen.php:23
 #, php-format
-msgid "One the security, latest update is the most important thing. The credit card security guidelines that will be established from April 2025 are also important. If you need site maintenance support, please consider about <a href=\"%s\" target=\"_blank\" title=\"Security measures for WooCommerce\">Security measures for WooCommerce</a>"
+msgid ""
+"One the security, latest update is the most important thing. The credit card "
+"security guidelines that will be established from April 2025 are also "
+"important. If you need site maintenance support, please consider about <a "
+"href=\"%s\" target=\"_blank\" title=\"Security measures for "
+"WooCommerce\">Security measures for WooCommerce</a>"
 msgstr ""
+"セキュリティに関しては、最新のアップデートが最も重要です。2025年4月から制定さ"
+"れるクレジットカードセキュリティガイドラインも重要です。サイトメンテナンスサ"
+"ポートが必要な場合は、<a href=\"%s\" target=\"_blank\" title=\"WooCommerceの"
+"セキュリティ対策\">WooCommerceのセキュリティ対策</a>についてご検討ください。"
 
 #: includes/admin/views/html-admin-setting-screen.php:30
 msgid "Do you like this plugin?"
-msgstr ""
+msgstr "このプラグインを気に入ってもらえましたか？"
 
 #: includes/admin/views/html-admin-setting-screen.php:31
 msgid "Rate it 5"
-msgstr ""
+msgstr "星５つ"
 
 #: includes/admin/views/html-admin-setting-screen.php:31
 msgid "on WordPress.org"
-msgstr ""
+msgstr "on WordPress.org"
 
 #: includes/admin/views/html-admin-setting-screen.php:34
 #: includes/jp4wc-framework/config-jp4wc-framework.php:48
 msgid "Created by"
-msgstr ""
+msgstr "Created by"
 
 #: includes/admin/views/html-admin-setting-screen.php:35
 #: includes/jp4wc-framework/config-jp4wc-framework.php:49
 msgid "WooCommerce Doc in Japanese"
-msgstr ""
+msgstr "WooCommerce の日本語ドキュメント"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:192
 msgid "Order Attempt Limiter"
-msgstr ""
+msgstr "注文試行制限"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:193
 msgid "Order Limiter"
-msgstr ""
+msgstr "注文制限"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:264
 msgid "Maximum Order Attempts"
-msgstr ""
+msgstr "最大注文試行回数"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:275
 msgid "Maximum number of order attempts allowed before lockout."
-msgstr ""
+msgstr "ロックアウトされるまでに許可される注文試行の最大回数。"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:283
 msgid "Lockout Duration (minutes)"
-msgstr ""
+msgstr "ロックアウト時間（分）"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:294
 msgid "How long users are locked out after exceeding maximum attempts."
-msgstr ""
+msgstr "最大試行回数を超えたユーザーをロックアウトする時間。"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:302
 msgid "Cleanup Interval (hours)"
-msgstr ""
+msgstr "クリーンアップ間隔（時間）"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:313
 msgid "How often to clean up old attempt records from the database."
-msgstr ""
+msgstr "データベースから古い試行記録を削除する頻度。"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:324
 msgid "Current Statistics"
-msgstr ""
+msgstr "現在の統計"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:331
 msgid "Clean Up Old Records Now"
-msgstr ""
+msgstr "今すぐ古い記録を削除"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:339
 msgid "Old records cleaned up successfully."
-msgstr ""
+msgstr "古い記録を削除しました。"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:362
 msgid "Total Attempts Recorded:"
-msgstr ""
+msgstr "記録された試行回数の合計:"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:366
 msgid "Currently Locked Users:"
-msgstr ""
+msgstr "現在ロック中のユーザー:"
 
 #: includes/class-jp4wc-order-attempt-limiter.php:370
 msgid "Attempts in Last 24 Hours:"
-msgstr ""
+msgstr "過去24時間の試行回数:"
 
 #. translators: %d is the lockout duration in minutes.
 #: includes/class-jp4wc-order-attempt-limiter.php:445
 #, php-format
-msgid "You have exceeded the maximum number of order attempts. Please try again after %d minutes."
-msgstr ""
+msgid ""
+"You have exceeded the maximum number of order attempts. Please try again "
+"after %d minutes."
+msgstr "注文試行回数の上限を超えました。%d分後に再度お試しください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-cc.php:140
 msgid "Subscription Credit Card Payment completed."
-msgstr ""
+msgstr "定期購入のクレジットカード決済に成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-cc.php:154
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-cc.php:159
 msgid "Subscription Credit Card Payment failed."
-msgstr ""
+msgstr "定期購入のクレジットカード決済に失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-cc.php:159
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-cc.php:191
 msgid "There are no saved cards."
-msgstr ""
+msgstr "保存されているカードがありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-cc.php:179
 msgid "Expired Credit Card has been deleted."
-msgstr ""
+msgstr "期限切れのクレジットカードは削除されました。"
 
 #. translators: %s: Error message.
 #. translators: %s: error message.
@@ -473,108 +519,118 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:397
 #, php-format
 msgid "Paygent Transaction Failed (%s)"
-msgstr ""
+msgstr "ペイジェントのトランザクションが失敗しました。 (%s)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:135
 msgid "Success cancel subscription."
-msgstr ""
+msgstr "定期購入をキャンセルしました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:138
 msgid "Fail cancel subscription."
-msgstr ""
+msgstr "定期購入をキャンセルできませんでした"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:142
 msgid "Cancel subscription failed"
-msgstr ""
+msgstr "定期購入のキャンセルに失敗しました"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:143
 msgid "Cancel subscription failed. Subscription ID: "
-msgstr ""
+msgstr "定期購入のキャンセルに失敗しました。定期購入 ID: "
 
 #. translators: %s: new amount.
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:172
 #, php-format
 msgid "Success change amount to %s."
-msgstr ""
+msgstr "成功した変更金額は %s です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:175
 msgid "Fail change amount."
-msgstr ""
+msgstr "金額変更が失敗"
 
 #. translators: %s: order ID.
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:262
 #, php-format
 msgid "No subscription found for order %s."
-msgstr ""
+msgstr "注文 %s の定期購入が見つかりません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:264
 msgid "This subscription is first order."
-msgstr ""
+msgstr "この定期購入は初回注文です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:306
 msgid "The payment amount did not match. Amount is "
-msgstr ""
+msgstr "支払い金額が一致しませんでした。 金額は "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:320
 msgid "Subscription MB Payment failed. Status is "
-msgstr ""
+msgstr "定期購入 MB の支払いに失敗しました。 ステータスは "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:334
 msgid "Paygent status check is error."
-msgstr ""
+msgstr "ペイジェントのステータスチェックがエラーです。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:345
 msgid "Subscription MB Payment failed. No running ID."
-msgstr ""
+msgstr "定期購入 MB の支払いに失敗しました。Running IDがありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:432
 msgctxt "subscription action"
 msgid "Change the amount"
-msgstr ""
+msgstr "金額を変更する"
 
 #. translators: %s: formatted payment amount.
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:465
 #, php-format
-msgid "The subscription payment amount has been changed to %s JPY. Please use the button below to proceed with the payment amount change."
+msgid ""
+"The subscription payment amount has been changed to %s JPY. Please use the "
+"button below to proceed with the payment amount change."
 msgstr ""
+"定期購入の支払金額が %s 円に変更されました。下のボタンから支払金額の変更手続"
+"きを行ってください。"
 
 #. translators: %s: formatted payment amount.
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:467
 #, php-format
 msgid "You will be charged %s JPY for the next payment as described above."
-msgstr ""
+msgstr "上記のとおり、次回のお支払いには %s 円が請求されます。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:469
 msgid "Change Amount"
-msgstr ""
+msgstr "金額変更"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:499
 msgid "An error has occurred. Please try again later."
-msgstr ""
+msgstr "エラーが発生しました。しばらくしてから再度お試しください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:530
 msgid "The procedure to change the amount failed."
-msgstr ""
+msgstr "金額変更手続きが失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:592
-msgid "If you switch your subscription using carrier billing, you will be charged the full amount instead of the difference that is currently displayed. <br />You will then be refunded your current subscription cost. please confirm."
+msgid ""
+"If you switch your subscription using carrier billing, you will be charged "
+"the full amount instead of the difference that is currently displayed. <br /"
+">You will then be refunded your current subscription cost. please confirm."
 msgstr ""
+"キャリア決済を利用して定期購入を切り替える場合、現在表示されている差額ではな"
+"く全額が請求されます。<br />その後、現在の定期購入費用が返金されます。ご確認"
+"ください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:627
 msgid "Success cancel the old MB subscription."
-msgstr ""
+msgstr "以前のキャリア決済の定期購入のキャンセルに成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:630
 msgid "Fail cancel the old MB subscription."
-msgstr ""
+msgstr "以前のキャリア決済の定期購入のキャンセルに失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:636
 msgid "Success refund this month MB subscription."
-msgstr ""
+msgstr "今月のキャリア決済の定期購入が払い戻しに成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-addon-mb.php:639
 msgid "Fail refund this month MB subscription."
-msgstr ""
+msgstr "今月のキャリア決済の定期購入が払い戻しに失敗しました。"
 
 #. translators: %s is the name of the payment method.
 #. translators: Bank Net.
@@ -606,7 +662,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:151
 #, php-format
 msgid "Proceed to %s"
-msgstr ""
+msgstr "%s でお支払い"
 
 #. translators: %s is the name of the payment method.
 #. translators: Payment method name.
@@ -614,7 +670,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:122
 #, php-format
 msgid "Paygent %s Gateway"
-msgstr ""
+msgstr "%s （ペイジェント）"
 
 #. translators: %s is the name of the payment method.
 #. translators: Payment method name.
@@ -622,7 +678,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:124
 #, php-format
 msgid "Allows payments by Paygent %s in Japan."
-msgstr ""
+msgstr "%s を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:105
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:105
@@ -634,7 +690,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:83
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:94
 msgid "Please set this payment at Control Panel! "
-msgstr ""
+msgstr "この決済方法を管理画面にて設定してください！ "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:140
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:133
@@ -646,7 +702,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:128
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:127
 msgid "Enable/Disable"
-msgstr ""
+msgstr "有効化/無効化"
 
 #. translators: %s is the name of the payment method.
 #. translators: Bank Net.
@@ -656,7 +712,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:206
 #, php-format
 msgid "Enable paygent %s Payment"
-msgstr ""
+msgstr "%s を有効にする"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:148
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:141
@@ -668,7 +724,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:135
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:134
 msgid "Title"
-msgstr ""
+msgstr "タイトル"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:150
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:143
@@ -680,7 +736,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:137
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:136
 msgid "This controls the title which the user sees during checkout."
-msgstr ""
+msgstr "購入手続き時にユーザーが目にするタイトルをここで設定します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:154
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:147
@@ -692,7 +748,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:141
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:140
 msgid "Description"
-msgstr ""
+msgstr "説明"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:156
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:163
@@ -711,7 +767,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:142
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:149
 msgid "This controls the description which the user sees during checkout."
-msgstr ""
+msgstr "購入手続き時にユーザーが目にする説明をここで設定します。"
 
 #. translators: %s is the name of the payment method.
 #. translators: Bank Net.
@@ -729,7 +785,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:144
 #, php-format
 msgid "Pay with your %s via Paygent."
-msgstr ""
+msgstr "ペイジェント経由で %s を利用します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:161
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:154
@@ -739,57 +795,67 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:148
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:147
 msgid "Order Button Text"
-msgstr ""
+msgstr "注文ボタンの文字"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:168
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:332
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:266
 msgid "Thank you page description"
-msgstr ""
+msgstr "サンキューページでの説明"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:170
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:334
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:268
 msgid "This controls the description displayed on the thank you page."
-msgstr ""
+msgstr "ここで、サンキューページでの説明を設定します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:171
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:345
-msgid "Thank you. Your order has been received. Please pay at the bank ATM by the specified method."
+msgid ""
+"Thank you. Your order has been received. Please pay at the bank ATM by the "
+"specified method."
 msgstr ""
+"ありがとうございました。ご注文を受け付けました。指定の方法で銀行 ATM にてお支"
+"払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:174
 msgid "Invoice detail"
-msgstr ""
+msgstr "請求書詳細"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:176
-msgid "This controls the text which the detail at ATM. Please enter in full-width characters."
+msgid ""
+"This controls the text which the detail at ATM. Please enter in full-width "
+"characters."
 msgstr ""
+"これは、ATM の明細のテキストを制御します。 全角文字で入力してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:177
 msgid "Shop Title"
-msgstr ""
+msgstr "店舗名"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:180
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:168
 msgid "Invoice detail (kana)"
-msgstr ""
+msgstr "請求書詳細（カナ）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:182
-msgid "This controls the text which the detail at ATM.(Kana) Please enter in half-width characters."
+msgid ""
+"This controls the text which the detail at ATM.(Kana) Please enter in half-"
+"width characters."
 msgstr ""
+"これは、ATM での詳細テキストを制御します（カナ）半角で入力してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:183
 msgid "Shop Title (kana)"
-msgstr ""
+msgstr "店舗名（カナ）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:186
 msgid "Payment Limit date"
-msgstr ""
+msgstr "支払期限日"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:190
 msgid "Set Payment limit date."
-msgstr ""
+msgstr "支払い期限日を設定"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:193
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:189
@@ -801,7 +867,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:155
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:168
 msgid "Debug Mode"
-msgstr ""
+msgstr "デバッグモード"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:195
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:191
@@ -813,7 +879,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:157
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:170
 msgid "Enable Debug Mode"
-msgstr ""
+msgstr "デバッグモードを有効"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:197
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:193
@@ -825,128 +891,128 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:159
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:172
 msgid "Save debug data using WooCommerce logging."
-msgstr ""
+msgstr "WooCommerce ロギングを使用してデバッグデータを保存します。"
 
 #. translators: %s is the name of the payment method.
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:245
 #, php-format
 msgid "Awaiting %s"
-msgstr ""
+msgstr "%s 待ちです。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:295
 msgid "Pay Center Number :"
-msgstr ""
+msgstr "収納機関番号 : "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:298
 msgid "Customer Number :"
-msgstr ""
+msgstr "お客様番号 :"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:301
 msgid "Conf Number :"
-msgstr ""
+msgstr "確認番号 : "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:304
 msgid "Payment Limit Date :"
-msgstr ""
+msgstr "支払期限日  : "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:307
 msgid "This order was not complete. Please pay at ATM."
-msgstr ""
+msgstr "この注文はまだ完了していません。ATMでお支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:317
 msgid "Thank you for your order."
-msgstr ""
+msgstr "ご注文ありがとう御座いました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:101
 msgid "Paygent Bank Net Payment Gateway"
-msgstr ""
+msgstr "銀行ネット決済"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:102
 msgid "Allows payments by Paygent Bnak Net in Japan."
-msgstr ""
+msgstr "銀行ネット決済を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:161
 msgid "Invoice detail (Kanji)"
-msgstr ""
+msgstr "請求書詳細（漢字）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:163
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:170
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:184
 msgid "This controls the description which invoice detail."
-msgstr ""
+msgstr "ここで、ユーザーが請求書で見る説明を設定します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:163
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:184
 msgid "Double-byte characters are required."
-msgstr ""
+msgstr "全角文字が必須です。"
 
 #. translators: Bank Net.
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:165
 #, php-format
 msgid "invoice detail Via %s (kanji)"
-msgstr ""
+msgstr "%s経由の請求書詳細（漢字）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:168
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:177
 msgid "Half-width characters are required."
-msgstr ""
+msgstr "半角カタカナが必須です。"
 
 #. translators: Bank Net.
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:172
 #, php-format
 msgid "invoice detail Via %s (kana)"
-msgstr ""
+msgstr "%s経由の請求書詳細（カナ）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:175
 msgid "Invoice shop name (Kana)"
-msgstr ""
+msgstr "請求書での店舗名（半角カタカナ）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:177
 msgid "This controls the shop name."
-msgstr ""
+msgstr "これは店舗名を管理します。"
 
 #. translators: Bank Net.
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:179
 #, php-format
 msgid "invoice shop name Via %s (kana)"
-msgstr ""
+msgstr "%s経由で請求書に表示される店舗名（半角カタカナ）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:182
 msgid "Invoice shop name (kanji)"
-msgstr ""
+msgstr "請求書での店舗名（漢字）"
 
 #. translators: Bank Net.
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:186
 #, php-format
 msgid "invoice shop name Via %s (kanji)"
-msgstr ""
+msgstr "%s経由で請求書に表示される店舗名（漢字）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:255
 msgid "Awaiting Bank Net payment ASP"
-msgstr ""
+msgstr "銀行ネット決済 ASP で支払待ち"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:282
 msgid "Failed at Paygent system for Bank Net Payment ASP."
-msgstr ""
+msgstr "銀行ネット決済 ASP のペイジェントのシステムで失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:284
 msgid "This payment is failed."
-msgstr ""
+msgstr "この決済は失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:203
 msgid "Paygent Credit Card Payment Gateway"
-msgstr ""
+msgstr "クレジットカード決済（ペイジェント）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:204
 msgid "Allows payments by Paygent Credit Card in Japan."
-msgstr ""
+msgstr "クレジットカード決済（ペイジェント）を利用する"
 
 #. translators: %s is the payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:221
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:408
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:878
 msgid "1 time payment"
-msgstr ""
+msgstr "一括払い"
 
 #. translators: %1$d is the number of payments, %2$s is the payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:222
@@ -954,14 +1020,14 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:891
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:123
 msgid "Installment payment"
-msgstr ""
+msgstr "分割払い"
 
 #. translators: %s is the payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:223
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:410
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:882
 msgid "Bonus One time"
-msgstr ""
+msgstr "ボーナス一括払い"
 
 #. translators: %s is the payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:224
@@ -969,135 +1035,146 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:886
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:125
 msgid "Revolving payment"
-msgstr ""
+msgstr "リボルビング払い"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:306
 msgid "Enable paygent Credit Card Payment"
-msgstr ""
+msgstr "クレジットカード決済（ペイジェント）を有効にする"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:335
 msgid "Thank you. Your order has been received."
-msgstr ""
+msgstr "ありがとうございました。ご注文を受け付けました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:338
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:216
 msgid "Store Card Infomation"
-msgstr ""
+msgstr "カード情報お預かり機能"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:340
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:218
 msgid "Enable Store Card Infomation"
-msgstr ""
+msgstr "カード情報お預かり機能を利用"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:342
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:220
 msgid "Store user Credit Card information in Paygent Server.(Option)"
 msgstr ""
+"カード情報お預かり機能を利用する（有料オプション）※ペイジェントと契約が必要で"
+"す。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:345
 msgid "Delete expired cards"
-msgstr ""
+msgstr "期限切れカード削除"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:347
 msgid "Enable Delete expired cards"
-msgstr ""
+msgstr "期限切れカード削除の有効化"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:349
 msgid "Expired cards will be automatically deleted when a payment fails."
-msgstr ""
+msgstr "支払いが失敗すると、期限切れのカードは自動的に削除されます。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:352
 msgid "Set Credit Card"
-msgstr ""
+msgstr "利用可能クレジットカード設定"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:355
 msgid "VISA & MASTER"
-msgstr ""
+msgstr "VISA と MASTER"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:361
 msgid "DINNERS"
-msgstr ""
+msgstr "DINNERS"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:367
 msgid "AMEX & JCB"
-msgstr ""
+msgstr "AMEX と JCB"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:369
 msgid "Please check them you are able to use Credit Card"
-msgstr ""
+msgstr "利用可能（審査の通った）なクレジットカードをチェックして下さい。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:372
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:223
 msgid "3D Secure 2.0"
-msgstr ""
+msgstr "3D セキュア 2.0"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:373
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:224
 msgid "Enable 3D Secure 2.0"
-msgstr ""
+msgstr "3D Secure 2.0 を利用"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:375
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:226
-msgid "* Application is required. Please make sure your application is complete."
-msgstr ""
+msgid ""
+"* Application is required. Please make sure your application is complete."
+msgstr "※申請が必要です。 申請が完了していることを確認してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:379
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:380
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:230
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:231
 msgid "3D Secure result acceptance hash key"
-msgstr ""
+msgstr "3D セキュア結果受け入れハッシュキー"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:382
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:233
-msgid "Please input 3D Secure result acceptance hash key, if you use 3D Secure 2.0."
+msgid ""
+"Please input 3D Secure result acceptance hash key, if you use 3D Secure 2.0."
 msgstr ""
+"3D セキュア2.0を使用している場合は、3D セキュア結果受付ハッシュキーを入力して"
+"ください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:385
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:386
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:236
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:237
 msgid "Store name"
-msgstr ""
+msgstr "店舗名"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:388
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:239
 msgid "Input Store name."
-msgstr ""
+msgstr "店舗名を入力"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:391
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:250
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:242
 msgid "Payment Action"
-msgstr ""
+msgstr "決済状況"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:394
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:406
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:245
-msgid "Choose whether you wish to capture funds immediately or authorize payment only."
-msgstr ""
+msgid ""
+"Choose whether you wish to capture funds immediately or authorize payment "
+"only."
+msgstr "すぐに資金を回収するか、支払いの与信のみをするかを選択します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:398
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:249
 msgid "Capture"
-msgstr ""
+msgstr "即時売上"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:399
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:250
 msgid "Authorize"
-msgstr ""
+msgstr "与信決済"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:403
 msgid "Payment Method"
-msgstr ""
+msgstr "支払方法"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:415
 msgid "Number of payments"
-msgstr ""
+msgstr "支払いの回数"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:418
-msgid "Please select from here if you choose installment payment. (Multiple selection possible)."
+msgid ""
+"Please select from here if you choose installment payment. (Multiple "
+"selection possible)."
 msgstr ""
+"分割払いを選択する場合は、ここから選択してください。 （複数選択可能）。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:421
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:422
@@ -1112,84 +1189,98 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:431
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:541
 msgid "times"
-msgstr ""
+msgstr "回払い"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:435
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:254
 msgid "Attempt classification compatible"
-msgstr ""
+msgstr "Attempt 分類の互換性"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:437
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:256
-msgid "If the Attempt category is \"Attention\", please check the checkbox if you wish to proceed with payment."
+msgid ""
+"If the Attempt category is \"Attention\", please check the checkbox if you "
+"wish to proceed with payment."
 msgstr ""
+"Attempt カテゴリが「注意」の場合、支払いを続行する場合はチェックボックスをオ"
+"ンにしてください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:439
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:453
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:258
-msgid "If you check this, the payment will go through, but the chargeback will be borne by the store."
+msgid ""
+"If you check this, the payment will go through, but the chargeback will be "
+"borne by the store."
 msgstr ""
+"これにチェックを入れると決済は完了しますが、チャージバックは店舗負担となりま"
+"す。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:442
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:443
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:261
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:262
 msgid "Attempt notice email"
-msgstr ""
+msgstr "Attempt 通知メール"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:445
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:264
 msgid "Please input Attempt notice email, if you permit the attempt."
-msgstr ""
+msgstr "Attempt を許可する場合は、Attempt 通知メールを入力してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:448
 msgid "Accept No 3D Secure Card"
-msgstr ""
+msgstr "3D セキュア登録のないカードを受け入れる"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:450
 msgid "Enable No 3D Secure Card"
-msgstr ""
+msgstr "3D セキュア登録のないカードの有効化"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:452
 msgid "If you check this, the card will be processed without 3D Secure."
 msgstr ""
+"3Dセキュアに登録していないクレジットカードを許容する場合は、チェックしてくだ"
+"さい。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:516
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:328
 msgid "Save payment information to my account for future purchases."
-msgstr ""
+msgstr "今後の購入のために支払い情報をアカウントに保存する。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:528
 msgid "Payment method : "
-msgstr ""
+msgstr "支払方法"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:552
 msgid "Cardholder Name (Alphabetic characters only)"
-msgstr ""
+msgstr "カードの記載名(半角アルファベットのみ)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:767
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1663
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:400
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:771
-msgid "The selected saved card could not be used. Please choose another payment method."
+msgid ""
+"The selected saved card could not be used. Please choose another payment "
+"method."
 msgstr ""
+"選択された保存済みカードは利用できませんでした。別の支払い方法を選択してくだ"
+"さい。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:818
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:820
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:458
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:460
 msgid "3D Secure 2.0 Payment Processing."
-msgstr ""
+msgstr "3D Secure 2.0 支払いに進みました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:829
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:469
 msgid "paygent Payment completed. Transaction ID: "
-msgstr ""
+msgstr "ペイジェントでの決済が完了しました。Transaction ID: "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:851
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:491
 msgid "Your credit card was not authorized."
-msgstr ""
+msgstr "クレジットカード支払いが承認されませんでした。"
 
 #. translators: %s is the payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:878
@@ -1197,40 +1288,44 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:886
 #, php-format
 msgid "Payment Number is %s"
-msgstr ""
+msgstr "支払いは%sです。"
 
 #. translators: %1$d is the number of payments, %2$s is the payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:891
 #, php-format
 msgid "Payment Number is %1$d times of %2$s"
-msgstr ""
+msgstr "支払いは%2$sの%1$d回払いです。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1212
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:602
 msgid "3D Secure 2.0 Requestor Error Code:"
-msgstr ""
+msgstr "EMV 3D セキュアリクエスターエラーコード:"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1217
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:607
 msgid "3D Secure 2.0 Server Error Code:"
-msgstr ""
+msgstr "EMV 3D セキュアサーバーエラーコード:"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1223
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:613
 msgid "Attempt kbn is attention."
-msgstr ""
+msgstr "Attempt は注意です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1226
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1304
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:616
 msgid "Notion: Attempt order#"
-msgstr ""
+msgstr "注意: Attempt 注文番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1227
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1306
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:617
-msgid "This order is a caution && is not eligible for cashback. Please be careful about shipping etc."
+msgid ""
+"This order is a caution && is not eligible for cashback. Please be careful "
+"about shipping etc."
 msgstr ""
+"この注文は注意事項であり、キャッシュバックの対象外です。 配送等にご注意くださ"
+"い。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1232
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1265
@@ -1239,35 +1334,40 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:656
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:663
 msgid "Failed 3D Secure 2.0."
-msgstr ""
+msgstr "3D Secure 2.0 が失敗しました"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1236
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:626
 msgid "Using a card that is not 3D Secure."
-msgstr ""
+msgstr "EMV 3D セキュアに対応していないカードを使っています。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1239
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:630
 msgid "Attempt kbn is normal."
-msgstr ""
+msgstr "Attempt は正常です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1241
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:632
 msgid "There was no response from Attempt kbn."
-msgstr ""
+msgstr "Attempt kbn からの応答がありませんでした。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1254
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:645
 msgid "Failed to store card information."
-msgstr ""
+msgstr "カード情報を保存できませんでした。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1311
 msgid "No 3D Secure 2.0 card."
-msgstr ""
+msgstr "EMV 3D セキュアに対応していないカードです。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1338
-msgid "If you use IE, this payment may fail. If this payment is not successful, please try a browser such as Edge."
+msgid ""
+"If you use IE, this payment may fail. If this payment is not successful, "
+"please try a browser such as Edge."
 msgstr ""
+"IE （インターネット・エクスプローラー）を利用している場合、決済が失敗する場合"
+"がございます。決済がうまくいかない場合は、Edge や Chrome などのブラウザをお試"
+"しください。"
 
 #. translators: %s is the field name (e.g., Security code).
 #. translators: %s is the field name (e.g., Expiration date).
@@ -1277,41 +1377,42 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1359
 #, php-format
 msgid "The number of digits of %s is invalid."
-msgstr ""
+msgstr "%sの桁数が不正です。"
 
 #. translators: %s is the field name (e.g., Security code).
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1353
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1366
-#: build/paygent-cc.js:1
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-cc/index.js:218
-#: src/blocks/paygent-mccc/index.js:152
+#: build/paygent-cc.js:1 build/paygent-cc.js:3 build/paygent-mccc.js:1
+#: src/blocks/paygent-cc/index.js:218 src/blocks/paygent-mccc/index.js:152
 #: src/blocks/shared/components/SavedTokenForm.jsx:92
 msgid "Security code"
-msgstr ""
+msgstr "セキュリティコード"
 
 #. translators: %s is the field name (e.g., Expiration date).
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1356
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1369
 msgid "Expiration date"
-msgstr ""
+msgstr "有効期限"
 
 #. translators: %s is the field name (e.g., Expiration date).
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1356
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1369
-msgid "Please enter the expiration date in 4 digits of the month / year. Example) In the case of November 2018 it will be 11/18."
+msgid ""
+"Please enter the expiration date in 4 digits of the month / year. Example) "
+"In the case of November 2018 it will be 11/18."
 msgstr ""
+"有効期限は月/年の4桁で入力してください。例) 2018年11月の場合は11/18となりま"
+"す。"
 
 #. translators: %s is the field name (e.g., Credit Card Number).
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1359
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1372
 msgid "Credit Card Number"
-msgstr ""
+msgstr "カード番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1361
 msgid "Parameter value has illegal number of digits."
-msgstr ""
+msgstr "パラメータの値は桁数が不正です。"
 
 #. translators: %s is the field name (e.g., Security code).
 #. translators: %s is the field name (e.g., Expiration date).
@@ -1321,72 +1422,78 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1372
 #, php-format
 msgid "%s is an invalid value."
-msgstr ""
+msgstr "%sは不正な値です。"
 
 #. translators: %s is the field name (e.g., Expiration date).
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1369
 msgid "The expiration date is too old or too future."
-msgstr ""
+msgstr "有効期限が古すぎるか、あまりにも未来すぎるかもしれません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1374
 msgid "The value of the parameter is an invalid value."
-msgstr ""
+msgstr "パラメータの値は不正な値です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1393
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:734
 msgid "The payment has been interrupted."
-msgstr ""
+msgstr "支払いは中断されました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1394
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:735
-msgid "The following order has failed. Sorry to trouble you, but if you want to purchase, please order again from the beginning."
+msgid ""
+"The following order has failed. Sorry to trouble you, but if you want to "
+"purchase, please order again from the beginning."
 msgstr ""
+"下の注文は失敗しました。 ご迷惑をおかけして申し訳ございませんが、ご購入をご希"
+"望の場合は、最初から再度ご注文ください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1396
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1517
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:556
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:737
 msgid "Error at 3D Secure."
-msgstr ""
+msgstr "3Dセキュアにてエラー。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1491
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:530
 msgid "3D Secure payment was complete."
-msgstr ""
+msgstr "3Dセキュア支払いが完了しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1545
 msgid "Use stored credit card information."
-msgstr ""
+msgstr "保存されているクレジットカード情報を使用します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1549
 msgid "credit card last some numbers: "
-msgstr ""
+msgstr "クレジットカードの最後の数字 :"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1553
 msgid "Card code"
-msgstr ""
+msgstr "セキュリティコード"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1559
 msgid "Use a new payment method"
-msgstr ""
+msgstr "新しい決済方法を使う"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1595
 msgid "Input information of the credit card is not enough."
-msgstr ""
+msgstr "入力されたクレジットカード情報が不十分です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1601
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1604
 msgid "Card information input error. Fault to stored your card info."
-msgstr ""
+msgstr "カード情報の入力エラーです。カード情報が保存できませんでした。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1608
 msgid "Stored card info."
-msgstr ""
+msgstr "カード情報を保存しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1650
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:758
-msgid "Sorry, you need to create an account in order for us to save your payment information."
-msgstr ""
+msgid ""
+"Sorry, you need to create an account in order for us to save your payment "
+"information."
+msgstr "支払い情報を保存する為にアカウントを作る必要があります。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1668
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1680
@@ -1394,650 +1501,750 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:788
 msgid "Input information of the credit card is not enough. Please check CVC."
 msgstr ""
+"入力されたクレジットカード情報が不十分です。セキュリティコードを確認してくだ"
+"さい。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1676
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:784
-msgid "Input information of the credit card is not enough. Please check Credit card expiration date, etc."
+msgid ""
+"Input information of the credit card is not enough. Please check Credit card "
+"expiration date, etc."
 msgstr ""
+"入力されたクレジットカード情報が不十分です。入力情報を確認してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1688
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:796
 msgid "Please enter the cardholder name."
-msgstr ""
+msgstr "カードの記載名を入力してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1695
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:803
 msgid "Please enter the cardholder name in alphabet."
-msgstr ""
+msgstr "カードの記載名は半角英字で入力してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1723
 msgid "Paygent CC - Amount Correction (028/029)"
-msgstr ""
+msgstr "Paygent CC - 金額補正 (028/029)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1750
 msgid "Current total:"
-msgstr ""
+msgstr "現在の合計:"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1753
-msgid "3D Secure orders: amount correction (028/029) is not supported by Paygent. This form has been disabled."
+msgid ""
+"3D Secure orders: amount correction (028/029) is not supported by Paygent. "
+"This form has been disabled."
 msgstr ""
+"3Dセキュア注文: ペイジェントでは金額補正 (028/029) がサポートされていないた"
+"め、このフォームは無効化されています。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1757
 msgid "Notes (from Paygent spec):"
-msgstr ""
+msgstr "注意事項（ペイジェント仕様より）:"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1758
 msgid "3D Secure is not supported — prior 3DS orders will fail."
 msgstr ""
+"3Dセキュアには対応していないため、3Dセキュアで決済した注文は失敗します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1759
 msgid "CVV check is skipped (value not retained by Paygent)."
 msgstr ""
+"セキュリティコードのチェックは行われません（ペイジェント側に値が保持されない"
+"ため）。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1760
 msgid "Card last-used date is not updated when using stored card."
-msgstr ""
+msgstr "保存済みカードを使用した場合、カードの最終利用日は更新されません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1765
 msgid "New total amount:"
-msgstr ""
+msgstr "新しい合計金額:"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1770
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1790
 msgid "Execute Amount Correction"
-msgstr ""
+msgstr "金額補正を実行"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1780
 msgid "Please enter a valid amount."
-msgstr ""
+msgstr "有効な金額を入力してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1783
 msgid "Processing..."
-msgstr ""
+msgstr "処理中..."
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1810
 msgid "Permission denied."
-msgstr ""
+msgstr "権限がありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1817
 msgid "Invalid order ID or amount."
-msgstr ""
+msgstr "注文IDまたは金額が無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1831
 msgid "Failed to retrieve current payment status."
-msgstr ""
+msgstr "現在の決済ステータスの取得に失敗しました。"
 
 #. translators: %s: payment status code.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1842
 #, php-format
-msgid "Amount correction is not available for payment status %s. Only status 20 (auth) or 40 (sale) is supported."
+msgid ""
+"Amount correction is not available for payment status %s. Only status 20 "
+"(auth) or 40 (sale) is supported."
 msgstr ""
+"決済ステータス %s では金額補正できません。ステータス 20（オーソリ）または 40"
+"（売上）のみ対応しています。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1859
 msgid "Amount correction failed."
-msgstr ""
+msgstr "金額補正に失敗しました。"
 
 #. translators: %1$s: telegram kind, %2$s: old amount, %3$s: new amount, %4$s: old payment_id, %5$s: new payment_id.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1880
 #, php-format
-msgid "Paygent amount correction (%1$s) succeeded. Amount: %2$s → %3$s. payment_id changed from %4$s to %5$s."
+msgid ""
+"Paygent amount correction (%1$s) succeeded. Amount: %2$s → %3$s. payment_id "
+"changed from %4$s to %5$s."
 msgstr ""
+"ペイジェントの金額補正 (%1$s) に成功しました。金額: %2$s → %3$s。payment_id "
+"が %4$s から %5$s に変更されました。"
 
 #. translators: %1$s: telegram kind, %2$s: old amount, %3$s: new amount.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1890
 #, php-format
 msgid "Paygent amount correction (%1$s) succeeded. Amount: %2$s → %3$s."
-msgstr ""
+msgstr "ペイジェントの金額補正 (%1$s) に成功しました。金額: %2$s → %3$s。"
 
 #. translators: %1$s: telegram kind, %2$s: old amount, %3$s: new amount.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:1900
 #, php-format
 msgid "Amount correction (%1$s) succeeded. Amount: %2$s → %3$s."
-msgstr ""
+msgstr "金額補正 (%1$s) に成功しました。金額: %2$s → %3$s。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2031
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2038
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2044
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2082
 msgid "Could not connect to system."
-msgstr ""
+msgstr "システムに接続できませんでした。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2032
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2039
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2045
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2079
 msgid "The transaction has timed out."
-msgstr ""
+msgstr "取引がタイムアウトしました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2033
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2040
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2046
 msgid "The transaction status is abnormal."
-msgstr ""
+msgstr "取引ステータスが異常です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2034
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2041
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2047
 msgid "A required item check error occurred."
-msgstr ""
+msgstr "必須項目チェックエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2035
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2042
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2048
 msgid "A length check error occurred."
-msgstr ""
+msgstr "レングスチェックエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2036
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2043
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2049
 msgid "A report message check error occurred."
-msgstr ""
+msgstr "報告電文チェックエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2037
 msgid "The 3DS Merchant TransID is duplicated."
-msgstr ""
+msgstr "3DS Merchant TransID が重複しています。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2054
 msgid "A system error has occurred."
-msgstr ""
+msgstr "システムエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2067
 msgid "The received message is invalid."
-msgstr ""
+msgstr "受信したメッセージが無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2068
 msgid "Unsupported message version number."
-msgstr ""
+msgstr "サポートされていないメッセージバージョン番号です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2069
-msgid "A required message element defined according to the specification is missing."
-msgstr ""
+msgid ""
+"A required message element defined according to the specification is missing."
+msgstr "仕様に従って定義された必須のメッセージ要素がありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2070
 msgid "A critical message extension is not present."
-msgstr ""
+msgstr "重要なメッセージ拡張が存在しません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2071
-msgid "A data element is not in the required format or has an invalid value defined according to the specification."
+msgid ""
+"A data element is not in the required format or has an invalid value defined "
+"according to the specification."
 msgstr ""
+"データ要素が要求されている形式ではないか、仕様に従って定義された値が無効で"
+"す。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2072
 msgid "Duplicate data elements were found."
-msgstr ""
+msgstr "重複したデータ要素が見つかりました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2073
 msgid "For receiving components, the received transaction ID is invalid."
-msgstr ""
+msgstr "コンポーネントの受信について、受信した取引 ID は無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2074
 msgid "Data encryption failed."
-msgstr ""
+msgstr "データの暗号化が失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2075
 msgid "The API request endpoint is invalid. Please check the request URL."
 msgstr ""
+"API リクエストのエンドポイントが無効です。 リクエスト URL を確認してくださ"
+"い。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2076
 msgid "The ISO code is invalid."
-msgstr ""
+msgstr "ISO コードが無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2077
 msgid "The transaction data is invalid."
-msgstr ""
+msgstr "取引データが無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2078
 msgid "Merchant category code is invalid."
-msgstr ""
+msgstr "加盟店カテゴリーコードが無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2080
 msgid "The system crashed for a short period of time."
-msgstr ""
+msgstr "システムが短期間故障しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2081
 msgid "The system has permanently failed."
-msgstr ""
+msgstr "システムが恒久的に故障しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2083
 msgid "An error occurred when communicating with the directory server."
-msgstr ""
+msgstr "ディレクトリ・サーバーとの通信中にエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2084
 msgid "The directory server for the specified provider could not be found."
-msgstr ""
+msgstr "指定されたプロバイダーのディレクトリ・サーバーが見つかりませんでした。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2085
 msgid "An error occurred while saving the transaction."
-msgstr ""
+msgstr "取引の保存中にエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2086
 msgid "Unhandled exception."
-msgstr ""
+msgstr "未処理の例外。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2087
 msgid "The merchant does not have a valid license."
-msgstr ""
+msgstr "加盟店に有効なライセンスがありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2088
 msgid "The 3DS Server transaction ID is not recognized."
-msgstr ""
+msgstr "3DS サーバーの取引 ID を認識できません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2089
 msgid "The 3DS Requestor's transaction ID is not recognized."
-msgstr ""
+msgstr "3DS リクエスターの取引 ID を認識できません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2090
 msgid "A required element is missing."
-msgstr ""
+msgstr "必須要素がありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2091
 msgid "An error occurred during data transfer."
-msgstr ""
+msgstr "データ転送中にエラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2092
-msgid "An error occurred while setting the requester's pre-trade ID. The pre-trade ID was not found."
+msgid ""
+"An error occurred while setting the requester's pre-trade ID. The pre-trade "
+"ID was not found."
 msgstr ""
+"リクエスターの事前取引 ID の設定中にエラーが発生しました。 事前取引 ID が見つ"
+"かりませんでした。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2093
-msgid "The format of one or more elements is invalid according to the specification."
-msgstr ""
+msgid ""
+"The format of one or more elements is invalid according to the specification."
+msgstr "仕様に従って、1つ以上の要素の形式が無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2094
 msgid "acquirerMerchantID/threeDSRequestorID is invalid."
-msgstr ""
+msgstr "acquirerMerchantID/threeDSRequestorID が無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2095
 msgid "Unsupported API version number."
-msgstr ""
+msgstr "サポートされていない API バージョン番号です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2096
 msgid "The input is invalid."
-msgstr ""
+msgstr "入力が無効です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2097
 msgid "Access denied."
-msgstr ""
+msgstr "アクセスが拒否されました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2098
 msgid "Internal Server Error."
-msgstr ""
+msgstr "内部サーバーエラー。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2099
 msgid "The session timed out."
-msgstr ""
+msgstr "セッションがタイムアウトしました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:2104
 msgid "Other exceptions."
-msgstr ""
+msgstr "その他の例外。"
 
 #. translators: %s: Convenience Store.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:144
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:250
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:263
 msgid "Convenience Store"
-msgstr ""
+msgstr "コンビニエンスストア"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:149
 msgid "Paygent Convenience Store Payment Gateway"
-msgstr ""
+msgstr "コンビニ決済（ペイジェント）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:150
 msgid "Allows payments by Paygent Convenience Store in Japan."
-msgstr ""
+msgstr "コンビニ決済（ペイジェント）を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:166
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:275
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:88
 msgid "Seven Eleven"
-msgstr ""
+msgstr "セブン-イレブン"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:172
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:94
 msgid "Lawson"
-msgstr ""
+msgstr "ローソン"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:173
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:98
 msgid "Mini Stop"
-msgstr ""
+msgstr "ミニストップ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:178
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:287
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:104
 msgid "Family Mart"
-msgstr ""
+msgstr "ファミリーマート"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:181
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:293
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:110
 msgid "Seicomart"
-msgstr ""
+msgstr "セイコーマート"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:184
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:299
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:116
 msgid "Daily Yamazaki"
-msgstr ""
+msgstr "デイリーヤマザキ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:190
 msgid "Payment slip number"
-msgstr ""
+msgstr "払込票番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:191
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:192
 msgid "Customer number"
-msgstr ""
+msgstr "お客様番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:193
 msgid "Receiving number"
-msgstr ""
+msgstr "収納番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:194
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:551
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:552
 msgid "Payment receipt number"
-msgstr ""
+msgstr "お支払い受付番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:195
 msgid "Online payment number"
-msgstr ""
+msgstr "オンライン決済番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:199
-msgid "Please print out the payment slip (or write down the \"Payment slip number (13 digits)\") and go to the 7-Eleven store. Please say \"Pay for the Internet payment\" at the cash register and pay with the payment slip, or give the \"Payment slip number\" and pay."
+msgid ""
+"Please print out the payment slip (or write down the \"Payment slip number "
+"(13 digits)\") and go to the 7-Eleven store. Please say \"Pay for the "
+"Internet payment\" at the cash register and pay with the payment slip, or "
+"give the \"Payment slip number\" and pay."
 msgstr ""
+"払込票をプリントアウトし（もしくは「払込票番号」（13桁）をメモして）、セブン"
+"イレブン店舗へ。店頭レジにて「インターネット代金の支払い」と伝え、払込票でお"
+"支払いいただくか、「払込票番号」を伝えお支払いください。"
 
 #. translators: %s: "Customer number" and "confirmation number(400008)".
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:201
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:203
 #, php-format
-msgid "Make a note of the reported %s and go to Lawson or Ministop store. Please enter the number into the multimedia terminal Loppi or MINISTOPLoppi installed in the store and pay at the cash register with the application ticket issued."
+msgid ""
+"Make a note of the reported %s and go to Lawson or Ministop store. Please "
+"enter the number into the multimedia terminal Loppi or MINISTOPLoppi "
+"installed in the store and pay at the cash register with the application "
+"ticket issued."
 msgstr ""
+"通知された%sをメモして、ローソン又はミニストップ店舗へ。店内に設置されている"
+"マルチメディア端末 Loppi 又は MINISTOPLoppi に番号を入力し、発券される申込券"
+"でレジにてお支払いください。"
 
 #. translators: %s: "Customer number" and "confirmation number(400008)".
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:201
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:203
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:572
 msgid "\"Customer number\" and \"confirmation number(400008)\""
-msgstr ""
+msgstr "「お客様番号」と「確認番号(400008)」"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:204
-msgid "Make a note of the notified \"Receiving number\" and go to the FamilyMart store. Please enter the number into the Fami port, a multimedia terminal installed in the store, and pay at the cash register with the application ticket issued."
+msgid ""
+"Make a note of the notified \"Receiving number\" and go to the FamilyMart "
+"store. Please enter the number into the Fami port, a multimedia terminal "
+"installed in the store, and pay at the cash register with the application "
+"ticket issued."
 msgstr ""
+"通知された「収納番号」をメモして、ファミリーマート店舗へ。店内に設置されてい"
+"るマルチメディア端末 Fami ポートに番号を入力し、発券される申込券でレジにてお"
+"支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:205
-msgid "Make a note of the \"Payment receipt number\" notified and go to the Seicomart store. Please enter the number in the multimedia terminal club station installed in the store and pay at the cash register with the application ticket issued."
+msgid ""
+"Make a note of the \"Payment receipt number\" notified and go to the "
+"Seicomart store. Please enter the number in the multimedia terminal club "
+"station installed in the store and pay at the cash register with the "
+"application ticket issued."
 msgstr ""
+"通知された「お支払い受付番号」をメモして、セイコーマート店舗へ。店内に設置さ"
+"れているマルチメディア端末クラブステーションに番号を入力し、発券される申込券"
+"でレジにてお支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:206
-msgid "Make a note of the notified \"Online payment number\" and go to the Daily Yamazaki store. Please say \"Online payment\" at the cash register, enter the \"Online payment number\" on the cashier's customer screen, and pay."
+msgid ""
+"Make a note of the notified \"Online payment number\" and go to the Daily "
+"Yamazaki store. Please say \"Online payment\" at the cash register, enter "
+"the \"Online payment number\" on the cashier's customer screen, and pay."
 msgstr ""
+"通知された「オンライン決済番号」をメモして、デイリーヤマザキ店舗へ。店頭レジ"
+"にて「オンライン決済」と伝え、レジのお客様用画面に「オンライン決済番号」を入"
+"力し、代金をお支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:241
 msgid "Enable paygent Convenience Store Payment"
-msgstr ""
+msgstr "コンビニ決済（ペイジェント）を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:256
 msgid "Pay at Convenience Store via Paygent."
-msgstr ""
+msgstr "コンビニで料金を支払う"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:259
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:209
 msgid "Order Button"
-msgstr ""
+msgstr "注文ボタン"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:261
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:211
 msgid "This controls the order button which the user sees during checkout."
-msgstr ""
+msgstr "ここで、ユーザーがチェックアウト時に見る注文ボタンを設定します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:269
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:594
-msgid "Thank you. Your order has been received. Please pay at the convenience store by the specified method."
+msgid ""
+"Thank you. Your order has been received. Please pay at the convenience store "
+"by the specified method."
 msgstr ""
+"ありがとうございました。ご注文を受け付けました。指定の方法でコンビニにてお支"
+"払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:272
 msgid "Set Convenience Store"
-msgstr ""
+msgstr "支払い可能コンビニ設定"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:281
 msgid "Lowson & Mini Stop"
-msgstr ""
+msgstr "ローソンとミニストップ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:301
 msgid "Please check them you are able to use Convenience Store"
-msgstr ""
+msgstr "利用可能（審査の通った）なコンビニグループをチェックしてください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:304
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:412
 msgid "Payment limit date"
-msgstr ""
+msgstr "支払い期限"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:308
-msgid "Please input the number of day for payment limit date. Default is 30 days."
-msgstr ""
+msgid ""
+"Please input the number of day for payment limit date. Default is 30 days."
+msgstr "支払期限の日数を入力してください。 デフォルトは30日です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:311
 msgid "Convenience store connection type"
-msgstr ""
+msgstr "コンビニ接続タイプ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:315
-msgid "Please select the convenience store connection type specified by Paygent. Most contracts are type A."
+msgid ""
+"Please select the convenience store connection type specified by Paygent. "
+"Most contracts are type A."
 msgstr ""
+"ペイジェントから指定されているコンビニ接続タイプを選んでください。ほとんどの"
+"契約はタイプAです。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:317
 msgid "Type A"
-msgstr ""
+msgstr "タイプ A"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:318
 msgid "Type D"
-msgstr ""
+msgstr "タイプ D"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:352
 msgid "Please select Convenience Store where you want to pay"
-msgstr ""
+msgstr "お支払いをされるコンビニをお選び下さい"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:409
 msgid "Awaiting Convenience store payment"
-msgstr ""
+msgstr "コンビニ支払い待ち"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:410
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:533
 msgid "CVS Payment"
-msgstr ""
+msgstr "決済コンビニ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:411
 msgid "Receipt number"
-msgstr ""
+msgstr "支払い番号"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:414
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:536
 msgid "Receipt Print Url"
-msgstr ""
+msgstr "印刷用 URL"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:432
 msgid "Paygent Payment failed. Sysmte Error: "
-msgstr ""
+msgstr "ペイジェント決済が失敗しました。Sysmte Error: "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:433
 msgid "Sorry, there was an error."
-msgstr ""
+msgstr "エラーが発生しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:441
 msgid "Paygent Payment failed. Some trouble happened."
-msgstr ""
+msgstr "ペイジェント決済が失敗しました。何かトラブルが発生したようです。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:442
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:550
-msgid "No response from payment gateway server. Try again later or contact the site administrator."
+msgid ""
+"No response from payment gateway server. Try again later or contact the site "
+"administrator."
 msgstr ""
+"ペイジェントのサーバーから反応がありません。少し経ってから再度試すか、サイト"
+"管理者にご連絡下さい。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:498
 msgid "Convenience store payment details"
-msgstr ""
+msgstr "コンビニ支払い詳細"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:501
 msgid "Convenience store : "
-msgstr ""
+msgstr "利用可能コンビニ : "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:504
 msgid "URL : "
-msgstr ""
+msgstr "案内URL : "
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:506
 msgid "limit Date : "
-msgstr ""
+msgstr "支払期限 : "
 
 #. translators: %s: Convenience Store name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:510
 #, php-format
 msgid "For %s Users"
-msgstr ""
+msgstr "%sでお支払いの方へ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:531
 msgid "Payment Detail"
-msgstr ""
+msgstr "支払詳細"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:538
 msgid "How to pay at a convenience store"
-msgstr ""
+msgstr "コンビニ店舗での支払い方法"
 
 #. translators: %s: Customer number and confirmation number details for convenience store payment.
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:567
 #, php-format
 msgid ""
 "Make a note of the reported %s and go to Lawson or Ministop store.\n"
-"\t\t\t\t\t Please enter the number into the multimedia terminal Loppi or MINISTOPLoppi installed in the store and pay at the cash register with the application ticket issued."
+"\t\t\t\t\t Please enter the number into the multimedia terminal Loppi or "
+"MINISTOPLoppi installed in the store and pay at the cash register with the "
+"application ticket issued."
 msgstr ""
+"表示された%s をメモして、ローソンまたはミニストップの店舗へお越しください。\n"
+"店舗に設置されているマルチメディア端末「Loppi」または「MINISTOPLoppi」にその"
+"番号を入力し、発行された申込券でレジにてお支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:163
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:234
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:88
 msgid "au Easy Payment"
-msgstr ""
+msgstr "au かんたん決済"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:169
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:240
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:94
 msgid "Docomo Payment"
-msgstr ""
+msgstr "ドコモ決済"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:175
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:246
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:100
 msgid "SoftBank Matomete Payment(B)"
-msgstr ""
+msgstr "SoftBank まとめて決済(B)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:252
 msgid "Payment Completed"
-msgstr ""
+msgstr "支払い完了"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:274
 msgid "Please select carrier type where you want to pay"
-msgstr ""
+msgstr "お支払いをされるキャリアタイプをお選び下さい"
 
 #. translators: Payment method name.
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:459
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:493
 #, php-format
 msgid "Pending %s"
-msgstr ""
+msgstr "保留中 %s"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:675
 msgid "Payment has failed. Please try again."
-msgstr ""
+msgstr "支払いに失敗しました。 もう一度お試しください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:961
-msgid "au Easy Payment allows only full refunds after capture (40). Partial refunds are only possible while the payment is authorized (20)."
+msgid ""
+"au Easy Payment allows only full refunds after capture (40). Partial refunds "
+"are only possible while the payment is authorized (20)."
 msgstr ""
+"auかんたん決済では、売上確定後 (40) は全額返金のみ可能です。部分返金はオーソ"
+"リ中 (20) のみ可能です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:964
-msgid "d-Payment cannot be refunded yet: the Paygent status is Sales Completed (40). It becomes refundable after the carrier completion notice updates it to Capture Completed (44), which happens from 3:30 AM the next day (or the day after in some cases). Please retry then."
+msgid ""
+"d-Payment cannot be refunded yet: the Paygent status is Sales Completed "
+"(40). It becomes refundable after the carrier completion notice updates it "
+"to Capture Completed (44), which happens from 3:30 AM the next day (or the "
+"day after in some cases). Please retry then."
 msgstr ""
+"d払いはまだ返金できません。ペイジェントのステータスが売上完了 (40) のためで"
+"す。キャリア完了通知によりステータスが消込完了 (44) に更新されると返金可能に"
+"なります。更新は翌日3:30以降（場合によっては翌々日）に行われますので、その後"
+"に再度お試しください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:967
-msgid "SoftBank Matomete Payment allows only full refunds after capture (40). Partial refunds are only possible while the payment is authorized (20/21)."
+msgid ""
+"SoftBank Matomete Payment allows only full refunds after capture (40). "
+"Partial refunds are only possible while the payment is authorized (20/21)."
 msgstr ""
+"ソフトバンクまとめて支払いでは、売上確定後 (40) は全額返金のみ可能です。部分"
+"返金はオーソリ中 (20/21) のみ可能です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1115
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1138
 msgid "Payment Information"
-msgstr ""
+msgstr "支払情報"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1125
 msgid "Running Status"
-msgstr ""
+msgstr "Running ステータス"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1162
 msgid "Career type"
-msgstr ""
+msgstr "キャリアタイプ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1165
 msgid "This order does not have Career type."
-msgstr ""
+msgstr "この注文にはキャリアタイプがありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1171
 msgid "Trading ID"
-msgstr ""
+msgstr "取引 ID"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1174
 msgid "This order does not have Trading ID."
-msgstr ""
+msgstr "この注文には取引 ID がありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1194
 msgid "Running ID"
-msgstr ""
+msgstr "Running ID"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1205
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:669
 msgid "Application interruption"
-msgstr ""
+msgstr "申込中断"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1206
 msgid "Subscription is ongoing"
-msgstr ""
+msgstr "定期購入継続中"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1207
 msgid "Subscription ends"
-msgstr ""
+msgstr "定期購入終了"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1208
 msgid "Subscription cancelled"
-msgstr ""
+msgstr "定期購入のキャンセル"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1215
 msgid "Running status"
-msgstr ""
+msgstr "Running ステータス"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1220
 msgid "This order does not have Running ID."
-msgstr ""
+msgstr "この注文には Running IDがありません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1234
 msgid "Your mobile payment has been canceled."
-msgstr ""
+msgstr "モバイル決済はキャンセルされました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:1259
 msgid "Mobile payment was canceled."
-msgstr ""
+msgstr "モバイル決済がキャンセルされました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:126
 msgid "Paygent Multi-currency Credit Card"
-msgstr ""
+msgstr "クレジットカード（多通貨決済）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:131
 msgid "Paygent Multi-currency Credit Card Payment Gateway"
-msgstr ""
+msgstr "ペイジェントクレジット（多通貨決済）"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:132
 msgid "Allows payments by Paygent Multi-currency Credit Card in Japan."
-msgstr ""
+msgstr "ペイジェントクレジット（多通貨決済）を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:191
 msgid "Enable paygent Multi-currency Credit Card Payment"
-msgstr ""
+msgstr "ペイジェントクレジット（多通貨決済）を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:206
 msgid "Pay with your credit card via Paygent."
-msgstr ""
+msgstr "ペイジェント経由でクレジット決済を利用します。"
 
 #. translators: %s: Payment method name.
 #. translators: %s: Paidy.
@@ -2047,29 +2254,35 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:228
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:248
 msgid "Paidy"
-msgstr ""
+msgstr "Paidy"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:152
-msgid "\"Paidy next month payment\" reduces the opportunity loss due to the payment method and contributes to sales increase."
+msgid ""
+"\"Paidy next month payment\" reduces the opportunity loss due to the payment "
+"method and contributes to sales increase."
 msgstr ""
+"「あと払い（ペイディ）」は決済方法による機会損失を減らし売上アップに貢献しま"
+"す。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:197
 msgid "Enable paygent Paidy Payment"
-msgstr ""
+msgstr "Paidy 決済（ペイジェント）を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:216
 msgid "Paidy description"
-msgstr ""
+msgstr "ペイディの説明"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:219
-msgid "Payment method description for paidy explanation that the customer will see on your checkout."
-msgstr ""
+msgid ""
+"Payment method description for paidy explanation that the customer will see "
+"on your checkout."
+msgstr "購入手続き中にお客様に表示される Paidy の決済方法の説明。"
 
 #. translators: %s: API Public Key.
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:231
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:234
 msgid "API Public Key"
-msgstr ""
+msgstr "API 公開鍵"
 
 #. translators: %s: API Public Key.
 #. translators: %s: Test API Public Key.
@@ -2077,128 +2290,146 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:241
 #, php-format
 msgid "Please enter %s from Paidy Admin site."
-msgstr ""
+msgstr "Paidy 管理サイトから %s を入力してください。"
 
 #. translators: %s: Test API Public Key.
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:238
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:241
 msgid "Test API Public Key"
-msgstr ""
+msgstr "API 公開キーのテスト"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:245
 msgid "Store Name"
-msgstr ""
+msgstr "ストア名"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:247
 msgid "This controls the store name which the user sees during paidy checkout."
 msgstr ""
+"これにより、paidy チェックアウト時にユーザーに表示される店舗名が制御されま"
+"す。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:251
 msgid "Logo Image (168×168 recommend)"
-msgstr ""
+msgstr "ロゴイメージ(168×168推奨)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:253
-msgid "URL of a custom logo that can be displayed in the checkout application header. If no value is specified, the Paidy logo will be displayed."
+msgid ""
+"URL of a custom logo that can be displayed in the checkout application "
+"header. If no value is specified, the Paidy logo will be displayed."
 msgstr ""
+"チェックアウトアプリケーションヘッダーに表示できるカスタムロゴの URL。値が指"
+"定されていない場合は、 Paidy ロゴが表示されます。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:256
 msgid "Optional"
-msgstr ""
+msgstr "オプション"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:276
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:311
 msgid "Pay next month with Paidy"
-msgstr ""
+msgstr "Paidyで翌月払い"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:313
 msgid "No credit card or prior registration required."
-msgstr ""
+msgstr "クレジットカードも事前登録も不要です。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:314
 msgid "Shop now with just your email address and phone number."
-msgstr ""
+msgstr "メールアドレスと携帯電話番号だけで、すぐにお買い物いただけます。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:315
-msgid "No matter how many times you shop in a month, pay it all together once the following month."
-msgstr ""
+msgid ""
+"No matter how many times you shop in a month, pay it all together once the "
+"following month."
+msgstr "1か月に何回お買い物をしても、お支払いは翌月にまとめて1回でOK。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:316
-msgid "Pay by the 10th of the following month via convenience store, bank transfer, or direct debit."
-msgstr ""
+msgid ""
+"Pay by the 10th of the following month via convenience store, bank transfer, "
+"or direct debit."
+msgstr "翌月10日までにコンビニ払い・銀行振込・口座振替でお支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:318
-msgid "Verify your identity in the Paidy app to unlock 3-installment pay-later with no installment fees* and budget controls to prevent overspending."
+msgid ""
+"Verify your identity in the Paidy app to unlock 3-installment pay-later with "
+"no installment fees* and budget controls to prevent overspending."
 msgstr ""
+"Paidyアプリで本人確認をすると、分割手数料無料*の3回あと払いや、使いすぎを防ぐ"
+"予算設定機能がご利用いただけます。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:319
 msgid "*Free only with bank transfer or direct debit"
-msgstr ""
+msgstr "*銀行振込・口座振替のみ無料"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:320
 msgid "**Available only for purchases of ¥3,000 or more"
-msgstr ""
+msgstr "**3,000円以上のお買い物のみ利用可能"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:321
 msgid "Learn more about Paidy"
-msgstr ""
+msgstr "Paidyについて詳しくはこちら"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:559
-msgid "API Public key is not set. Please set an API public key in the admin page."
+msgid ""
+"API Public key is not set. Please set an API public key in the admin page."
 msgstr ""
+"API 公開キーが設定されていません。 管理ページで API 公開キーを設定してくださ"
+"い。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:598
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:390
 msgid "Success the cancel for paygent."
-msgstr ""
+msgstr "ペイジェント側のキャンセル処理に成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:601
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:611
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:393
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:403
 msgid "Failed the cancel for paygent."
-msgstr ""
+msgstr "ペイジェント側のキャンセル処理に失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:608
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:400
 msgid "Success the refund for paygent."
-msgstr ""
+msgstr "ペイジェント側の払い戻し処理に成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:615
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:307
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:407
 msgid "Failed this order to refund for paygent."
-msgstr ""
+msgstr "ペイジェント側の払い戻し処理に失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:683
 msgid "Once the customer interrupted the payment.. Order ID:"
-msgstr ""
+msgstr "お客様が支払いを中断しました。。。Order ID:"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:686
-msgid "This Paidy payment has been declined. Please select another payment method."
-msgstr ""
+msgid ""
+"This Paidy payment has been declined. Please select another payment method."
+msgstr "今回のお支払いは承認されませんでした。他の支払い方法をお選びください。"
 
 #. translators: %s: URL.
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:744
 #, php-format
 msgid "Already using URL as image: %s"
-msgstr ""
+msgstr "既に URL をイメージとして使用しています: %s"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:752
 msgid "Select a image to upload"
-msgstr ""
+msgstr "アップロードする画像を選択する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:753
 msgid "Use this image"
-msgstr ""
+msgstr "この画像を使う"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:754
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:757
 msgid "Add image"
-msgstr ""
+msgstr "画像を新規追加"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:765
 msgid "Remove image"
-msgstr ""
+msgstr "画像を削除"
 
 #. translators: %s: PayPay.
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:72
@@ -2206,306 +2437,352 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:145
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:152
 msgid "PayPay"
-msgstr ""
+msgstr "ペイペイ決済"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:117
 msgid "Paygent PayPay Payment Gateway"
-msgstr ""
+msgstr "ペイペイ決済(ペイジェント)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:118
 msgid "Allows payments by Paygent PayPay in Japan."
-msgstr ""
+msgstr "ペイペイ決済(ペイジェント)を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:129
 msgid "Enable paygent PayPay Payment"
-msgstr ""
+msgstr "ペイペイ決済(ペイジェント)を有効にする"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:243
 msgid "PayPay Authorization"
-msgstr ""
+msgstr "PayPay認証へ進む"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:270
 msgid "PayPay payment was successful."
-msgstr ""
+msgstr "PayPay 支払いが完了しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:293
 msgid "Success the Refund for paygent."
-msgstr ""
+msgstr "ペイジェントでの払い戻しに成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:302
 msgid "Failed the refund for paygent."
-msgstr ""
+msgstr "ペイジェントでの払い戻しに失敗しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:344
 msgid "Success the Complete for paygent."
-msgstr ""
+msgstr "ペイジェント側の完了処理に成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-paypay.php:347
 msgid "Failed the complete for paygent."
-msgstr ""
+msgstr "ペイジェント側の完了処理に失敗しました。"
 
 #. translators: Rakuten Pay.
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:81
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:144
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:151
 msgid "Rakuten Pay"
-msgstr ""
+msgstr "楽天ペイ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:86
 msgid "Paygent Rakuten Pay Payment Gateway"
-msgstr ""
+msgstr "楽天ペイ(ペイジェント)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:87
 msgid "Allows payments by Paygent Rakuten Pay in Japan."
-msgstr ""
+msgstr "楽天ペイ(ペイジェント)を利用する"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:128
 msgid "Enable paygent Rakuten Pay Payment"
-msgstr ""
+msgstr "楽天ペイ(ペイジェント)を有効にする"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:137
 msgid "Rakuten PAY"
-msgstr ""
+msgstr "楽天ペイ"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:154
 msgid "Button type"
-msgstr ""
+msgstr "ボタンの種類"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:157
 msgid "Select the button you want to display when making a payment decision."
-msgstr ""
+msgstr "支払い決定を行うときに表示するボタンを選択します。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:161
 msgid "Red: 240px(width) 40px(height)"
-msgstr ""
+msgstr "赤: 240px(幅) 40px(高さ)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:162
 msgid "White: 240px(width) 40px(height)"
-msgstr ""
+msgstr "白: 240px(幅) 40px(高さ)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:163
 msgid "Red: 165px(width) 30px(height)"
-msgstr ""
+msgstr "赤: 165px(幅) 30px(高さ)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:164
 msgid "White: 165px(width) 30px(height)"
-msgstr ""
+msgstr "白: 165px(幅) 30px(高さ)"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:246
 msgid "Fee"
-msgstr ""
+msgstr "手数料"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:253
-msgid "Rakuten PAY cannot be used with this product due to consumption tax. Please contact the store."
+msgid ""
+"Rakuten PAY cannot be used with this product due to consumption tax. Please "
+"contact the store."
 msgstr ""
+"楽天ペイは消費税のため、本商品との併用はできません。 お店にお問い合わせくださ"
+"い。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:259
 msgid "Rakuten PAY cannot be used if there is a coupon discount."
-msgstr ""
+msgstr "楽天ペイはクーポンの値引きは使えません。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:340
 msgid "Rakuten Pay payment was successful."
-msgstr ""
+msgstr "楽天PAY支払いが完了しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:379
-msgid "Rakuten Pay does not support partial refunds. Please refund the full amount."
-msgstr ""
+msgid ""
+"Rakuten Pay does not support partial refunds. Please refund the full amount."
+msgstr "楽天ペイは部分返金に対応していません。全額を返金してください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:442
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:291
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:299
 msgid "Success this order set to sale at Paygent."
-msgstr ""
+msgstr "この注文はペイジェントで消込の設定に成功しました。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-rakuten-pay.php:444
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:301
 msgid "Failed this order set to sale at Paygent."
-msgstr ""
+msgstr "この注文はペイジェントで消込の設定に失敗しました。"
 
 #. translators: %s: payment status.
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:114
 #, php-format
-msgid "I received a payment information inquiry telegram with a payment status of %s."
-msgstr ""
+msgid ""
+"I received a payment information inquiry telegram with a payment status of "
+"%s."
+msgstr "ペイジェントから支払い状況が%sになっている通知を受け取りました。"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:120
 msgid "Trading ID was not received."
-msgstr ""
+msgstr "取引 ID を受信できませんでした。"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:129
 msgid "Validity confirmed"
-msgstr ""
+msgstr "有効性確認済み"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:131
 msgid "Validity confirmation NG"
-msgstr ""
+msgstr "有効性確認 NG"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:197
 msgid "Paygent IP permission error."
-msgstr ""
+msgstr "ペイジェントのIP許可エラーです。"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:246
 msgid "This order is pre-order. Notice status is "
-msgstr ""
+msgstr "この注文は予約注文です。通知ステータスは "
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:274
 msgid "This order type does not support Paygent payment."
-msgstr ""
+msgstr "この注文タイプは Paygent 支払いをサポートしていません。"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:278
-msgid "Since the subscription is activated, the payment order is also activated."
-msgstr ""
+msgid ""
+"Since the subscription is activated, the payment order is also activated."
+msgstr "定期購入が有効化されると、支払い注文も有効化されます。"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:296
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:681
 msgid "Sales canceled"
-msgstr ""
+msgstr "売上取消済"
 
 #. translators: %1$s: current status, %2$s: new status.
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:300
 #, php-format
-msgid "The current status of this order is %1$s. I received an application from Paygent and changed the status to %2$s."
+msgid ""
+"The current status of this order is %1$s. I received an application from "
+"Paygent and changed the status to %2$s."
 msgstr ""
+"この注文の現在のステータスは %1$s です。ペイジェントから申請を受け取り、ス"
+"テータスを %2$s に変更しました。"
 
 #. translators: %1$s: notified status, %2$s: current status.
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:305
 #, php-format
-msgid "Received a %1$s status notification from Paygent, but the order status was left unchanged at %2$s. Please review the order if this is unexpected."
+msgid ""
+"Received a %1$s status notification from Paygent, but the order status was "
+"left unchanged at %2$s. Please review the order if this is unexpected."
 msgstr ""
+"ペイジェントから %1$s のステータス通知を受信しましたが、注文ステータスは "
+"%2$s のまま変更していません。想定外の場合は注文をご確認ください。"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:665
 msgid "Apply"
-msgstr ""
+msgstr "申込済"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:666
 msgid "Approval failure"
-msgstr ""
+msgstr "オーソリNG"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:667
 msgid "Expired payment"
-msgstr ""
+msgstr "支払期限切"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:668
 msgid "3D secure failure"
-msgstr ""
+msgstr "3D セキュア中断"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:670
 msgid "Authority OK"
-msgstr ""
+msgstr "オーソリ OK"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:671
 msgid "Authority Completed"
-msgstr ""
+msgstr "オーソリ完了"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:672
 msgid "Requesting sales"
-msgstr ""
+msgstr "売上要求中"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:673
 msgid "The authority is being canceled"
-msgstr ""
+msgstr "オーソリ取消中"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:674
 msgid "Approval revoked"
-msgstr ""
+msgstr "オーソリ取消済"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:675
 msgid "Authorization expired"
-msgstr ""
+msgstr "オーソリ期限切"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:676
 msgid "Sales hold"
-msgstr ""
+msgstr "売上保留"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:677
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:680
 msgid "Sales Completed"
-msgstr ""
+msgstr "売上完了"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:678
 msgid "Sales Completed (no change more)"
-msgstr ""
+msgstr "売上完了(これ以上変更なし)"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:679
 msgid "Breaking news detected"
-msgstr ""
+msgstr "速報検知済"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:682
 msgid "Breaking news canceled"
-msgstr ""
+msgstr "速報取消済"
 
 #: includes/gateways/paygent/class-wc-paygent-endpoint.php:683
 msgid "Cancellation completed"
-msgstr ""
+msgstr "取消完了"
 
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:122
 msgid "One-time payment"
-msgstr ""
+msgstr "一括払い"
 
 #: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:124
 msgid "Bonus lump-sum payment"
-msgstr ""
+msgstr "ボーナス一括払い"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:177
 msgid "This request send data for order ID:"
-msgstr ""
+msgstr "この送信データの注文 ID :"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:182
 msgid "The request transmission data is shown below."
-msgstr ""
+msgstr "リクエスト送信データを以下に示します。"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:207
 msgid "This response data for order ID:"
-msgstr ""
+msgstr "この応答データの注文 ID :"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:214
 msgid "The response transmission data is shown below."
-msgstr ""
+msgstr "応答受信データを以下に示します。"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:278
-msgid "The payment is already captured at Paygent, so the capture request was skipped."
+msgid ""
+"The payment is already captured at Paygent, so the capture request was "
+"skipped."
 msgstr ""
+"この決済はペイジェント側ですでに売上処理済みのため、売上要求の送信をスキップ"
+"しました。"
 
 #. translators: %s: Paygent payment status (or "unknown").
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:284
 #, php-format
-msgid "The capture request was not sent because the Paygent payment status could not be confirmed as authorized (status: %s). Please verify the payment on the Paygent admin site and complete the order again if needed."
+msgid ""
+"The capture request was not sent because the Paygent payment status could "
+"not be confirmed as authorized (status: %s). Please verify the payment on "
+"the Paygent admin site and complete the order again if needed."
 msgstr ""
+"ペイジェントの決済ステータスがオーソリ済みと確認できなかったため、売上要求を"
+"送信しませんでした（ステータス: %s）。ペイジェント管理サイトで決済をご確認の"
+"うえ、必要に応じて再度注文を完了してください。"
 
 #. translators: %s: Paygent error code.
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:311
 #, php-format
-msgid "Failed to capture the subscription sale at Paygent (error code: %s). Please check the payment on the Paygent admin site."
+msgid ""
+"Failed to capture the subscription sale at Paygent (error code: %s). Please "
+"check the payment on the Paygent admin site."
 msgstr ""
+"ペイジェントでの定期購入の売上処理に失敗しました（エラーコード: %s）。ペイ"
+"ジェント管理サイトで決済をご確認ください。"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:342
-msgid "The capture request failed, but Paygent already reports this payment as captured. No further action is needed."
+msgid ""
+"The capture request failed, but Paygent already reports this payment as "
+"captured. No further action is needed."
 msgstr ""
+"売上要求は失敗しましたが、ペイジェント側ではすでに売上処理済みと報告されてい"
+"ます。追加の対応は不要です。"
 
 #. translators: %1$s: Paygent error code, %2$s: Paygent error message.
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:354
 #, php-format
-msgid "The capture request failed (error code: %1$s %2$s) and the payment could not be confirmed as still authorized. The order status was kept — please verify the payment on the Paygent admin site."
+msgid ""
+"The capture request failed (error code: %1$s %2$s) and the payment could not "
+"be confirmed as still authorized. The order status was kept — please verify "
+"the payment on the Paygent admin site."
 msgstr ""
+"売上要求に失敗し（エラーコード: %1$s %2$s）、決済がオーソリ中であることも確認"
+"できませんでした。注文ステータスは変更していません。ペイジェント管理サイトで"
+"決済をご確認ください。"
 
 #. translators: %1$s: Paygent error code, %2$s: Paygent error message.
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:361
 #, php-format
-msgid "Capture at Paygent failed (error code: %1$s %2$s), so the order was moved back to on-hold. Please try completing the order again or capture the payment on the Paygent admin site."
+msgid ""
+"Capture at Paygent failed (error code: %1$s %2$s), so the order was moved "
+"back to on-hold. Please try completing the order again or capture the "
+"payment on the Paygent admin site."
 msgstr ""
+"ペイジェントでの売上処理に失敗したため（エラーコード: %1$s %2$s）、注文を保留"
+"に戻しました。再度注文の完了をお試しいただくか、ペイジェント管理サイトで売上"
+"処理を行ってください。"
 
 #. translators: %s: payment status.
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:455
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:492
 msgid "Failed Refund. "
-msgstr ""
+msgstr "払い戻しが失敗しました。"
 
 #. translators: %s: payment status.
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:455
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:492
 #, php-format
 msgid "Not matched payment_status %s for refund."
-msgstr ""
+msgstr "payment_status %s が払い戻しに対応していません。"
 
 #. translators: %s: telegram kind code (e.g. 021/023/102/122).
 #. translators: %s: telegram kind code (e.g. 028/029).
@@ -2513,27 +2790,27 @@ msgstr ""
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:499
 #, php-format
 msgid "Failed Refund (telegram: %s). "
-msgstr ""
+msgstr "払い戻しが失敗しました（電文: %s）。"
 
 #. translators: %s: telegram kind code (e.g. 021/023/102/122).
 #. translators: %s: telegram kind code (e.g. 028/029).
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:466
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:499
 msgid "Error Code :"
-msgstr ""
+msgstr "エラーコード : "
 
 #. translators: %s: telegram kind code (e.g. 021/023/102/122).
 #. translators: %s: telegram kind code (e.g. 028/029).
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:466
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:499
 msgid " Error message :"
-msgstr ""
+msgstr " エラーメッセージ : "
 
 #. translators: %s: telegram kind code (e.g. 021/023/102/122).
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:471
 #, php-format
 msgid "This order has been successfully refunded by Paygent (telegram: %s)."
-msgstr ""
+msgstr "ペイジェント側での全額返金の処理に成功しました（電文: %s）。"
 
 #. translators: %s: telegram kind code (e.g. 021/023/102/122).
 #. translators: %s: telegram kind code (e.g. 028/029).
@@ -2541,427 +2818,455 @@ msgstr ""
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:514
 #, php-format
 msgid "Failed Refund (telegram: %s)."
-msgstr ""
+msgstr "払い戻しが失敗しました（電文: %s）。"
 
 #. translators: %s: telegram kind code (e.g. 028/029).
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:507
 #, php-format
-msgid "This order has been successfully partially refunded by Paygent (telegram: %s). "
-msgstr ""
+msgid ""
+"This order has been successfully partially refunded by Paygent (telegram: "
+"%s). "
+msgstr "ペイジェント側での部分返金の処理に成功しました（電文: %s）。"
 
 #. translators: %1$s: base_payment_id, %2$s: payment_id.
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:509
 #, php-format
 msgid "payment_id changed from %1$s to %2$s."
-msgstr ""
+msgstr "payment_id が%1$sから%2$sに変更されました。"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:542
 msgid "paygent Payment failed. Sysmte Error: "
-msgstr ""
+msgstr "ペイジェントでの決済が失敗しました。Sysmte Error: "
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:544
 msgid "Sorry, there was an error: "
-msgstr ""
+msgstr "申し訳ございません。エラーが発生しました。エラー："
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:548
 msgid "paygent Payment failed. Some trouble happened."
-msgstr ""
+msgstr "決済が失敗しました。何かトラブルが発生したようです。"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:622
 msgid "[Issuer error] Insufficient card loan balance"
-msgstr ""
+msgstr "【イシュアエラー】カードローン融資残高不足"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:623
 msgid "[Issuer error] Card loan limit exceeded"
-msgstr ""
+msgstr "【イシュアエラー】カードローン限度額オーバー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:624
 msgid "[Issuer error] Insufficient cash loan balance"
-msgstr ""
+msgstr "【イシュアエラー】キャッシング融資残高不足"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:625
 msgid "[Issuer error] Cashing limit exceeded"
-msgstr ""
+msgstr "【イシュアエラー】キャッシング限度額オーバー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:626
 msgid "[Issuer error] Insufficient debit card balance"
-msgstr ""
+msgstr "【イシュアエラー】デビットカード残高不足"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:627
 msgid "[Issuer error] Debit card limit exceeded"
-msgstr ""
+msgstr "【イシュアエラー】デビットカード限度額オーバー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:628
 msgid "[Issuer error] Card cannot be used"
-msgstr ""
+msgstr "【イシュアエラー】カード使用不可"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:629
 msgid "[Issuer error] Permanent payment ban"
-msgstr ""
+msgstr "【イシュアエラー】支払永久禁止"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:630
 msgid "[Issuer error] Transaction judgment pending (attended judgment)"
-msgstr ""
+msgstr "【イシュアエラー】取引判定保留（有人判定）"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:631
 msgid "[Issuer error] PIN code error"
-msgstr ""
+msgstr "【イシュアエラー】暗証番号エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:632
 msgid "[Issuer error] Incorrect card confirmation number"
-msgstr ""
+msgstr "【イシュアエラー】カード確認番号の誤り"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:633
 msgid "[Issuer error] Card confirmation number not entered"
-msgstr ""
+msgstr "【イシュアエラー】カード確認番号未入力"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:634
 msgid "[Issuer error] JIS 2nd page information error"
-msgstr ""
+msgstr "【イシュアエラー】JIS2面情報エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:635
 msgid "[Issuer error] Number of uses per day amount exceeded"
-msgstr ""
+msgstr "【イシュアエラー】1日利用回数金額オーバー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:636
 msgid "[Issuer error] Daily usage limit exceeded"
-msgstr ""
+msgstr "【イシュアエラー】1日利用限度額オーバー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:637
 msgid "[Issuer error] Credit card import"
-msgstr ""
+msgstr "【イシュアエラー】クレジットカード取り込み"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:638
 msgid "[Issuer error] Accident card"
-msgstr ""
+msgstr "【イシュアエラー】事故カード"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:639
 msgid "[Issuer error] Invalid card"
-msgstr ""
+msgstr "【イシュアエラー】無効カード"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:640
 msgid "[Issuer error] Membership number error"
-msgstr ""
+msgstr "【イシュアエラー】会員番号エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:641
 msgid "[Issuer error] Product code error"
-msgstr ""
+msgstr "【イシュアエラー】商品コードエラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:642
 msgid "[Issuer error] Amount error"
-msgstr ""
+msgstr "【イシュアエラー】金額エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:643
 msgid "[Issuer error] Tax shipping error"
-msgstr ""
+msgstr "【イシュアエラー】税送料エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:644
 msgid "[Issuer error] Bonus count error"
-msgstr ""
+msgstr "【イシュアエラー】ボーナス回数エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:645
 msgid "[Issuer error] Bonus month error"
-msgstr ""
+msgstr "【イシュアエラー】ボーナス月エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:646
 msgid "[Issuer error] Bonus amount errorv"
-msgstr ""
+msgstr "【イシュアエラー】ボーナス額エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:647
 msgid "[Issuer error] Payment start month error"
-msgstr ""
+msgstr "【イシュアエラー】支払開始月エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:648
 msgid "[Issuer error] Division count error"
-msgstr ""
+msgstr "【イシュアエラー】分割回数エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:649
 msgid "[Issuer error] Split amount error"
-msgstr ""
+msgstr "【イシュアエラー】分割金額エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:650
 msgid "[Issuer error] Initial amount error"
-msgstr ""
+msgstr "【イシュアエラー】初回金額エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:651
 msgid "[Issuer error] Business classification error"
-msgstr ""
+msgstr "【イシュアエラー】業務区分エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:652
 msgid "[Issuer error] Payment classification error"
-msgstr ""
+msgstr "【イシュアエラー】支払区分エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:653
 msgid "[Issuer error] Inquiry category error"
-msgstr ""
+msgstr "【イシュアエラー】照会区分エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:654
 msgid "[Issuer error] Cancellation classification error"
-msgstr ""
+msgstr "【イシュアエラー】取消区分エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:655
 msgid "[Issuer error] Handling classification/transaction classification error"
-msgstr ""
+msgstr "【イシュアエラー】取扱区分・取引区分エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:656
 msgid "[Issuer error] Expiration date error"
-msgstr ""
+msgstr "【イシュアエラー】有効期限エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:657
 msgid "[Issuer error] Approval number error"
-msgstr ""
+msgstr "【イシュアエラー】承認番号エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:658
 msgid "[Issuer error] CAFIS agency processing error"
-msgstr ""
+msgstr "【イシュアエラー】CAFIS代行処理エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:659
 msgid "[Issuer error] Optional message output"
-msgstr ""
+msgstr "【イシュアエラー】任意メッセージ出力"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:660
 msgid "[Issuer error] Cycle number error"
-msgstr ""
+msgstr "【イシュアエラー】サイクル番号エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:661
 msgid "[Issuer error] The relevant business has ended online"
-msgstr ""
+msgstr "【イシュアエラー】当該業務オンライン終了"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:662
 msgid "[Issuer error] Accident card data error"
-msgstr ""
+msgstr "【イシュアエラー】事故カードデータエラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:663
 msgid "[Issuer error] Rejection of the request"
-msgstr ""
+msgstr "【イシュアエラー】当該要求拒否"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:664
 msgid "[Issuer error] Business error for the company concerned"
-msgstr ""
+msgstr "【イシュアエラー】当該自社対象業務エラー"
 
 #: includes/gateways/paygent/includes/class-wc-gateway-paygent-request.php:665
 msgid "[Issuer error] Connection request refused by our company"
-msgstr ""
+msgstr "【イシュアエラー】接続要求自社受付拒否"
 
 #. Translators: %s is the name of the feature to be checked.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:23
 #, php-format
 msgid "Please check it if you want to use %s."
-msgstr ""
+msgstr "%sを利用する場合はこちらをチェックしてください。"
 
 #. Translators: %s is the name of the payment method.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:25
 #, php-format
 msgid "Please check it if you want to use the payment method of %s."
-msgstr ""
+msgstr "%sの支払い方法を利用する場合はこちらをチェックしてください。"
 
 #. Translators: %s is the name of the input field.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:27
 #, php-format
 msgid "Please input %s."
-msgstr ""
+msgstr "%sを入力してください。"
 
 #. Translators: %s is the name of the selection.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:29
 #, php-format
 msgid "Please select one from these as %s."
-msgstr ""
+msgstr "%s として、これらのうちから1つ選択してください。"
 
 #: includes/jp4wc-framework/config-jp4wc-framework.php:30
 msgid "Need support?"
-msgstr ""
+msgstr "サポートが必要ですか？"
 
 #. Translators: %s is the URL to the support forum.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:32
 #, php-format
-msgid "If you are having problems with this plugin, talk about them in the <a href=\"%s\" target=\"_blank\" title=\"Pro Version\">Support forum</a>."
+msgid ""
+"If you are having problems with this plugin, talk about them in the <a "
+"href=\"%s\" target=\"_blank\" title=\"Pro Version\">Support forum</a>."
 msgstr ""
+"このプラグインで何か問題があったら<a href=\"%s\" target=\"_blank\" "
+"title=\"Pro Version\">サポートフォーラム</a>で聞いてみてください。"
 
 #. Translators: %s is the URL to the support forum.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:34
 #, php-format
-msgid "If you need professional support, please consider about <a href=\"%1$s\" target=\"_blank\" title=\"Site Construction Support service\">Site Construction Support service</a> or <a href=\"%2$s\" target=\"_blank\" title=\"Maintenance Support service\">Maintenance Support service</a>."
+msgid ""
+"If you need professional support, please consider about <a href=\"%1$s\" "
+"target=\"_blank\" title=\"Site Construction Support service\">Site "
+"Construction Support service</a> or <a href=\"%2$s\" target=\"_blank\" "
+"title=\"Maintenance Support service\">Maintenance Support service</a>."
 msgstr ""
+"専門的なサポートが必要な場合は、<a href=\"%1$s\" target=\"_blank\" "
+"title=\"Site Construction Support service\">サイト構築支援サービス</a>や<a "
+"href=\"%2$s\" target=\"_blank\" title=\"Maintenance Support service\">保守サ"
+"ポート サービス</a>についてご検討ください。"
 
 #: includes/jp4wc-framework/config-jp4wc-framework.php:35
 msgid "Pro version"
-msgstr ""
+msgstr "Pro 版"
 
 #. Translators: %s is the URL to the support forum.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:37
 #, php-format
-msgid "The pro version is available <a href=\"%s\" target=\"_blank\" title=\"Support forum\">here</a>."
+msgid ""
+"The pro version is available <a href=\"%s\" target=\"_blank\" "
+"title=\"Support forum\">here</a>."
 msgstr ""
+"Pro 版は<a href=\"%s\" target=\"_blank\" title=\"Support forum\">こちら</a>か"
+"ら入手できます。"
 
 #: includes/jp4wc-framework/config-jp4wc-framework.php:38
-msgid "The pro version includes support for bulletin boards. Please consider purchasing the pro version."
+msgid ""
+"The pro version includes support for bulletin boards. Please consider "
+"purchasing the pro version."
 msgstr ""
+"Pro 版には掲示板サポートが含まれています。Pro 版の購入をご検討ください。"
 
 #: includes/jp4wc-framework/config-jp4wc-framework.php:39
 msgid "Finished Latest Update, WordPress and WooCommerce?"
-msgstr ""
+msgstr "WordPress と WooCommerce の最新版にアップデートできていますか？"
 
 #. Translators: %s is the URL to the support forum.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:41
 #, php-format
-msgid "One the security, latest update is the most important thing. If you need site maintenance support, please consider about <a href=\"%s\" target=\"_blank\" title=\"Support forum\">Site Maintenance Support service</a>."
+msgid ""
+"One the security, latest update is the most important thing. If you need "
+"site maintenance support, please consider about <a href=\"%s\" "
+"target=\"_blank\" title=\"Support forum\">Site Maintenance Support service</"
+"a>."
 msgstr ""
+"セキュリティー上最新のバージョンにアップデートするのは重要な事です。サイト保"
+"守のお手伝いの必要があれば、<a href=\"%s\" target=\"_blank\" title=\"Support "
+"forum\">サイト保守サポートサービス</a>をご検討ください。"
 
 #: includes/jp4wc-framework/config-jp4wc-framework.php:42
 msgid "Where is the study group of Woocommerce in Japan?"
-msgstr ""
+msgstr "Woocommerce の勉強会は日本にありますか？"
 
 #. Translators: %s is the URL to the support forum.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:44
 #, php-format
-msgid "<a href=\"%s\" target=\"_blank\" title=\"Tokyo WooCommerce Meetup\">Tokyo WooCommerce Meetup</a>."
+msgid ""
+"<a href=\"%s\" target=\"_blank\" title=\"Tokyo WooCommerce Meetup\">Tokyo "
+"WooCommerce Meetup</a>."
 msgstr ""
+"<a href=\"%s\" target=\"_blank\" title=\"東京 WooCommerce Meetup\">東京 "
+"WooCommerce Meetup</a>."
 
 #. Translators: %s is the URL to the support forum.
 #: includes/jp4wc-framework/config-jp4wc-framework.php:46
 #, php-format
-msgid "<a href=\"%s\" target=\"_blank\" title=\"Kansai WooCommerce Meetup\">Kansai WooCommerce Meetup</a>."
+msgid ""
+"<a href=\"%s\" target=\"_blank\" title=\"Kansai WooCommerce Meetup\">Kansai "
+"WooCommerce Meetup</a>."
 msgstr ""
+"<a href=\"%s\" target=\"_blank\" title=\"関西 WooCommerce Meetup\">関西 "
+"WooCommerce Meetup</a>."
 
 #: includes/jp4wc-framework/config-jp4wc-framework.php:47
 msgid "Join Us!"
-msgstr ""
+msgstr "ご参加ください !"
 
 #: woocommerce-for-paygent-payment-main.php:55
-msgid "Paygent Payment Gateways for WooCommerce is enabled but not effective. It requires WooCommerce in order to work."
+msgid ""
+"Paygent Payment Gateways for WooCommerce is enabled but not effective. It "
+"requires WooCommerce in order to work."
 msgstr ""
+"ペイジェント決済 for WooCommerce は利用可能ですが、動いておりません。"
+"WooCommerce をインストールして、アクティブにする必要があります。"
 
-#: build/paygent-cc.js:1
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-cc/index.js:156
-#: src/blocks/paygent-mccc/index.js:92
+#: build/paygent-cc.js:1 build/paygent-cc.js:3 build/paygent-mccc.js:1
+#: src/blocks/paygent-cc/index.js:156 src/blocks/paygent-mccc/index.js:92
 #: src/blocks/shared/components/SavedTokenForm.jsx:76
 msgid "Card authentication failed. Please check your input."
-msgstr ""
+msgstr "カードの認証に失敗しました。入力内容をご確認ください。"
 
-#: build/paygent-cc.js:1
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
+#: build/paygent-cc.js:1 build/paygent-cc.js:3 build/paygent-mccc.js:1
 #: src/blocks/paygent-cc/index.js:241
 #: src/blocks/shared/components/SavedTokenForm.jsx:106
 msgid "Security code (3–4 digits on card back)"
-msgstr ""
+msgstr "セキュリティコード（カード裏面の3～4桁）"
 
-#: build/paygent-cc.js:1
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
+#: build/paygent-cc.js:1 build/paygent-cc.js:3 build/paygent-mccc.js:1
 #: src/blocks/paygent-cc/index.js:275
 #: src/blocks/shared/components/SavedTokenForm.jsx:113
 msgid "Payment method"
-msgstr ""
+msgstr "支払い方法"
 
 #. translators: %d: number of installments
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:70
-#, js-format
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:70
 msgid "%d installments"
-msgstr ""
+msgstr "%d回払い"
 
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-cc/index.js:179
-#: src/blocks/paygent-mccc/index.js:115
+#: build/paygent-cc.js:3 build/paygent-mccc.js:1
+#: src/blocks/paygent-cc/index.js:179 src/blocks/paygent-mccc/index.js:115
 msgid "Card number"
-msgstr ""
+msgstr "カード番号"
 
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:192
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:192
 msgid "Credit card number (16 digits)"
-msgstr ""
+msgstr "クレジットカード番号（16桁）"
 
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-cc/index.js:200
-#: src/blocks/paygent-mccc/index.js:135
+#: build/paygent-cc.js:3 build/paygent-mccc.js:1
+#: src/blocks/paygent-cc/index.js:200 src/blocks/paygent-mccc/index.js:135
 msgid "Expiry date"
-msgstr ""
+msgstr "有効期限"
 
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:213
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:213
 msgid "Expiry date (MM / YY)"
-msgstr ""
+msgstr "有効期限（MM / YY）"
 
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:223
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:223
 msgid "3–4 digit number on the back of your card"
-msgstr ""
+msgstr "カード裏面の3～4桁の番号"
 
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:225
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:225
 msgid "About security codes: 3–4 digit number on the back of your card"
-msgstr ""
+msgstr "セキュリティコードについて: カード裏面の3～4桁の番号です"
 
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-cc/index.js:250
-#: src/blocks/paygent-mccc/index.js:174
+#: build/paygent-cc.js:3 build/paygent-mccc.js:1
+#: src/blocks/paygent-cc/index.js:250 src/blocks/paygent-mccc/index.js:174
 msgid "Cardholder name"
-msgstr ""
+msgstr "カードの記載名"
 
-#: build/paygent-cc.js:3
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-cc/index.js:251
-#: src/blocks/paygent-mccc/index.js:175
+#: build/paygent-cc.js:3 build/paygent-mccc.js:1
+#: src/blocks/paygent-cc/index.js:251 src/blocks/paygent-mccc/index.js:175
 msgid "(Latin alphabet only)"
-msgstr ""
+msgstr "(半角アルファベットのみ)"
 
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:264
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:264
 msgid "Cardholder name (Latin alphabet, as printed on card)"
-msgstr ""
+msgstr "カードの記載名（カード表記どおりの半角アルファベット）"
 
-#: build/paygent-cc.js:3
-#: src/blocks/paygent-cc/index.js:311
+#: build/paygent-cc.js:3 src/blocks/paygent-cc/index.js:311
 msgid "Credit card"
-msgstr ""
+msgstr "クレジットカード"
 
-#: build/paygent-cs.js:1
-#: src/blocks/paygent-cs/index.js:32
+#: build/paygent-cs.js:1 src/blocks/paygent-cs/index.js:32
 msgid "Please select a convenience store."
-msgstr ""
+msgstr "コンビニを選択してください。"
 
-#: build/paygent-cs.js:1
-#: src/blocks/paygent-cs/index.js:51
+#: build/paygent-cs.js:1 src/blocks/paygent-cs/index.js:51
 msgid "No convenience stores are currently available."
-msgstr ""
+msgstr "現在利用可能なコンビニはありません。"
 
-#: build/paygent-cs.js:1
-#: src/blocks/paygent-cs/index.js:61
+#: build/paygent-cs.js:1 src/blocks/paygent-cs/index.js:61
 msgid "Select convenience store"
-msgstr ""
+msgstr "コンビニを選択"
 
-#: build/paygent-cs.js:1
-#: src/blocks/paygent-cs/index.js:88
+#: build/paygent-cs.js:1 src/blocks/paygent-cs/index.js:88
 msgid "Convenience store payment"
-msgstr ""
+msgstr "コンビニ決済"
 
-#: build/paygent-mb.js:1
-#: src/blocks/paygent-mb/index.js:34
+#: build/paygent-mb.js:1 src/blocks/paygent-mb/index.js:34
 msgid "Please select a carrier."
-msgstr ""
+msgstr "キャリアを選択してください。"
 
-#: build/paygent-mb.js:1
-#: src/blocks/paygent-mb/index.js:53
+#: build/paygent-mb.js:1 src/blocks/paygent-mb/index.js:53
 msgid "No carriers are currently available."
-msgstr ""
+msgstr "現在利用可能なキャリアはありません。"
 
-#: build/paygent-mb.js:1
-#: src/blocks/paygent-mb/index.js:63
+#: build/paygent-mb.js:1 src/blocks/paygent-mb/index.js:63
 msgid "Select carrier"
-msgstr ""
+msgstr "キャリアを選択"
 
-#: build/paygent-mb.js:1
-#: src/blocks/paygent-mb/index.js:90
+#: build/paygent-mb.js:1 src/blocks/paygent-mb/index.js:90
 msgid "Carrier payment"
-msgstr ""
+msgstr "キャリア決済"
 
-#: build/paygent-mccc.js:1
-#: src/blocks/paygent-mccc/index.js:213
+#: build/paygent-mccc.js:1 src/blocks/paygent-mccc/index.js:213
 msgid "Multi-currency credit card"
-msgstr ""
+msgstr "クレジット決済（多通貨）"
+
+#~ msgctxt "woocommerce-for-paygent-payment-main"
+#~ msgid "Change the amount"
+#~ msgstr "金額を変更する"
+
+#~ msgid ""
+#~ "Order status change due to Paygent notification is abnormal. Please "
+#~ "confirm it."
+#~ msgstr ""
+#~ "ペイジェント通知による注文ステータスの変化が異常です。 それを確認してくだ"
+#~ "さい。"
+
+#~ msgid "This order has been successfully partial refunded by Paygent."
+#~ msgstr "ペイジェント側での部分返金の処理に成功しました。"
+
+#~ msgid "This order has been successfully refunded by Paygent."
+#~ msgstr "ペイジェント側での全額返金の処理に成功しました。"
+
+#~ msgid "Failed Refund."
+#~ msgstr "払い戻しが失敗しました。"

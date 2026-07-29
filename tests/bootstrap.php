@@ -53,6 +53,11 @@ if ( ! function_exists( 'wp_kses' ) ) {
 if ( ! function_exists( 'wp_enqueue_block_style' ) ) {
 	function wp_enqueue_block_style( $block_name, $args = array() ) {} // phpcs:ignore
 }
+if ( ! function_exists( 'wp_set_script_translations' ) ) {
+	function wp_set_script_translations( $handle, $domain = 'default', $path = '' ) { // phpcs:ignore
+		return true;
+	}
+}
 if ( ! function_exists( 'wc_get_order_statuses' ) ) {
 	function wc_get_order_statuses() { // phpcs:ignore
 		return array(

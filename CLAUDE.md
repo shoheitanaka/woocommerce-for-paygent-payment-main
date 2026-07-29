@@ -53,6 +53,7 @@ woocommerce-for-paygent-payment-main/
 │   └── System/PaygentB2BModule.php            ← Paygent公式通信モジュール
 │
 ├── 2025docs/                                  ← Paygent公式仕様書PDF（要確認）
+├── report/                                    ← サンドボックス検証レポート（.distignore対象）
 ├── scripts/
 │   ├── check-pdf-updates.sh                   ← PDF変更検知
 │   └── update-pdf-hashes.sh                   ← PDFハッシュ記録
@@ -137,6 +138,8 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 - `phpcs` / `phpstan` が設定されている場合はコミット前に実行
 - **git commit / push はユーザーからの明示的な指示があるまで実行しない**。
   修正はワーキングツリーに残した状態で報告し、コミットするかどうかの判断はユーザーに委ねる
+- 新しい開発専用ディレクトリ（`report/`等）を追加したら `.distignore` にも追記する
+  （配布ZIPへの除外漏れをCopilotレビューで指摘された実績あり）
 
 ## Claude Code スキル
 
@@ -212,7 +215,10 @@ pdftotext "2025docs/<path>.pdf" - | less
 ### サブスクリプション対応を追加するとき
 
 - `WC_Subscriptions_Order` クラスが存在する場合に `_Addon_` クラスが使われる
-- CC継続課金: `fingerprint`（カード識別子）をオーダーメタに保存して再利用
+- CC継続課金: 更新決済は注文メタの固定値ではなく、`WC_Payment_Tokens::get_customer_default_token()`
+  で取得した**顧客の現在のデフォルトWC決済トークン**の`customer_card_id`メタを使用
+  （`_paygent_customer_card_id`オーダーメタは申込時の記録用）。複数カード保存時は
+  デフォルトトークンの入れ替わりに注意
 - キャリア継続課金: `120`（申込）→ `121`（売上）、継続課金IDは `_paygent_running_id` に保存
 
 ### Block Checkoutで保存カード（トークン）を扱うとき
