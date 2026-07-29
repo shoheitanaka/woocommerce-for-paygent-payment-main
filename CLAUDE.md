@@ -241,3 +241,16 @@ pdftotext "2025docs/<path>.pdf" - | less
   `wc_add_notice()` が顧客に届かない。復帰URLにはホワイトリスト化したエラーコードのみを付与し
   （自由文は禁止・例: `paygent_3ds2_error`）、`core/notices` へ `context:"wc/checkout"` で
   dispatch して表示する（2026-07 PR #34）
+
+### 翻訳（i18n）を更新するとき
+
+- 手順: `npm run make-pot` → `msgmerge` で ja.po 更新 → 翻訳 → `npm run make-json`、
+  `.mo` は `msgfmt` で生成
+- `i18n/*.json` / `i18n/*.mo` は `.distignore` で配布除外（ローカル開発用）。本番翻訳は
+  translate.wordpress.org の言語パックが配信するため、**リリース（タグpush）前に
+  ja.po を GlotPress へインポートする**（怠ると新規文字列が英語のままになる）
+- Block JS の翻訳は抽象クラスの `set_script_translations()` ヘルパーで読み込む。
+  Blockクラスで新しいWP関数を呼んだら `tests/bootstrap.php` へプレーンスタブの追加が
+  必要（単体テストはWPなしの Brain\Monkey 環境）
+- wp-env での翻訳確認: `languages/plugins/` の言語パックが同梱 `.mo` より優先される。
+  新規文字列の確認はパックの `.mo` を上書きし `.l10n.php` を削除する
