@@ -2095,10 +2095,9 @@ msgid ""
 "MINISTOPLoppi installed in the store and pay at the cash register with the "
 "application ticket issued."
 msgstr ""
-"表示された割引率%s をメモして、ローソンまたはミニストップの店舗へお越しくださ"
-"い。\n"
+"表示された%s をメモして、ローソンまたはミニストップの店舗へお越しください。\n"
 "店舗に設置されているマルチメディア端末「Loppi」または「MINISTOPLoppi」にその"
-"番号を入力し、発行されたアプリチケットでレジにてお支払いください。"
+"番号を入力し、発行された申込券でレジにてお支払いください。"
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:163
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:234
