@@ -28,10 +28,10 @@ https://sandbox.paygent.co.jp/testtool/statusupdatesearch
 
 まず、テストしたい注文を実際にサイトのチェックアウト画面から作成しておきます（コンビニ決済やATM決済で注文を確定させます）。
 
-コンビニ決済・ATM決済の場合、この「決済ID」は WooCommerce の注文詳細画面（注文メモ）には表示されません。
+コンビニ決済・ATM決済の場合、この「決済ID」は WooCommerce の注文詳細画面の「Transaction ID」欄に記録されています。
 （注文メモには店舗名や支払期限などは記録されますが、決済IDそのものは含まれません。）
 
-決済IDは、ペイジェント社の加盟店管理者サイト（[https://portal.paygent.co.jp/n/manage-m/login.html](https://portal.paygent.co.jp/n/manage-m/login.html)）にログインして確認してください。
+「Transaction ID」欄が空、または確認できない場合は、ペイジェント社の加盟店管理者サイト（[https://portal.paygent.co.jp/n/manage-m/login.html](https://portal.paygent.co.jp/n/manage-m/login.html)）にログインして確認してください。
 決済日時や注文金額などを手がかりに、対象の注文を検索できます。
 
 ### 2. 決済検索画面で情報を入力する
