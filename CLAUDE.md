@@ -123,6 +123,11 @@ SHA-256による改ざん検知。`merchant_id + connect_id + connect_password +
 `POST /wp-json/paygent/v1/check` — コンビニ・仮想口座の入金通知を受信。
 `WC_Paygent_Endpoint::paygent_check_webhook()` でステータス更新。
 
+**既知の制限（ATM）**: `paygent_check_webhook()` の `payment_type` switch で ATM（`case 01`）は
+ハンドラ未実装（`break`のみ）。入金通知を受けても注文メモが追加されるだけで、WooCommerce注文
+ステータスは自動更新されない。ATM決済は加盟店管理者サイトで消込を確認し手動更新する運用が必要
+（他決済 `paygent_cv_webhook()`/`paygent_bn_webhook()` 等との非対称）。
+
 ### HPOS対応
 
 WooCommerce High Performance Order Storage（HPOS）完全対応済み。
@@ -184,6 +189,19 @@ pdftotext "2025docs/<path>.pdf" - | less
 2. `class-wc-gateway-paygent-request.php` の `send_paygent_request()` でリクエスト送信
 3. `telegram_kind` に正しいコードを設定（必ず仕様書で確認）
 4. レスポンス `result === '0'` で正常、それ以外はエラー処理
+
+### CC与信決済の売上確定（022）を扱うとき
+
+`order_paygent_cc_status_completed()` は注文を「完了」にした際に売上確定（022）を送るが、
+**成功時（`result === '0'`）は注文メモを追加しない**。失敗時のみ `error_response()` 経由でメモが
+残る非対称な挙動なので、ユーザー向け案内やデバッグでは「メモが無い＝成功」と誤読しないよう注意する
+（成功可否は加盟店管理者サイトまたは `094` 照会で確認する）。
+
+### 決済ID（payment_id）の確認方法
+
+CC/MCCC/CS/ATM/PayPay/楽天ペイ/BN/MB は `payment_complete()` または `set_transaction_id()`
+経由で payment_id を WooCommerce 注文の「Transaction ID」欄に保存する。注文メモには載らないため、
+ユーザー向け手順書や調査では加盟店管理者サイトを案内する前にまずこの欄を確認する。
 
 ### 返金・取消を実装するとき
 
