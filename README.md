@@ -68,6 +68,22 @@ Please back up your database and plugin files before updating. If you do a major
 
 ## Changelog
 
+### 3.0.0 - 2026-09-03
+
+- Security - Block direct web access to the client certificate upload directory (wp-content/uploads/wc-paygent/) with an .htaccess and index.html. nginx users should add an equivalent deny rule to the server configuration.
+- Added - WooCommerce Block Checkout (Cart and Checkout blocks) support for all payment methods.
+- Added - Native saved card (payment token) support on Block Checkout for Credit Card and Multi-Currency Credit Card.
+- Added - Japanese user manual with step-by-step setup instructions.
+- Fixed - Show 3D Secure 2.0 challenge failure notices on Block Checkout.
+- Fixed - Surface Paygent error messages to customers on Block Checkout when a payment fails.
+- Fixed - Resolve carrier payment capture and cancellation issues found in sandbox testing.
+- Fixed - Send the stored trading ID on PayPay refunds and captures.
+- Fixed - Enforce trading ID resolution for subsequent telegrams and restrict the order prefix to alphabetic characters.
+- Fixed - Resolve saved card issues for Multi-Currency Credit Card payment.
+- Updated - Complete Japanese translations and load block JSON translations.
+- Updated - Recommend enabling the telegram hash check in the settings screen to detect tampering of the communication with Paygent.
+- Updated - Tested with WordPress 7.1 and WooCommerce 11.0.1.
+
 ### 2.4.8 - 2026-02-05
 
 - Fixed - Refactor next payment date calculation for subscriptions to use a dedicated method.

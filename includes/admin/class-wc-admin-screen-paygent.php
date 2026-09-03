@@ -456,6 +456,7 @@ class WC_Admin_Screen_Paygent {
 					$this->jp4wc_plugin->jp4wc_debug_log( $message, 'yes', 'wc-paygent' );
 				}
 			}
+			$this->protect_cert_directory( $wc_paybent_dir );
 			// Client Cert File upload.
 			if ( isset( $_FILES['clientc_file'] ) ) {
 				if ( isset( $_FILES['clientc_file']['name'] ) && substr( sanitize_file_name( $_FILES['clientc_file']['name'] ), strrpos( sanitize_file_name( $_FILES['clientc_file']['name'] ), '.' ) + 1 ) === 'pem' ) {
@@ -515,6 +516,34 @@ class WC_Admin_Screen_Paygent {
 				}
 			}
 			$this->jp4wc_plugin->add_message( __( 'Your settings have been saved.', 'woocommerce-for-paygent-payment-main' ), $this );
+		}
+	}
+
+	/**
+	 * Block direct web access to the wc-paygent upload directory.
+	 *
+	 * The directory stores the Paygent client certificate, which must never be
+	 * downloadable over HTTP. The .htaccess only works on Apache; nginx users
+	 * need an equivalent deny rule in the server configuration.
+	 *
+	 * @param string $dir Absolute path to the wc-paygent upload directory.
+	 */
+	private function protect_cert_directory( $dir ) {
+		global $wp_filesystem;
+
+		if ( ! $wp_filesystem || ! is_dir( $dir ) ) {
+			return;
+		}
+		$htaccess = $dir . '/.htaccess';
+		if ( ! $wp_filesystem->exists( $htaccess ) ) {
+			$rules  = "# Deny all web access. This directory stores the Paygent client certificate.\n";
+			$rules .= "<IfModule mod_authz_core.c>\n\tRequire all denied\n</IfModule>\n";
+			$rules .= "<IfModule !mod_authz_core.c>\n\tOrder deny,allow\n\tDeny from all\n</IfModule>\n";
+			$wp_filesystem->put_contents( $htaccess, $rules, 0644 );
+		}
+		$index = $dir . '/index.html';
+		if ( ! $wp_filesystem->exists( $index ) ) {
+			$wp_filesystem->put_contents( $index, '', 0644 );
 		}
 	}
 
@@ -669,8 +698,9 @@ class WC_Admin_Screen_Paygent {
 	 * Select Telegram hash check
 	 */
 	public function wc_paygent_hash_check() {
-		$title       = __( 'Telegram hash check', 'woocommerce-for-paygent-payment-main' );
-		$description = $this->jp4wc_plugin->jp4wc_description_check_pattern( $title );
+		$title        = __( 'Telegram hash check', 'woocommerce-for-paygent-payment-main' );
+		$description  = $this->jp4wc_plugin->jp4wc_description_check_pattern( $title );
+		$description .= '<br />' . __( 'Strongly recommended: the hash check detects tampering of the communication with Paygent. Enable it together with the hash code issued by Paygent.', 'woocommerce-for-paygent-payment-main' );
 		$this->jp4wc_plugin->jp4wc_input_checkbox( 'hash_check', $description, $this->prefix );
 	}
 

@@ -3,8 +3,8 @@ Contributors: artisan-workshop-1, shohei.tanaka
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=info@artws.info&item_name=Donation+for+Artisan&currency_code=JPY
 Tags: woocommerce, payment Gateway, japan
 Requires at least: 5.0
-Tested up to: 7.0
-Stable tag: 2.4.8
+Tested up to: 7.1
+Stable tag: 3.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -14,7 +14,7 @@ PAYGENT Payment Gateway plugin provides all popular online payment methods for y
 
 By contracting with PAYGENT, this plugin can introduce major payment methods in Japan to WooCommerce.
 
-Note! : When performing a major or other update from version 1.2 to 2.0 or version 2.1 to 2.2, be sure to check the operation on the staging site before using it in the production environment. We cannot guarantee anything if something goes wrong.
+Note! : When performing a major or other update such as from version 1.2 to 2.0, version 2.1 to 2.2, or version 2.4 to 3.0, be sure to check the operation on the staging site before using it in the production environment. We cannot guarantee anything if something goes wrong.
 
 1. Credit Payment (include Subscriptions)
 2. Convenience Store Payment
@@ -33,6 +33,9 @@ A: Just testing in a test environment requires a contract with Paygent. If you w
 <br />
 Q: I don't know how to set up. Can you support me?<br />
 A: We support with paid support. <a herf="https://wc.artws.info/product/payment-support/" target="_blank">Please use from here if necessary.</a><br />
+<br />
+Q: Is the uploaded client certificate protected from direct web access?<br />
+A: On Apache, the plugin writes an .htaccess file into wp-content/uploads/wc-paygent/ that denies all web access (created or refreshed when you save the Paygent settings). On nginx, .htaccess has no effect, so add a rule such as <code>location ^~ /wp-content/uploads/wc-paygent/ { deny all; }</code> to your server configuration.<br />
 
 
 == Screenshots ==
@@ -44,6 +47,21 @@ A: We support with paid support. <a herf="https://wc.artws.info/product/payment-
 5. Convenience Store Payment setting
 
 == Changelog ==
+
+= 3.0.0 - 2026-09-03 =
+* Security - Block direct web access to the client certificate upload directory (wp-content/uploads/wc-paygent/) with an .htaccess and index.html. nginx users should add an equivalent deny rule to the server configuration.
+* Added - WooCommerce Block Checkout (Cart and Checkout blocks) support for all payment methods.
+* Added - Native saved card (payment token) support on Block Checkout for Credit Card and Multi-Currency Credit Card.
+* Added - Japanese user manual with step-by-step setup instructions.
+* Fixed - Show 3D Secure 2.0 challenge failure notices on Block Checkout.
+* Fixed - Surface Paygent error messages to customers on Block Checkout when a payment fails.
+* Fixed - Resolve carrier payment capture and cancellation issues found in sandbox testing.
+* Fixed - Send the stored trading ID on PayPay refunds and captures.
+* Fixed - Enforce trading ID resolution for subsequent telegrams and restrict the order prefix to alphabetic characters.
+* Fixed - Resolve saved card issues for Multi-Currency Credit Card payment.
+* Updated - Complete Japanese translations and load block JSON translations.
+* Updated - Recommend enabling the telegram hash check in the settings screen to detect tampering of the communication with Paygent.
+* Updated - Tested with WordPress 7.1 and WooCommerce 11.0.1.
 
 = 2.4.8 - 2026-02-05 =
 * Fixed - Refactor next payment date calculation for subscriptions to use a dedicated method.
