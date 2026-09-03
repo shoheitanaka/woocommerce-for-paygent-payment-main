@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the PAYGENT for WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: PAYGENT for WooCommerce 2.4.8\n"
+"Project-Id-Version: PAYGENT for WooCommerce 3.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woocommerce-for-paygent-payment-main\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-07-29T22:38:51+00:00\n"
+"POT-Creation-Date: 2026-09-03T04:12:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 
@@ -95,7 +95,7 @@ msgid "Payment information difference notification URL"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:180
-#: includes/admin/class-wc-admin-screen-paygent.php:614
+#: includes/admin/class-wc-admin-screen-paygent.php:643
 msgid "Site ID"
 msgstr ""
 
@@ -104,12 +104,12 @@ msgid "CA Cert File"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:194
-#: includes/admin/class-wc-admin-screen-paygent.php:663
+#: includes/admin/class-wc-admin-screen-paygent.php:692
 msgid "Test Mode"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:201
-#: includes/admin/class-wc-admin-screen-paygent.php:672
+#: includes/admin/class-wc-admin-screen-paygent.php:701
 msgid "Telegram hash check"
 msgstr ""
 
@@ -119,29 +119,29 @@ msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:216
 #: includes/admin/class-wc-admin-screen-paygent.php:273
-#: includes/admin/class-wc-admin-screen-paygent.php:525
-#: includes/admin/class-wc-admin-screen-paygent.php:578
+#: includes/admin/class-wc-admin-screen-paygent.php:554
+#: includes/admin/class-wc-admin-screen-paygent.php:607
 msgid "Merchant ID"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:223
 #: includes/admin/class-wc-admin-screen-paygent.php:280
-#: includes/admin/class-wc-admin-screen-paygent.php:534
-#: includes/admin/class-wc-admin-screen-paygent.php:587
+#: includes/admin/class-wc-admin-screen-paygent.php:563
+#: includes/admin/class-wc-admin-screen-paygent.php:616
 msgid "Connect ID"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:230
 #: includes/admin/class-wc-admin-screen-paygent.php:287
-#: includes/admin/class-wc-admin-screen-paygent.php:543
-#: includes/admin/class-wc-admin-screen-paygent.php:596
+#: includes/admin/class-wc-admin-screen-paygent.php:572
+#: includes/admin/class-wc-admin-screen-paygent.php:625
 msgid "Connect Password"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:237
 #: includes/admin/class-wc-admin-screen-paygent.php:294
-#: includes/admin/class-wc-admin-screen-paygent.php:552
-#: includes/admin/class-wc-admin-screen-paygent.php:605
+#: includes/admin/class-wc-admin-screen-paygent.php:581
+#: includes/admin/class-wc-admin-screen-paygent.php:634
 msgid "Token Generation Key"
 msgstr ""
 
@@ -150,12 +150,12 @@ msgid "Client Cert File"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:251
-#: includes/admin/class-wc-admin-screen-paygent.php:681
+#: includes/admin/class-wc-admin-screen-paygent.php:711
 msgid "Telegram hash check Code"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:258
-#: includes/admin/class-wc-admin-screen-paygent.php:699
+#: includes/admin/class-wc-admin-screen-paygent.php:729
 msgid "Paygent debug Mode"
 msgstr ""
 
@@ -164,7 +164,7 @@ msgid "Test environment"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:301
-#: includes/admin/class-wc-admin-screen-paygent.php:690
+#: includes/admin/class-wc-admin-screen-paygent.php:720
 msgid "Test Telegram hash check Code"
 msgstr ""
 
@@ -173,13 +173,13 @@ msgid "Paygent Payment Method"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:316
-#: includes/admin/class-wc-admin-screen-paygent.php:708
+#: includes/admin/class-wc-admin-screen-paygent.php:738
 msgid "Prefix of Order Number"
 msgstr ""
 
 #. translators: %s is the payment method name.
 #: includes/admin/class-wc-admin-screen-paygent.php:323
-#: includes/admin/class-wc-admin-screen-paygent.php:717
+#: includes/admin/class-wc-admin-screen-paygent.php:747
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:197
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:315
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:322
@@ -188,29 +188,29 @@ msgid "Credit Card"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:330
-#: includes/admin/class-wc-admin-screen-paygent.php:726
+#: includes/admin/class-wc-admin-screen-paygent.php:756
 #: includes/gateways/paygent/class-wc-gateway-paygent-paidy.php:151
 msgid "Paidy Payment"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:337
-#: includes/admin/class-wc-admin-screen-paygent.php:735
+#: includes/admin/class-wc-admin-screen-paygent.php:765
 msgid "PayPay Payment"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:344
-#: includes/admin/class-wc-admin-screen-paygent.php:744
+#: includes/admin/class-wc-admin-screen-paygent.php:774
 msgid "RakutenPay Payment"
 msgstr ""
 
 #: includes/admin/class-wc-admin-screen-paygent.php:351
-#: includes/admin/class-wc-admin-screen-paygent.php:753
+#: includes/admin/class-wc-admin-screen-paygent.php:783
 msgid "Convenience store"
 msgstr ""
 
 #. translators: Bank Net.
 #: includes/admin/class-wc-admin-screen-paygent.php:358
-#: includes/admin/class-wc-admin-screen-paygent.php:762
+#: includes/admin/class-wc-admin-screen-paygent.php:792
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:96
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:135
 #: includes/gateways/paygent/class-wc-gateway-paygent-bn.php:144
@@ -225,7 +225,7 @@ msgstr ""
 
 #. translators: %s is the name of the payment method.
 #: includes/admin/class-wc-admin-screen-paygent.php:365
-#: includes/admin/class-wc-admin-screen-paygent.php:771
+#: includes/admin/class-wc-admin-screen-paygent.php:801
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:94
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:100
 #: includes/gateways/paygent/class-wc-gateway-paygent-atm.php:102
@@ -239,7 +239,7 @@ msgstr ""
 
 #. translators: Payment method name.
 #: includes/admin/class-wc-admin-screen-paygent.php:372
-#: includes/admin/class-wc-admin-screen-paygent.php:780
+#: includes/admin/class-wc-admin-screen-paygent.php:810
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:116
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:122
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:124
@@ -254,70 +254,74 @@ msgstr ""
 
 #. translators: %s is the payment method name.
 #: includes/admin/class-wc-admin-screen-paygent.php:379
-#: includes/admin/class-wc-admin-screen-paygent.php:789
+#: includes/admin/class-wc-admin-screen-paygent.php:819
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:124
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:200
 #: includes/gateways/paygent/class-wc-gateway-paygent-mccc.php:213
 msgid "Multi-currency Credit Card"
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:465
+#: includes/admin/class-wc-admin-screen-paygent.php:466
 msgid "Client Cert File have not been uploaded."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:469
+#: includes/admin/class-wc-admin-screen-paygent.php:470
 msgid "Uploaded flie is not Client Cert File. Please check .pem file."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:478
+#: includes/admin/class-wc-admin-screen-paygent.php:479
 msgid "CA Cert File have not been uploaded."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:482
+#: includes/admin/class-wc-admin-screen-paygent.php:483
 msgid "Uploaded flie is not CA Cert File. Please check .crt file."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:517
+#: includes/admin/class-wc-admin-screen-paygent.php:518
 msgid "Your settings have been saved."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:566
+#: includes/admin/class-wc-admin-screen-paygent.php:595
 msgid "Please select Client Cert File (pem) from local."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:568
+#: includes/admin/class-wc-admin-screen-paygent.php:597
 msgid "If you want to change Client Cert File, please select New Client Cert File (pem) from local."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:616
+#: includes/admin/class-wc-admin-screen-paygent.php:645
 msgid "If you have only one site please enter 1."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:629
+#: includes/admin/class-wc-admin-screen-paygent.php:658
 msgid "Please select CA Cert(crt) File from local."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:631
+#: includes/admin/class-wc-admin-screen-paygent.php:660
 msgid "If you want to change CA Cert File, please select New CA Cert(crt) File from local."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:647
+#: includes/admin/class-wc-admin-screen-paygent.php:676
 msgid "Since it is different depending on the rental server, please contact the server company if the test is not completed."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:656
+#: includes/admin/class-wc-admin-screen-paygent.php:685
 msgid "This URL is the payment information difference notification URL set on the Paygent merchant administrator site."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:700
+#: includes/admin/class-wc-admin-screen-paygent.php:703
+msgid "Strongly recommended: the hash check detects tampering of the communication with Paygent. Enable it together with the hash code issued by Paygent."
+msgstr ""
+
+#: includes/admin/class-wc-admin-screen-paygent.php:730
 msgid "Check it only for error checking in the production environment. Basically, please uncheck it."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:709
+#: includes/admin/class-wc-admin-screen-paygent.php:739
 msgid "Only single-byte alphabetic characters (A-Z, a-z) are allowed. Any other characters will be removed when saving."
 msgstr ""
 
-#: includes/admin/class-wc-admin-screen-paygent.php:813
+#: includes/admin/class-wc-admin-screen-paygent.php:843
 msgid "Toggle panel"
 msgstr ""
 
@@ -952,7 +956,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:222
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:409
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:891
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:123
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:125
 msgid "Installment payment"
 msgstr ""
 
@@ -967,7 +971,7 @@ msgstr ""
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:224
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:411
 #: includes/gateways/paygent/class-wc-gateway-paygent-cc.php:886
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:125
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:127
 msgid "Revolving payment"
 msgstr ""
 
@@ -1686,35 +1690,35 @@ msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:166
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:275
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:88
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:90
 msgid "Seven Eleven"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:172
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:94
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:96
 msgid "Lawson"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:173
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:98
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:100
 msgid "Mini Stop"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:178
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:287
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:104
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:106
 msgid "Family Mart"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:181
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:293
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:110
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:112
 msgid "Seicomart"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:184
 #: includes/gateways/paygent/class-wc-gateway-paygent-cs.php:299
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:116
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cs.php:118
 msgid "Daily Yamazaki"
 msgstr ""
 
@@ -1910,19 +1914,19 @@ msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:163
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:234
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:88
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:90
 msgid "au Easy Payment"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:169
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:240
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:94
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:96
 msgid "Docomo Payment"
 msgstr ""
 
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:175
 #: includes/gateways/paygent/class-wc-gateway-paygent-mb.php:246
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:100
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-mb.php:102
 msgid "SoftBank Matomete Payment(B)"
 msgstr ""
 
@@ -2438,11 +2442,11 @@ msgstr ""
 msgid "Cancellation completed"
 msgstr ""
 
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:122
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:124
 msgid "One-time payment"
 msgstr ""
 
-#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:124
+#: includes/gateways/paygent/includes/block/class-wc-paygent-block-cc.php:126
 msgid "Bonus lump-sum payment"
 msgstr ""
 
