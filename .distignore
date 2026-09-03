@@ -10,6 +10,13 @@
 /.claude
 /script
 /report
+/2025docs
+/docs
+/tests
+/scripts
+/playwright-report
+/test-results
+/.playwright-mcp
 
 # Compiled translation files: local development only.
 # WordPress.org language packs (translate.wordpress.org) serve production
@@ -28,3 +35,13 @@ package-lock.json
 package.json
 README.md
 LICENSE
+AGENTS.md
+CLAUDE.md
+e2e.config.md
+phpcs.xml.dist
+phpunit.xml.dist
+phpunit-integration.xml.dist
+phpunit-sandbox.xml.dist
+playwright.config.js
+webpack.config.js
+wp-tests-config.php
