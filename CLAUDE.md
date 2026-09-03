@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-Paygent決済をWooCommerceに統合するWordPressプラグイン（v2.4.8）。
+Paygent決済をWooCommerceに統合するWordPressプラグイン（v3.0.0）。
 日本国内の主要決済手段（クレジットカード、コンビニ、キャリア決済、QRコード等）をサポート。
 
 ## 技術スタック・要件
@@ -10,8 +10,8 @@ Paygent決済をWooCommerceに統合するWordPressプラグイン（v2.4.8）�
 | 項目 | バージョン |
 | --- | --- |
 | PHP | >= 7.4（推奨 8.2+） |
-| WordPress | >= 5.0（推奨 7.0+ / 7.0.2で検証済み） |
-| WooCommerce | >= 8.0.0（推奨 10.9+ / 10.9.4で検証済み） |
+| WordPress | >= 5.0（推奨 7.0+ / 7.1で検証済み） |
+| WooCommerce | >= 8.0.0（推奨 11.0+ / 11.0.1で検証済み） |
 | WooCommerce Subscriptions | 継続課金使用時のみ必須 |
 
 ## ファイル構成
