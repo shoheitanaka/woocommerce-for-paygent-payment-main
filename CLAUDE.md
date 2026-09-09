@@ -163,6 +163,8 @@ WooCommerce High Performance Order Storage（HPOS）完全対応済み。
 
 スキルの情報は **2025docs/ の仕様書PDFが正**。コードより仕様書を優先すること。
 
+共有スキル（`wc-development`、`woo-marketplace-*`、`wp-*`）はこのリポジトリに同梱しない。元本は [shinobiashi/claude-skills](https://github.com/shinobiashi/claude-skills) で、`bash install.sh` により `~/.claude/skills/` に配置して使う（2026-09-09 から）。`.claude/skills/` には上記のプロジェクト固有スキルだけを置く。
+
 ## PDF仕様書アップデート検知
 
 仕様書PDFが更新された際にスキルのレビューが必要かどうかを検知するワークフロー。
